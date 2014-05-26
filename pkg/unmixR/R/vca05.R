@@ -2,6 +2,7 @@
 ##' 
 ##' This algorithm is based on the geometry of convex sets. It exploits the
 ##' fact that endmembers occupy the vertices of a simplex.
+##' Intended to be called from \code{\link{vca}}.
 ##' 
 ##' @param data Data to unmix. It will be converted to a matrix using
 ##'   as.matrix. The matrix should contain a spectrum per row.
@@ -10,12 +11,12 @@
 ##'   estimated using \code{\link{estSNR}}
 ##' 
 ##' @return Although the other VCA algorithms return only indices, this
-##'   function returns the full structure to \link{\code{vca}} as the
+##'   function returns the full structure to \code{\link{vca}} as the
 ##'   endmembers should be taken out of a projected dataset which it generates
 ##' 
 ##' @references Nascimento, J.M.P.; Bioucas Dias, J.M., "Vertex component
 ##'   analysis: a fast algorithm to unmix hyperspectral data," Geoscience and
-##'   Remote Sensing, vol.43, no.4, pp.898,910, April 2005;
+##'   Remote Sensing, vol. 43, no. 4, pp.898-910, April 2005,
 ##'   doi: 10.1109/TGRS.2005.844293
 
 vca05 <- function(data, p, SNR=estSNR(data, p)) {

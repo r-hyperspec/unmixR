@@ -1,11 +1,3 @@
-.predict <- function(object, newdata=object$data, ...) {
-  endmembers <- t(newdata[object$indices,])
-  
-  t(apply(newdata, 1, function(spectrum) {
-    nnls(endmembers, spectrum)$x
-  }))
-}
-
 ##' Predict Endmember Abundances
 ##' 
 ##' Predicts the abundance percentages of each endmember at all sample points
@@ -23,14 +15,27 @@
 ##' 
 ##' @name predict
 ##' @rdname predict
-##' @method predict nfindr
-##' @S3method predict nfindr
 
+.predict <- function(object, newdata=object$data, ...) {
+  x <- NULL # suppresses check warnings about no visible global binding
+  indices <- NULL # suppresses check warnings about no visible global binding
+
+  endmembers <- t(newdata[object$indices,])
+  
+  t(apply(newdata, 1, function(spectrum) {
+    nnls(endmembers, spectrum)$x
+  }))
+}
+
+##' @name predict
+##' @rdname predict
+##' @method predict nfindr
+# @export predict nfindr
 predict.nfindr <- .predict
 
 ##' @name predict
 ##' @rdname predict
 ##' @method predict vca
-##' @S3method predict vca
+# @export predict vca
 
 predict.vca <- .predict

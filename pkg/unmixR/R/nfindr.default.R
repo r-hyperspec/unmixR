@@ -1,11 +1,13 @@
 ##' @name nfindr
 ##' @rdname nfindr
 ##' @method nfindr default
-##' @S3method nfindr default
+# @export nfindr default
 
 nfindr.default <- function(data, p,
                            method="LDU", indices=sample(nrow(data), p), ...,
                            drop=FALSE) {
+  x <- NULL # suppresses check warnings about no visible global binding
+
   methods <- c("99", "LDU", "SeqLDU", "CB", "Brute") # valid methods
   
   # check for p being with the valid range, >= 2

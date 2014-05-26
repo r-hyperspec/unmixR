@@ -10,6 +10,8 @@
 ##' @include unmixR-package.R
 
 unmixR.unittest <- function () {
+  warn <- NULL # suppresses check warnings about no visible global binding
+ 
   if (!require("svUnit", quietly=TRUE)) {
     warning("svUnit required to run the unit tests.")
     return(NA)
@@ -38,7 +40,7 @@ unmixR.unittest <- function () {
   invisible(TRUE)
 }
 
-##' test data for unit tests
+# test data for unit tests
 .C <- expand.grid ( 0 : 3, 0 : 3) 
 .C [, 3] <- 3 - rowSums (.C)
 .C <- as.matrix (.C [.C [, 3] >= 0,])

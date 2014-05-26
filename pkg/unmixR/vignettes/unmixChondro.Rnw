@@ -11,6 +11,7 @@ knitr::opts_chunk$set (fig.width=10, fig.height=6)
 require ("hyperSpec")
 require ("hyperSpec.matrixStats")
 require ("spec.unmixing")
+require("unmixR")
 @
 
 <<>>=

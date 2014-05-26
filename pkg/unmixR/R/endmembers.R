@@ -11,5 +11,6 @@
 ##'   unmixing algorithm
 
 endmembers <- function(object, newdata=object$data) {
+  indices <- NULL # suppresses check warnings about no visible global binding
   newdata[object$indices, ]
 }

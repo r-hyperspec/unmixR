@@ -1,7 +1,6 @@
 ##' @name vca
 ##' @rdname vca
 ##' @method vca default
-##' @S3method vca default
 
 vca.default <- function(data, p, method= c("Mod", "Lopez", "05"), seed=NULL, ...) {
 

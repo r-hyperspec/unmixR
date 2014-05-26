@@ -1,0 +1,13 @@
+
+NEWS file for package unmixR
+
+unmixR implements the N-FINDR and Vertex Component Analysis (VCA) algorithms which can recover pure component spectra and their respective concentrations from a hyperspectral data set.
+
+unmixR was originally authored by Conor McManus during the Google Summer of Code 2013.  Conor was supervised by Simon Fuller, Claudia Beleites and Bryan Hanson.  Claudia now maintains the package.  See citation("unmixR").
+
+The latest version of unmixR can be found at https://github.com/Chathurga/unmixR
+
+##### Version 0.1-0
+Date: 2014-05-26
+>> Builds and checks when skipping vignettes and unit tests.
+>> Still needs extensive testing.

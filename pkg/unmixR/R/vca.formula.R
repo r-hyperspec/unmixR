@@ -1,7 +1,7 @@
 ##' @name vca
 ##' @rdname vca
 ##' @method vca formula
-##' @S3method vca formula
+# @export vca formula
 
 vca.formula <- function(formula, frame, p, method="Mod", seed=NULL, ...) {
   

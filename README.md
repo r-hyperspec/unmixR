@@ -1,7 +1,7 @@
 ### unmixR
 #### An R package for unmixing of hyperspectral images
 
-`unmixR is a WORK IN PROGRESS`.  The fundamental structures & behavior are changing frequently.
+`unmixR is a WORK IN PROGRESS`.  The fundamental structures & behavior are changing frequently.  `unmixR` currently builds and checks w/o vignettes or unit tests, but there are probably errors in the results.  Don't trust it!
 
 `unmixR` is supported by [Google Summer of Code](http://www.google-melange.com/gsoc/homepage/google/gsoc2013).  Thank you!
 
@@ -9,20 +9,13 @@ Note: hyperspectral data are also called 'imaging spectroscopy' and 'imaging spe
 
 #### Things to do and Things to remember + Misc Notes
 
-An informal list to keep us on track.  Naturally, edit as you see fit.
+An informal list to keep us on track.
 
 ##### Top priority
-* Unit tests on nfindr variants
-* Add'l comments for nfindrLDU and nfindrSeqLDU
-* Add options beyond nnls to predict.nfindr
-* Improve endmember.R
-* nfindr variants (do these all work as expected?)
-    * nfindr99
-    * nfindrLDU
-    * nfindrSeqLDU
-* class definition(s): nfindr currently informally defined at end of nfindr.default.  Do we need/want to create an Rd page about it?
-* changes needed for build & check (?)
-* vignettes
+* Review unit tests which currently fail.
+* Class definition(s): `nfindr` currently informally defined at end of nfindr.default.  Do we need/want to create an Rd page about it?
+* Work on vignettes
+* Review all documentation.
 
 ##### Lower priority
 
@@ -35,4 +28,3 @@ An informal list to keep us on track.  Naturally, edit as you see fit.
 ##### Misc notes
 
 * ?
-

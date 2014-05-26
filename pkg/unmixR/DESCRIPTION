@@ -1,15 +1,23 @@
 Package: unmixR
 Type: Package
-Title: Spectral Unmixing Methods
-Version: 1.0
-Date: 2013-06-19
-Author: Conor McManus
-Maintainer: Conor McManus <chathurga@gmail.com>
-Description: Implements the N-FINDR and Vertex Component Analysis algorithms
-    to recover pure component spectra and their respective concentrations
-    from a set of measured spectra.
+Title: Hyperspectral Unmixing Methods
+Version: 0.1-0
+Date: 2014-05-26
+Author: Conor McManus, National University of Ireland Maynooth
+Maintainer: Claudia Beleites <chemometrie@beleites.de>
+Authors@R: c(person("Conor", "McManus", role = "aut"), person("Claudia",
+    "Beleites", role = c("aut", "cre"), email ="chemometrie@beleites.de"),
+    person("Simon", "Fuller", role = "aut"), person("Bryan", "Hanson", role =
+    "aut"))
+Description: unmixR implements the N-FINDR and Vertex Component Analysis (VCA)
+    algorithms which can recover pure component spectra and their respective
+    concentrations from a hyperspectral data set.
+URL: https://github.com/Chathurga/unmixR
+BugReports: https://github.com/Chathurga/unmixR/issues
 License: GPL (>= 3)
+ByteCompile: TRUE
 Depends:
+    R (>= 3.0),
     hyperSpec,
     MASS,
     nnls
@@ -18,25 +26,25 @@ Suggests:
     svUnit
 VignetteBuilder: knitr
 Collate:
-    'unmixR-package.R'
+    'endmembers.R'
+    'estSNR.R'
     'nfindr.R'
     'nfindr.default.R'
     'nfindr.formula.R'
+    'unmixR-package.R'
     'nfindr99.R'
+    'nfindrBrute.R'
+    'nfindrCB.R'
     'nfindrLDU.R'
     'nfindrSeqLDU.R'
-    'nfindrCB.R'
-    'nfindrBrute.R'
+    'predict.R'
+    'repvec.col.R'
+    'repvec.row.R'
+    'simplex.R'
+    'unittests.R'
     'vca.R'
     'vca.default.R'
     'vca.formula.R'
     'vca05.R'
     'vcaLopez.R'
     'vcaMod.R'
-    'estSNR.R'
-    'predict.R'
-    'endmembers.R'
-    'simplex.R'
-    'unittests.R'
-    'repvec.row.R'
-    'repvec.col.R'

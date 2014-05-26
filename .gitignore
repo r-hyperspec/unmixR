@@ -1,5 +1,3 @@
-.Rproj.user
 .Rhistory
-.RData
-.Rbuildignore
-spec.unmixing.Rproj
+pkg/unmixR.Rcheck/
+pkg/unmixR_*
