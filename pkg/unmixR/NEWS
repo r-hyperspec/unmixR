@@ -7,6 +7,11 @@ unmixR was originally authored by Conor McManus during the Google Summer of Code
 
 The latest version of unmixR can be found at https://github.com/Chathurga/unmixR
 
+##### Version 0.1-1
+Date: 2014-05-28
+>> Working on those darn unit tests!
+>> Still needs extensive testing.
+
 ##### Version 0.1-0
 Date: 2014-05-26
 >> Builds and checks when skipping vignettes and unit tests.

@@ -1,8 +1,8 @@
 Package: unmixR
 Type: Package
 Title: Hyperspectral Unmixing Methods
-Version: 0.1-0
-Date: 2014-05-26
+Version: 0.1-1
+Date: 2014-05-28
 Author: Conor McManus, National University of Ireland Maynooth
 Maintainer: Claudia Beleites <chemometrie@beleites.de>
 Authors@R: c(person("Conor", "McManus", role = "aut"), person("Claudia",
@@ -28,10 +28,10 @@ VignetteBuilder: knitr
 Collate:
     'endmembers.R'
     'estSNR.R'
+    'unmixR-package.R'
     'nfindr.R'
     'nfindr.default.R'
     'nfindr.formula.R'
-    'unmixR-package.R'
     'nfindr99.R'
     'nfindrBrute.R'
     'nfindrCB.R'

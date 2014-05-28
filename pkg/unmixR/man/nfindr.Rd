@@ -5,13 +5,13 @@
 \alias{nfindr.formula}
 \title{General interface to N-FINDR spectral unmixing implementations}
 \usage{
+nfindr(...)
+
 \method{nfindr}{default}(data, p, method = "LDU",
   indices = sample(nrow(data), p), ..., drop = FALSE)
 
 \method{nfindr}{formula}(formula, frame, p, method = "LDU",
   indices = sample(nrow(data), p), ..., drop = FALSE)
-
-nfindr(...)
 }
 \arguments{
 \item{data}{Data to unmix. It will be converted to a matrix using

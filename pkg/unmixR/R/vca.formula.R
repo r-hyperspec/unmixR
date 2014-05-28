@@ -2,6 +2,7 @@
 ##' @rdname vca
 ##' @method vca formula
 # @export vca formula
+##' @include unmixR-package.R
 
 vca.formula <- function(formula, frame, p, method="Mod", seed=NULL, ...) {
   

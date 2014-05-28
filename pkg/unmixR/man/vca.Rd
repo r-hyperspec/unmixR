@@ -6,12 +6,12 @@
 \title{General interface to Vertex Component Analysis spectral unmixing
 implementations}
 \usage{
+vca(...)
+
 \method{vca}{default}(data, p, method = c("Mod", "Lopez", "05"),
   seed = NULL, ...)
 
 \method{vca}{formula}(formula, frame, p, method = "Mod", seed = NULL, ...)
-
-vca(...)
 }
 \arguments{
 \item{data}{Data to unmix. It will be converted to a matrix using

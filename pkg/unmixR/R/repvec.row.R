@@ -8,6 +8,7 @@
 ##' @return A matrix with \code{n} rows where each row is \code{v}
 ##' 
 ##' @rdname repvec.row
+##' @include unmixR-package.R
 
 .repvec.row <- function(v, n) t(as.matrix(v))[rep(1, n), ]
 

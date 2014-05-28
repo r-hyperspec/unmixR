@@ -41,45 +41,43 @@
 ##' 
 ##' @rdname nfindr
 ##' @export
+##' @include unmixR-package.R
 
 nfindr <- function(...) {
   UseMethod("nfindr")
 }
 
-# Bryan commented out this test because it causes roxygenize to fail,
-# and I don't quite see why.
-
-# .test(nfindr) <- function() {
-  # data <- as.matrix(laser)
-  # p <- 2
-  # indices <- c(1, 2)
+.test(nfindr) <- function() {
+  data <- as.matrix(laser)
+  p <- 2
+  indices <- c(1, 2)
   
-  # # test: nfindr produces error for invalid values of p
+  # test: nfindr produces error for invalid values of p
   
-  # checkException(nfindr(data, p="---"))
-  # checkException(nfindr(data, p=0))
+  checkException(nfindr(data, p="---"))
+  checkException(nfindr(data, p=0))
   
-  # # test: nfindr produces error for invalid method
+  # test: nfindr produces error for invalid method
   
-  # checkException(nfindr(data, p, method="invalid"))
+  checkException(nfindr(data, p, method="invalid"))
   
-  # # test: nfindr default produces the correct answer
+  # test: nfindr default produces the correct answer
   
-  # output <- nfindr(data, p)$indices
-  # checkTrue(output == c(4, 79))
+  output <- nfindr(data, p)$indices
+  checkTrue(output == c(4, 79))
   
-  # # test: all N-FINDR methods produce the same output
+  # test: all N-FINDR methods produce the same output
   
-  # methods <- c("99", "LDU", "SeqLDU", "CB", "Brute")
+  methods <- c("99", "LDU", "SeqLDU", "CB", "Brute")
   
-  # outputs <- sapply(1:4, function(i) {
-    # nfindr(data, p, methods[i])$indices
-  # })
+  outputs <- sapply(1:4, function(i) {
+    nfindr(data, p, methods[i])$indices
+  })
   
-  # checkTrue(all(outputs[,1] == outputs))
+  checkTrue(all(outputs[,1] == outputs))
   
-  # # test: check the formula interface
+  # test: check the formula interface
   
-  # output.formula <- nfindr(~ 0 + ., as.data.frame(data), p)$indices
-  # checkEquals(output.formula, output)
-# }
+  output.formula <- nfindr(~ 0 + ., as.data.frame(data), p)$indices
+  checkEquals(output.formula, output)
+}

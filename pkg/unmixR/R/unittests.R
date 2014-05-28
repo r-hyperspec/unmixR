@@ -11,7 +11,7 @@
 
 unmixR.unittest <- function () {
   warn <- NULL # suppresses check warnings about no visible global binding
- 
+
   if (!require("svUnit", quietly=TRUE)) {
     warning("svUnit required to run the unit tests.")
     return(NA)

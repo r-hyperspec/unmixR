@@ -24,7 +24,8 @@ vca05 <- function(data, p, SNR=estSNR(data, p)) {
   N <- ncol(data)
   
   SNRth <- 15 + 10 * log10(p)
-  
+  cat("SNR is:", SNR, "\n")
+  cat("SNRth is:", SNRth, "\n")
   # if the estimated SNR is over a certain threshold ...
   if (SNR > SNRth) {
     d <- p

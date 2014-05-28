@@ -1,6 +1,7 @@
 ##' @name vca
 ##' @rdname vca
 ##' @method vca default
+##' @include unmixR-package.R
 
 vca.default <- function(data, p, method= c("Mod", "Lopez", "05"), seed=NULL, ...) {
 

@@ -12,13 +12,22 @@
 ##' @import hyperSpec
 ##' @import nnls
 ##' @import MASS
+# @import svUnit
 
-if (!require('svUnit', quietly = TRUE)) {
-	'.test<-' <- function(f, value) {
-		class(value) <- c('svTest', 'function')
-		attr(f, 'test') <- value
-		f
+# This code needs to be here due to the order in which
+# things are sourced, apparently.  It made more sense to
+# me to put it unittests.R but that causes problems.  BH.
+	
+	if (!require('svUnit', quietly = TRUE)) {
+		'.test<-' <- function(f, value) {
+			cat("svUnit is not available\n")
+			class(value) <- c('svTest', 'function')
+			attr(f, 'test') <- value
+			f
+		}
+	} else {
+		'.test<-' <- svUnit::'test<-'
+		cat("svUnit is installed\n")
+		print(svUnit::'test<-') # this is valid code/real function
 	}
-} else {
-	'.test<-' <- svUnit::'test<-'
-}
+
