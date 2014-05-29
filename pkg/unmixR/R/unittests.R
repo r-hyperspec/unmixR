@@ -44,6 +44,7 @@ unmixR.unittest <- function () {
 .C <- expand.grid ( 0 : 3, 0 : 3) 
 .C [, 3] <- 3 - rowSums (.C)
 .C <- as.matrix (.C [.C [, 3] >= 0,])
-.testdata <- data.frame (a = 1 : 10, x = I (.C))
+dimnames(.C) <- list(samples = 1:10, wavelengths = paste("L", 1:3, sep = "")) # BH
+.testdata <- data.frame (sample = paste("s", 1:10, sep = ""), x = I (.C))
 rm (.C)
 .correct <- c (1, 4, 10)

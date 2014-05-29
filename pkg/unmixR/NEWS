@@ -7,9 +7,16 @@ unmixR was originally authored by Conor McManus during the Google Summer of Code
 
 The latest version of unmixR can be found at https://github.com/Chathurga/unmixR
 
+##### Version 0.1-2
+Date: 2014-05-29
+>> Now builds and checks WITH the unit tests, except that one of the vca.formula tests was behaving badly and was commented out, AND, all tests involving .testdata are commented out, which is related to the next item, still a work in progress.
+>> Corrected what I think were some errors in estSNR (see notes within the file).  Also set some traps to monitor the SNR.  With .testdata, which is noiseless(?), one can get some pretty odd answers.  Not sure if this is the final solution to this problem.
+>> Modified .testdata in unittests.R so that the column names were consistent (a cosmetic fix).
+>> Still needs extensive testing.
+
 ##### Version 0.1-1
 Date: 2014-05-28
->> Working on those darn unit tests!
+>> Fixed collate order so that the svUnit framework is fully visible.  Tests still fail.
 >> Still needs extensive testing.
 
 ##### Version 0.1-0

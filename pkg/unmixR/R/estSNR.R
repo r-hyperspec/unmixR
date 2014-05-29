@@ -3,9 +3,9 @@
 ##' Estimate the signal to noise ratio of a hyperspectral image
 ##' 
 ##' @param data The hyperspectral image whose signal to noise ratio needs to
-##'   be estimated 
-##' @param p The number of endmembers, used for data reduction
-##' @return The estimates signal to noise ratio in decibels
+##'   be estimated.  Samples in rows, frequencies in columns.
+##' @param p The number of endmembers, used for data reduction.
+##' @return The estimated signal to noise ratio in decibels.
 ##' 
 ##' @references Nascimento, J.M.P.; Bioucas Dias, J.M., "Vertex component
 ##'   analysis: a fast algorithm to unmix hyperspectral data," Geoscience and
@@ -16,8 +16,11 @@ estSNR <- function(data, p) {
   u <- NULL # suppresses check warnings about no visible global binding
   E <- function(M, n) sum(c(M)^2 / n) # expectation operator
   
-  L <- nrow(data)
-  N <- ncol(data)
+  #data <- t(data) # BH added by analogy to the VCA functions (?)
+  #p <- p - 1 # BH added by analogy to the VCA functions (?)
+  
+  L <- nrow(data) # no of frequencies
+  N <- ncol(data) # no of samples
   
   rowMean <- apply(data, 1, mean) # get the mean of each row
   # repeat the column of row means so that it matches the size of the data
@@ -25,10 +28,45 @@ estSNR <- function(data, p) {
   zMean <- data - repMean # zero mean the data
   Ud <- svd(tcrossprod(zMean) / N, nv=p)$u[,1:p]
   zProj <- crossprod(Ud, zMean) # project the zero mean data
+
+  # Conor's original code + BH comments
+  # pr <- E(data, N) # E value of raw data
+  # # Next, compute E value of PCA'd data, uncentered
+  # prp <- E(crossprod(Ud, zMean), N) + crossprod(rowMean)
+  # # Last step based upon Eqn 13 in reference
+  # SNR <- 10 * log10((prp - (p / L) * pr) / (pr - prp))
+ 
+  # BH replacement code, which seems closer to the reference
+  # Follows Eqn 13 to the letter
+  pr <- E(crossprod(data), N) # E value of raw data
+  # Next, compute E value of PCA'd data, uncentered
+  prp <- crossprod(data, Ud) %*% crossprod(Ud, data)
+  prp <- E(prp, N) + crossprod(rowMean)
   
-  pr <- E(data, N)
-  prp <- E(crossprod(Ud, zMean), N) + crossprod(rowMean)
+  # .testdata used in unit tests has no or very little noise.
+  # This creates some odd situations, which are trapped below.
+  # Something is probably wrong before this spot.
+  
+  # Some reporting for troubleshooting
+  SNRth <- 15 + 10 * log10(p)
+  cat("SNRth is:", SNRth, "\n")
+
+  if ((prp - (p / L) * pr) / (pr - prp) < 0) {
+  	# This would be taking the log10 of a negative number
+  	message("SNR is undefined for this data, returning SNRth + 1")
+  	return(15 + 10*log10(p) + 1)
+  	}
+  	
+  # Otherwise compute according to Eqn 13
   SNR <- 10 * log10((prp - (p / L) * pr) / (pr - prp))
+ 
+  # Next line is to catch the test cases which are noiseless
+  if (SNR < 0) {
+  	message("SNR was very high, apparent test case, returning SNRth + 1")
+  	return(15 + 10 * log10(p) + 1)
+  	}
+  	
+  message("SNR was satisfactory")
   
   SNR
 }

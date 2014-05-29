@@ -24,8 +24,9 @@ vca05 <- function(data, p, SNR=estSNR(data, p)) {
   N <- ncol(data)
   
   SNRth <- 15 + 10 * log10(p)
-  cat("SNR is:", SNR, "\n")
-  cat("SNRth is:", SNRth, "\n")
+  # cat("SNRth is:	", SNRth, "\n")
+  # cat("SNR is:	", estSNR(data, p), "\n")
+  
   # if the estimated SNR is over a certain threshold ...
   if (SNR > SNRth) {
     d <- p
@@ -44,7 +45,8 @@ vca05 <- function(data, p, SNR=estSNR(data, p)) {
     # repeat the column of row means so that it matches the size of the data
     repMean <- .repvec.col(rowMean, N)
     zMean <- data - repMean # zero mean the data
-    Ud <- svd(tcrossprod(zMean) / N, nv=p)$u[,1:p]
+#    Ud <- svd(tcrossprod(zMean) / N, nv=p)$u[,1:p] # Conor original
+    Ud <- svd(tcrossprod(zMean) / N, nv=p)$u[,1:d] # BH fix?
     zProj <- crossprod(Ud, zMean) # project the zero mean data
     
     x <- zProj[1:d, ]
