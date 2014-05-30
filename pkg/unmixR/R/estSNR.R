@@ -16,7 +16,9 @@ estSNR <- function(data, p) {
   u <- NULL # suppresses check warnings about no visible global binding
   E <- function(M, n) sum(c(M)^2 / n) # expectation operator
   
-  #data <- t(data) # BH added by analogy to the VCA functions (?)
+  data <- t(data) # BH added by analogy to the VCA functions (?)
+  # If we don't transpose, the definitions below are reversed
+  # compared to how we have used them other places.
   #p <- p - 1 # BH added by analogy to the VCA functions (?)
   
   L <- nrow(data) # no of frequencies
@@ -48,25 +50,18 @@ estSNR <- function(data, p) {
   # Something is probably wrong before this spot.
   
   # Some reporting for troubleshooting
+  
   SNRth <- 15 + 10 * log10(p)
   cat("SNRth is:", SNRth, "\n")
 
   if ((prp - (p / L) * pr) / (pr - prp) < 0) {
   	# This would be taking the log10 of a negative number
-  	message("SNR is undefined for this data, returning SNRth + 1")
-  	return(15 + 10*log10(p) + 1)
+  	message("SNR is undefined for this data, returning alternate definition")
+  	return(10*log10(prp/pr)) # this is plain denoised data over data
   	}
   	
   # Otherwise compute according to Eqn 13
   SNR <- 10 * log10((prp - (p / L) * pr) / (pr - prp))
- 
-  # Next line is to catch the test cases which are noiseless
-  if (SNR < 0) {
-  	message("SNR was very high, apparent test case, returning SNRth + 1")
-  	return(15 + 10 * log10(p) + 1)
-  	}
-  	
-  message("SNR was satisfactory")
-  
+   
   SNR
 }
