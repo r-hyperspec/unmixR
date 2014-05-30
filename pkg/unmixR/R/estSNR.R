@@ -16,7 +16,14 @@ estSNR <- function(data, p) {
   u <- NULL # suppresses check warnings about no visible global binding
   E <- function(M, n) sum(c(M)^2 / n) # expectation operator
   
-  data <- t(data) # BH added by analogy to the VCA functions (?)
+  # NOTE: we don't need to transpose here, because when this
+  # is called internally by vca05, the data is already tranposed
+  # and lazy evaluation applies (the SNR argument to vca05 is not
+  # eval'd until it is needed, after the transpose)
+  # This also means one should not call estSNR directly, unless
+  # one transposes first.
+  
+  #data <- t(data) # BH added by analogy to the VCA functions (?)
   # If we don't transpose, the definitions below are reversed
   # compared to how we have used them other places.
   #p <- p - 1 # BH added by analogy to the VCA functions (?)
@@ -52,7 +59,6 @@ estSNR <- function(data, p) {
   # Some reporting for troubleshooting
   
   SNRth <- 15 + 10 * log10(p)
-  cat("SNRth is:", SNRth, "\n")
 
   if ((prp - (p / L) * pr) / (pr - prp) < 0) {
   	# This would be taking the log10 of a negative number

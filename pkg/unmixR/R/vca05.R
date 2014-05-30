@@ -20,12 +20,11 @@
 ##'   doi: 10.1109/TGRS.2005.844293
 
 vca05 <- function(data, p, SNR=estSNR(data, p)) {
+
   data <- t(as.matrix(data))
   N <- ncol(data)
   
   SNRth <- 15 + 10 * log10(p)
-  # cat("SNRth is:	", SNRth, "\n")
-  # cat("SNR is:	", estSNR(data, p), "\n")
   
   # if the estimated SNR is over a certain threshold ...
   if (SNR > SNRth) {
@@ -50,6 +49,7 @@ vca05 <- function(data, p, SNR=estSNR(data, p)) {
     zProj <- crossprod(Ud, zMean) # project the zero mean data
     
     x <- zProj[1:d, ]
+#    print(str(Ud))
     dataProj <- Ud[, 1:d] %*% x + repMean
     c <- max(sum(x^2))^0.5
     y <- rbind(x, c)
