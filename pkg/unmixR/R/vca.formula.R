@@ -25,7 +25,7 @@ vca.formula <- function(formula, frame, p, method="Mod", seed=NULL, ...) {
   
   # test: check the formula interface
   
-#  checkEquals (vca(~ x, .testdata, p = 3)$indices, .correct)
+  #checkEquals (vca(~ x, .testdata, p = 3)$indices, .correct)
   
   ## check conversion of classes 
   if (require ("hyperSpec")) {

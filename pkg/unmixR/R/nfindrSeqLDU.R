@@ -59,6 +59,6 @@ nfindrSeqLDU <- function(data, p, indices, ...) {
       }
     }
   }
-  
+  indices <- sort(indices)
   indices
 }

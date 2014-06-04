@@ -60,6 +60,6 @@ nfindr99 <- function(data, p, indices, iters=3*p) {
     volume.prev <- volume.now
     volume.now <- volume
   }
-  
+  indices <- sort(indices)
   indices
 }

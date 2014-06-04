@@ -31,7 +31,7 @@ nfindrCB <- function(data, p, indices, ..., iters=3) {
     # after p points did not change we know that we are converged
     if (no.change > p) break
   }
-  
+  indices <- sort(indices)
   indices
 }
 

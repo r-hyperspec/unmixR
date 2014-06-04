@@ -12,7 +12,8 @@ as.matrix. The matrix should contain a spectrum per row.}
 \item{p}{Number of endmembers}
 }
 \value{
-Endmember indices
+The indices that indicate the position of the endmembers in the
+  original dataset
 }
 \description{
 Modified VCA algorithm that aims to reduced the algorithmic complexity of

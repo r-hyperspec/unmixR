@@ -11,7 +11,8 @@
 ##' @param data Data to unmix. It will be converted to a matrix using
 ##'   as.matrix. The matrix should contain a spectrum per row.
 ##' @param p Number of endmembers
-##' @return Endmember indices
+##' @return The indices that indicate the position of the endmembers in the
+##'   original dataset
 ##' 
 ##' @references Lopez, S.; Horstrand, P.; Callico, G.M.; Lopez, J.F.;
 ##' Sarmiento, R., "A Low-Computational-Complexity Algorithm for
@@ -40,6 +41,6 @@ vcaLopez <- function(data, p) {
     indices[i] <- index
     E[, i] <- Y[, index]
   }
-  
+  indices <- sort(indices)
   indices
 }

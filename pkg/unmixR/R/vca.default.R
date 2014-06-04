@@ -49,15 +49,15 @@ vca.default <- function(data, p, method= c("Mod", "Lopez", "05"), seed=NULL, ...
   
   for (m in methods) {
     # .testdata has 3 components, so picking 2 out of 3
-    # checkTrue (all (vca (.testdata$x, p = 2, method = m)$indices %in% .correct), 
-               # msg = sprintf ("%s: .testdata, p = 2", m))
+    #checkTrue (all (vca (.testdata$x, p = 2, method = m)$indices %in% .correct), 
+    #           msg = sprintf ("%s: .testdata, p = 2", m))
     # BH changed to p = 3, since once in VCA05 this data passes to the 2nd block where d = p - 1 
-    # checkTrue (all (vca (.testdata$x, p = 3, method = m)$indices %in% .correct), 
-               # msg = sprintf ("%s: .testdata, p = 2", m))
+    #checkTrue (all (vca (.testdata$x, p = 3, method = m)$indices %in% .correct), 
+     #          msg = sprintf ("%s: .testdata, p = 2", m))
     
     # all 3 components should be recovered, vca output is sorted. 
-    # checkEquals (vca (.testdata$x, p = 3, method = m)$indices, .correct, 
-                 # msg = sprintf ("%s: .testdata, p = 3", m))
+    #checkEquals (vca (.testdata$x, p = 3, method = m)$indices, .correct, 
+     #            msg = sprintf ("%s: .testdata, p = 3", m))
   }
   
   # test: if hyperSpec is available, test on hyperSpec object

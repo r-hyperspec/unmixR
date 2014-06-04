@@ -31,5 +31,6 @@ nfindrBrute <- function(data, p, ...) {
   
   # return the indices that formed the largest simplex
   col <- which.max(volumes)
-  combos[, col]
+  indices <- sort(combos[, col])
+  indices
 }
