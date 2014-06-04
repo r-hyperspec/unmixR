@@ -14,8 +14,26 @@
 ##' @rdname simplex
 ##' @include unmixR-package.R
 
+# .simplex <- function(data, p, indices) {
+  # rbind(rep(1, p), t(data[indices,]))
+# }
+
+# The following is Bryan's modification so that the function does what
+# it is claimed to do, return a p x p matrix
+# This was causing problems in nfindr99 (det fails, not square) 
+# and probably slowing down nfindrLDU
+# Alternatively, we might make the check in the calling function
+# & state in the Rd how long indices should be/or default to runif
+# Rd stuff above not updated!!!!!!!!!!!!!!!!!!
+
 .simplex <- function(data, p, indices) {
-  rbind(rep(1, p), t(data[indices,]))
+  if (length(indices) != p) {
+  	stop("indices should have length p")
+  }
+  data <- data[indices,]
+  tdata <- t(data)
+  tdata <- tdata[1:(p-1),]
+  rbind(rep(1, p), tdata)
 }
 
 .test(.simplex) <- function() {
