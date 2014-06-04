@@ -18,7 +18,7 @@
 ##'   spectral end-member determination in hyperspectral data", Proc.
 ##'   SPIE 3753, Imaging Spectrometry V, 266 (October 27, 1999), 
 ##'   doi:10.1117/12.366289
-##'
+##' @export
 nfindr99 <- function(data, p, indices, iters=3*p) {
   simplex <- .simplex(data, p, indices)
   nspectra <- nrow(data)

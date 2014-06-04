@@ -18,6 +18,7 @@
 ##'   analysis: a fast algorithm to unmix hyperspectral data," Geoscience and
 ##'   Remote Sensing, vol. 43, no. 4, pp.898-910, April 2005,
 ##'   doi: 10.1109/TGRS.2005.844293
+##' @export
 
 vca05 <- function(data, p, SNR=estSNR(data, p)) {
 
@@ -69,8 +70,11 @@ vca05 <- function(data, p, SNR=estSNR(data, p)) {
     A[,i] <- y[, indices[i]]
   }
   
-  list(
-    data = t(dataProj),
-    indices = sort(indices)
-  )
+  # list(
+    # data = t(dataProj),
+    # indices = sort(indices)
+  # )
+  
+   indices <- sort(indices)
+   indices
 }

@@ -14,6 +14,7 @@
 ##'   \code{\link{nfindr}}
 ##' @return The indices that indicate the position of the endmembers in the
 ##'   original dataset
+##' @export
 
 nfindrBrute <- function(data, p, ...) {
   # generate all possible unique combinations of p indices

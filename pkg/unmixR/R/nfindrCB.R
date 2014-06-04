@@ -12,6 +12,7 @@
 ##' @param iters Max number of iterations, defaults to 3*p
 ##' @return The indices that indicate the position of the endmembers in the
 ##'   original dataset
+##' @export
 
 nfindrCB <- function(data, p, indices, ..., iters=3) {
   no.change <- 0 # number of points that were checked but did not change

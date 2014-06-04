@@ -19,6 +19,7 @@
 ##'   "Reducing the complexity of the N-FINDR algorithm for hyperspectral
 ##'   image analysis.", IEEE Trans Image Process. 2013 July 22 (No. 7):2835-48l
 ##'   doi: 10.1109/TIP.2012.2219546
+##' @export
 
 nfindrLDU <- function(data, p, indices, ...) {
   simplex <- .simplex(data, p, indices)

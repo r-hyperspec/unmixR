@@ -14,6 +14,7 @@
 ##'   analysis: a fast algorithm to unmix hyperspectral data," Geoscience and
 ##'   Remote Sensing, vol. 43, no. 4, pp.898-910, April 2005, 
 ##'   doi: 10.1109/TGRS.2005.844293
+##' @export
 
 estSNR <- function(data, p) {
   u <- NULL # suppresses check warnings about no visible global binding

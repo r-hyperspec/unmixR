@@ -1,7 +1,7 @@
 ### unmixR
 #### An R package for unmixing of hyperspectral images
 
-`unmixR is a WORK IN PROGRESS`.  The fundamental structures & behavior are changing frequently.  `unmixR` currently builds and checks w/o vignettes or unit tests, but there are probably errors in the results.  Don't trust it!
+`unmixR is a WORK IN PROGRESS`.  The fundamental structures & behavior are changing frequently.  `unmixR` currently builds and checks w/o vignettes and with limited unit tests, but there are probably errors in the results.  Don't trust it!
 
 `unmixR` is supported by [Google Summer of Code](http://www.google-melange.com/gsoc/homepage/google/gsoc2013).  Thank you!
 
@@ -14,6 +14,7 @@ An informal list to keep us on track.
 ##### Top priority
 * Review unit tests which currently fail.
 * Class definition(s): `nfindr` currently informally defined at end of nfindr.default.  Do we need/want to create an Rd page about it?
+* Similar question for class vca.  It is not different from class nfindr, maybe they should both return class 'unmixR'?
 * Work on vignettes
 * Review all documentation.
 
@@ -24,7 +25,9 @@ An informal list to keep us on track.
     * nwhfc
     * sml (second moment linear)
     * Hysime (hyperspectral signal subspace identification by minimum error)
-
+* methods that don't assume a pure pixel is present
+    * MVT methods...
+    
 ##### Misc notes
 
-* ?
+* Bryan is wondering: we are doing a lot of PCA manually in our functions, I believe they are all unscaled.  If we scaled, one would get quite different answers.  Do we want to add scaling as an option, or (better?) just mention this in the documentation somewhere?  Is it even important to note this?

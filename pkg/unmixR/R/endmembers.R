@@ -9,6 +9,7 @@
 ##'   the endmembers then this parameter allows for passing in new data
 ##' @return A matrix where each row is an endmember as calculated by the
 ##'   unmixing algorithm
+##' @export
 
 endmembers <- function(object, newdata=object$data) {
   indices <- NULL # suppresses check warnings about no visible global binding
