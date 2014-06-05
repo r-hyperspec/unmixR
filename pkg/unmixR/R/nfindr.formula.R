@@ -1,7 +1,6 @@
 ##' @name nfindr
 ##' @rdname nfindr
-##' @method nfindr formula
-# @export nfindr formula
+##' @export
 
 nfindr.formula <- function(formula, frame, p,
                            method="LDU", indices=sample(nrow(data), p), ...,

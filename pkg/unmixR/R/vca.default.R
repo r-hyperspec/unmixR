@@ -1,7 +1,6 @@
 ##' @name vca
 ##' @rdname vca
-##' @method vca default
-# @export vca default
+##' @export
 ##' @include unmixR-package.R
 
 vca.default <- function(data, p, method= c("Mod", "Lopez", "05"), seed=NULL, ...) {
@@ -53,11 +52,11 @@ vca.default <- function(data, p, method= c("Mod", "Lopez", "05"), seed=NULL, ...
     #           msg = sprintf ("%s: .testdata, p = 2", m))
     # BH changed to p = 3, since once in VCA05 this data passes to the 2nd block where d = p - 1 
     #checkTrue (all (vca (.testdata$x, p = 3, method = m)$indices %in% .correct), 
-     #          msg = sprintf ("%s: .testdata, p = 2", m))
+    #           msg = sprintf ("%s: .testdata, p = 2", m))
     
     # all 3 components should be recovered, vca output is sorted. 
     #checkEquals (vca (.testdata$x, p = 3, method = m)$indices, .correct, 
-     #            msg = sprintf ("%s: .testdata, p = 3", m))
+    #            msg = sprintf ("%s: .testdata, p = 3", m))
   }
   
   # test: if hyperSpec is available, test on hyperSpec object

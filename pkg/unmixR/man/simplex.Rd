@@ -7,8 +7,8 @@
 }
 \arguments{
 \item{data}{Matrix whose rows will be included in the simplex. This
-matrix will have been reduced using using PCA or some other process
-so that it has p columns}
+matrix should be reduced using using PCA or some other process
+so that it has p columns before calling this function.}
 
 \item{p}{Number of endmembers that should be found using the simplex.
 Defines the size of the simplex (will be p x p)}

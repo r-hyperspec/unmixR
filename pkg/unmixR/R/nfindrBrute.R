@@ -24,7 +24,8 @@ nfindrBrute <- function(data, p, ...) {
   # generate the volumes of all the simplexes using the indices
   volumes <- sapply(1:n, function(i) {
     idx <- combos[,i]
-    simplex <- rbind(rep(1, p), data[idx,])
+#    simplex <- rbind(rep(1, p), data[idx,])
+    simplex <- rbind(rep(1, p), t(data[idx,])) # Bryan's fix
     
     abs(det(simplex))
   })

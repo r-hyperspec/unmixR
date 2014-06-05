@@ -7,6 +7,12 @@ unmixR was originally authored by Conor McManus during the Google Summer of Code
 
 The latest version of unmixR can be found at https://github.com/Chathurga/unmixR
 
+##### Version 0.1-5
+Date: 2014-06-05
+>> Changed roxygen2 settings for predict, nfindr.default, nfindr.formula, vca.formula & vca.default.  It is no longer necessary for S3 methods to be declared but you must export the methods.  All you need to write is simply use @export, roxygen2 seems to figure it all out.
+>> Changes made yesterday to .simplex were probably not necessary but do no harm.  Had forgotten that nfindr.default was doing the pca before .simplex was called.
+>> Found an error in nfindrBrute where the data was not being transposed.  See note in file.  Runs now.
+ 
 ##### Version 0.1-4
 Date: 2014-06-04
 >> Made sure all vca and nfindr functions sorted their indices before returning them.

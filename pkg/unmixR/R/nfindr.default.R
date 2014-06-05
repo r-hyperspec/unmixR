@@ -1,7 +1,6 @@
 ##' @name nfindr
 ##' @rdname nfindr
-##' @method nfindr default
-# @export nfindr default
+##' @export
 
 nfindr.default <- function(data, p,
                            method="LDU", indices=sample(nrow(data), p), ...,
@@ -36,7 +35,7 @@ nfindr.default <- function(data, p,
   # call the function to get the indices of the endmembers
   indices <- nfindrFunc(data, p, indices, ...)
   # sort the indices to normalise the order between runs
-  indices <- sort(indices)
+  indices <- sort(indices) # they should be returned already sorted by each method
   
   # return a model
   structure(list(

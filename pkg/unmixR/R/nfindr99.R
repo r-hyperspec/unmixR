@@ -54,12 +54,13 @@ nfindr99 <- function(data, p, indices, iters=3*p) {
           simplex[2:p,k] <- sample
         }
       }
-    }
+    } # end of (k in 1:p) loop
     
     iter <- iter+1
     volume.prev <- volume.now
     volume.now <- volume
-  }
+  } # end of 'while'
+  
   indices <- sort(indices)
   indices
 }

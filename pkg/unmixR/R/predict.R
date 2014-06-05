@@ -29,13 +29,12 @@
 
 ##' @name predict
 ##' @rdname predict
-##' @method predict nfindr
-# @export predict nfindr
+##' @export
+
 predict.nfindr <- .predict
 
 ##' @name predict
 ##' @rdname predict
-##' @method predict vca
-# @export predict vca
+##' @export
 
 predict.vca <- .predict
