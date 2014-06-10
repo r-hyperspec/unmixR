@@ -16,7 +16,8 @@ An informal list to keep us on track.
 * Class definition(s): `nfindr` currently informally defined at end of nfindr.default.  Do we need/want to create an Rd page about it?
 * Similar question for class vca.  It is not different from class nfindr, maybe they should both return class 'unmixR'?
 * Work on vignettes
-* Review all documentation.
+* Review all documentation generally.
+* Add examples to the documentation.
 
 ##### Lower priority
 
