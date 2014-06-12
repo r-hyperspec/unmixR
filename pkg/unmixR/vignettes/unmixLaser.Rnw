@@ -57,10 +57,7 @@ zero <- rmvnorm (n = nrow (laser), sigma=sd)
 points (log10 (svd (zero)$d), pch = 20, cex = 0.5, col = "green")
 @
 
-HFC:
-<<>>=
-hfc (laser [[]], alpha = c(.33, .1,.05,.01, .001))
-@
+
 
 
 Winter 1999:
@@ -73,14 +70,14 @@ lines (pca$x [,1:2])
 
 pairs (pca$x [, 1: 4], panel = function (x, ...) {points (x, ..., type = "b")}, pch = 19, col = alois.palette (nrow (laser)))
 
-e <- nfindr99 (laser [[]], p=2)
+e <- nfindr (laser [[]], p=2)
 plot (decomposition (laser, e$data [e$indices,]), col = 1 : 2)
 
 matplot (laser$t / 60, predict (e), type = "l", lty = 1, main = "N-FINDR Winter1999", xlab = "t / min")
 @
 
 <<>>=
-e <- nfindr99 (laser [[]], p=3)
+e <- nfindr (laser [[]], p=3)
 plot (decomposition (laser, e$data [e$indices,]), stacked = T)
 
 matplot (laser$t / 60, predict (e), type = "l", lty = 1, main = "N-FINDR Winter1999", xlab = "t / min")

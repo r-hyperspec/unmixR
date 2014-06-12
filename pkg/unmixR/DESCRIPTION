@@ -19,12 +19,13 @@ ByteCompile: TRUE
 Depends:
     R (>= 3.0),
     hyperSpec,
-    ChemoSpec,
     MASS,
     nnls
 Suggests:
     knitr,
     svUnit
+Imports:
+    amap
 VignetteBuilder: knitr
 Collate:
     'abundanceImage.R'

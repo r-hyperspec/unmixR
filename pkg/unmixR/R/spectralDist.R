@@ -34,7 +34,6 @@
 ##' @seealso  \code{\link[amap]{Dist}}, \code{\link[stats]{dist}},  \code{\link{cos.dist}}
 ##' @export
 ##' @include unmixR-package.R
-##' @importFrom amap Dist
 
 spectralDist <- function (M = stop ("Missing matrix of spectra"), 
                           method = c ("euclidean", "maximum", "manhattan", "canberra", "binary", "minkowski",  
@@ -54,7 +53,7 @@ spectralDist <- function (M = stop ("Missing matrix of spectra"),
 	D <- switch (method,
 	             minkowski = dist (M, "minkowski", ...),
                cosineAlpha = cos.dist (M, ...),
-               Dist (M, method = method, ...)
+               amap::Dist (M, method = method, ...)
 	)
 	
   if (! missing (ref))

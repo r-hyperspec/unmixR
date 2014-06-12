@@ -1,3 +1,6 @@
+%\VignetteEngine{knitr::knitr}
+%\VignetteIndexEntry{analyse hyperSpec's chondro data set with spectral unmixing}
+%\VignetteDepends{hyperSpec}
 N-FINDR-CB
 ========================================================
 
