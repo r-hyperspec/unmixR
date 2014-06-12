@@ -11,8 +11,6 @@
 ##' @param M Matrix containing spectra to be compared in rows.
 ##' The matrix should have dimensions no. of samples x
 ##' no. of wavelengths. 
-##' BH: SHOULD THE MATRIX BE MEAN-CENTERED?
-##  CB: NO. Why should it? 
 ##'
 ##' @param method String.  The method to be used in computing the distance.
 ##' One of \code{c("name them")}.
@@ -26,17 +24,23 @@
 ##' @param ... Arguments to be passed downstream, for instance, the power
 ##' for the Minkowski computation.  See \code{\link{dist}} for details.
 ##'
-##' @return If \code{ref = NULL}, an object of class \code{dist}; basically
-##' the lower triangle of the pair-wise distance matrix.  If \code{ref != NULL},
-##' a vector of length \code{nrow(M)} containing the
-##' distances between each spectrum and the reference spectrum.  If
-##' \code{reportAsRank = TRUE} the vector will be reported as a ranked vector.
-##'
+##' @return pair-wise distance matrix of all cases in \code{M} against those indicated by \code{ref}.  
+##' 
+##' If \code{ref} is not given, a dist object with all pair-wise distances.
+##' 
+##' If \code{reportAsRank = TRUE} the vector will be reported as a ranked vector.
+##' 
+##' @author Bryan Hanson, with contributions by Claudia Beleites
+##' @seealso  \code{\link[amap]{Dist}}, \code{\link[stats]{dist}},  \code{\link{cos.dist}}
 ##' @export
-##' @importFrom ChemoSpec Dist
+##' @include unmixR-package.R
+##' @importFrom amap Dist
 
-spectralDist <- function(M = NULL, method = "euclidean",
-	ref = NULL, reportAsRank = FALSE, ...) {
+spectralDist <- function (M = stop ("Missing matrix of spectra"), 
+                          method = c ("euclidean", "maximum", "manhattan", "canberra", "binary", "minkowski",  
+                                      "pearson", "correlation", "spearman", "kendall", "abspearson", "abscorrelation",
+                                      "cosineAlpha"),
+                          ref, reportAsRank = FALSE, ...) {
 	
 	# Bryan A. Hanson, DePauw University, June 2014
 	# Patterned after rowDist in ChemoSpec
@@ -45,66 +49,41 @@ spectralDist <- function(M = NULL, method = "euclidean",
 	# but then select only the desired entries.
 	# This will have a small speed penalty.
 	
-	# Will require package amap for the Dist function.
-	
-	if (is.null(M)) stop("Missing matrix of spectra")
-	
-	#M <- scale(M, center = TRUE, scale = FALSE) # not sure if this necessary
-	
-	method <- match.arg(method, c("cosineAlpha", "pearson", "correlation", "spearman", "kendall",
-		"euclidean", "maximum", "manhattan", "canberra","binary", "minkowski"))
+	method <- match.arg (method)
 
-	if (method %in% c("pearson", "correlation", "spearman", "kendall") ) {
-		D <- Dist(M, method = method)
-		}
+	D <- switch (method,
+	             minkowski = dist (M, "minkowski", ...),
+               cosineAlpha = cos.dist (M, ...),
+               Dist (M, method = method, ...)
+	)
 	
-  ## methods implemented in stats::dist
-	if (method %in% c("euclidean", "maximum", "manhattan", "canberra","binary", "minkowski") ) {
-		D <- dist(M, method = method, ...)
-		}
+  if (! missing (ref))
+	  D <- as.matrix (D) [, ref, drop = FALSE]
 
-	if (method == "cosineAlpha") {
-		# Not sure I have correctly implemented this!
-		
-		# definition from Varmuza & Filzmoser pg 46
-		# does not seem to give sensible answers
-		#D = crossprod(M)/(sqrt(colSums(M)^2) * sqrt(rowSums(M)^2))	
-		D = crossprod(M)/sqrt(sum(M)) # this is not right either!
-		}
-
-	if (is.null(ref)) return(D)
-	
-	# Continue if ref != NULL
-	# Convert D to a symmetric matrix, class dist is hard to use,
-	# and grab the desired column on the fly
-	
-	if (ref > nrow(M)) stop("Requested reference spectrum doesn't exist")
-	D <- as.numeric(as.matrix(D)[,ref])
-	if (reportAsRank) D <- rank(D)
-	D
-	}
+  ## TODO: @BH should we really include this. This is just one line, and I'm not sure when global vs. case-wise ranking is required. 
+  if (reportAsRank) 
+    D [TRUE] <- rank (D)
+  
+  D
+}
 	
 .test(spectralDist) <- function() {
 
-  td <- matrix(1, ncol = 5, nrow = 5)
-  #td <- matrix(rnorm(25), ncol = 5, nrow = 5)
+  td <- matrix(1 : 25, ncol = 5, nrow = 5)
 
-  # test: spectralDist produces error for invalid method
+  ## test: spectralDist produces error for invalid method
   checkException(spectralDist(td, method = "invalid"))
   
-  # test: spectralDist returns a vector when ref is given
+  ## test: spectralDist returns a vector when one ref is given
   checkTrue(is.vector(spectralDist(td, ref = 1)))
- 
-   # test: spectralDist returns a dist object when ref is NULL
+  
+  ## ... and a matrix nrow (M) x no. of ref. spectra
+  checkEquals (dim (spectralDist (td, ref = 1 : 3)), c (5, 3))
+  checkTrue (is.matrix (spectralDist (td, ref = 1 : 3)))
+  
+  ## test: spectralDist returns a dist object when ref is missing
   checkTrue(class(spectralDist(td)) == "dist")
- 
-  # test correct calculations for the available methods
-  # probably don't need this for anything but cosineAlpha
-  
-  meth <- c("pearson", "correlation", "spearman", "kendall", "cosineAlpha",
-    "euclidean", "maximum", "manhattan", "canberra","binary", "minkowski")
-  
-  for (m in meth) {
-  	}
-  
-  }
+
+}
+
+

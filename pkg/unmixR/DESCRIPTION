@@ -28,9 +28,10 @@ Suggests:
 VignetteBuilder: knitr
 Collate:
     'abundanceImage.R'
+    'unmixR-package.R'
+    'cosdist.R'
     'endmembers.R'
     'estSNR.R'
-    'unmixR-package.R'
     'nfindr.R'
     'nfindr.default.R'
     'nfindr.formula.R'

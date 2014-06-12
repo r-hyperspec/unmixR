@@ -3,13 +3,15 @@
 \alias{spectralDist}
 \title{Compute distances between spectra}
 \usage{
-spectralDist(M = NULL, method = "euclidean", ref = NULL,
-  reportAsRank = FALSE, ...)
+spectralDist(M = stop("Missing matrix of spectra"), method = c("euclidean",
+  "maximum", "manhattan", "canberra", "binary", "minkowski", "pearson",
+  "correlation", "spearman", "kendall", "abspearson", "abscorrelation",
+  "cosineAlpha"), ref, reportAsRank = FALSE, ...)
 }
 \arguments{
 \item{M}{Matrix containing spectra to be compared in rows.
 The matrix should have dimensions no. of samples x
-no. of wavelengths. SHOULD THE MATRIX BE MEAN-CENTERED?}
+no. of wavelengths.}
 
 \item{method}{String.  The method to be used in computing the distance.
 One of \code{c("name them")}.}
@@ -24,11 +26,11 @@ cause the vector to be reported as a rank.}
 for the Minkowski computation.  See \code{\link{dist}} for details.}
 }
 \value{
-If \code{ref = NULL}, an object of class \code{dist}; basically
-the lower triangle of the pair-wise distance matrix.  If \code{ref != NULL},
-a vector of length \code{nrow(M)} containing the
-distances between each spectrum and the reference spectrum.  If
-\code{reportAsRank = TRUE} the vector will be reported as a ranked vector.
+pair-wise distance matrix of all cases in \code{M} against those indicated by \code{ref}.
+
+If \code{ref} is not given, a dist object with all pair-wise distances.
+
+If \code{reportAsRank = TRUE} the vector will be reported as a ranked vector.
 }
 \description{
 Compute the distances between spectra in
@@ -38,5 +40,11 @@ Optionally, a particular spectrum may be specified as
 a reference spectrum.  In all cases it is assumed
 that the spectra are in similar units and appropriately
 scaled.
+}
+\author{
+Bryan Hanson, with contributions by Claudia Beleites
+}
+\seealso{
+\code{\link[amap]{Dist}}, \code{\link[stats]{dist}},  \code{\link{cos.dist}}
 }
 
