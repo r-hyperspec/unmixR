@@ -74,10 +74,9 @@ spectralDist <- function (M = stop ("Missing matrix of spectra"),
   ## test: spectralDist produces error for invalid method
   checkException(spectralDist(td, method = "invalid"))
   
-  ## test: spectralDist returns a vector when one ref is given
-  checkTrue(is.vector(spectralDist(td, ref = 1)))
+  ## test: spectralDist returns a matrix when ref is given
+  checkTrue (is.matrix (spectralDist (td, ref = 1)))
   
-  ## ... and a matrix nrow (M) x no. of ref. spectra
   checkEquals (dim (spectralDist (td, ref = 1 : 3)), c (5, 3))
   checkTrue (is.matrix (spectralDist (td, ref = 1 : 3)))
   
