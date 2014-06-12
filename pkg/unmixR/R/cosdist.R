@@ -46,5 +46,5 @@ cos.dist <- function (x, ...){
       D.manual [a, b] <- t (xa) %*% xb / sqrt (sum (xa^2) * sum (xb^2))
     }
   
-  checkEquals (as.dist (D.manual), cos.dist (.testdata$x))
+  checkEqualsNumeric (as.dist (D.manual), cos.dist (.testdata$x))
 }
