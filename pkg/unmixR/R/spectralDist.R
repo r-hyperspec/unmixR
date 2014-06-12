@@ -10,7 +10,9 @@
 ##'
 ##' @param M Matrix containing spectra to be compared in rows.
 ##' The matrix should have dimensions no. of samples x
-##' no. of wavelengths. SHOULD THE MATRIX BE MEAN-CENTERED?
+##' no. of wavelengths. 
+##' BH: SHOULD THE MATRIX BE MEAN-CENTERED?
+##  CB: NO. Why should it? 
 ##'
 ##' @param method String.  The method to be used in computing the distance.
 ##' One of \code{c("name them")}.
@@ -31,6 +33,7 @@
 ##' \code{reportAsRank = TRUE} the vector will be reported as a ranked vector.
 ##'
 ##' @export
+##' @importFrom ChemoSpec Dist
 
 spectralDist <- function(M = NULL, method = "euclidean",
 	ref = NULL, reportAsRank = FALSE, ...) {
@@ -54,7 +57,8 @@ spectralDist <- function(M = NULL, method = "euclidean",
 	if (method %in% c("pearson", "correlation", "spearman", "kendall") ) {
 		D <- Dist(M, method = method)
 		}
-		
+	
+  ## methods implemented in stats::dist
 	if (method %in% c("euclidean", "maximum", "manhattan", "canberra","binary", "minkowski") ) {
 		D <- dist(M, method = method, ...)
 		}
