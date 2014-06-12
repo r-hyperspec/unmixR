@@ -17,13 +17,11 @@
 ##' @rdname predict
 
 .predict <- function(object, newdata=object$data, ...) {
-  x <- NULL # suppresses check warnings about no visible global binding
-  indices <- NULL # suppresses check warnings about no visible global binding
-
-  endmembers <- t(newdata[object$indices,])
+  endmembers <- t (newdata [object [["indices"]], ])
   
-  t(apply(newdata, 1, function(spectrum) {
-    nnls(endmembers, spectrum)$x
+  t (apply (newdata, 1, function(spectrum) {
+    abundance <- nnls (endmembers, spectrum)
+    abundance [["x"]]
   }))
 }
 
