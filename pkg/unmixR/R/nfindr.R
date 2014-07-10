@@ -18,7 +18,6 @@
 ##'     \item LDU (\code{\link{nfindrLDU}})
 ##'     \item SeqLDU (\code{\link{nfindrSeqLDU}})
 ##'     \item Brute (\code{\link{nfindrBrute}})
-##'     \item CB (\code{\link{nfindrCB}})
 ##'   }
 ##'   Default: LDU as it generally performs the best
 ##' @param indices Locations of the rows in the dataset that will be used to

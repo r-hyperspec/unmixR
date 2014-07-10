@@ -38,7 +38,6 @@ Collate:
     'nfindr.formula.R'
     'nfindr99.R'
     'nfindrBrute.R'
-    'nfindrCB.R'
     'nfindrLDU.R'
     'nfindrSeqLDU.R'
     'predict.R'

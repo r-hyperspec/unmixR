@@ -31,7 +31,6 @@ some other method then reduce it first and set drop to \code{TRUE}}
   \item LDU (\code{\link{nfindrLDU}})
   \item SeqLDU (\code{\link{nfindrSeqLDU}})
   \item Brute (\code{\link{nfindrBrute}})
-  \item CB (\code{\link{nfindrCB}})
 }
 Default: LDU as it generally performs the best}
 
