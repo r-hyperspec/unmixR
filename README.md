@@ -7,7 +7,7 @@
 
 ```r
 require ("devtools")
-install_git ("https://gitlab.com/cbeleites/unmixR.git", subdir = "pkg/unmixR")
+install_git ("https://gitlab.com/chemometrics/unmixR.git", subdir = "pkg/unmixR")
 ```
 
 `unmixR` was supported by [Google Summer of Code 2013](http://www.google-melange.com/gsoc/homepage/google/gsoc2013).  Thank you!
