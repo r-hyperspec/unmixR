@@ -10,7 +10,7 @@
 ##'   estimated using \code{\link{estSNR}}
 ##'
 ##' @return Although the other VCA algorithms return only indices, this
-##'   function returns the full structure to \link{\code{vca}} as the
+##'   function returns the full structure to \code{\link{vca}} as the
 ##'   endmembers should be taken out of a projected dataset which it generates
 ##'
 ##' @references Nascimento, J.M.P.; Bioucas Dias, J.M., "Vertex component
