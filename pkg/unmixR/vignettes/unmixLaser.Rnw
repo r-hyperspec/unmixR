@@ -1,6 +1,6 @@
 %\VignetteEngine{knitr::knitr}
 %\VignetteIndexEntry{hyperSpec's laser data set analysed with spectral unmixing algorithms}
-%\VignetteDepends{hyperSpec}
+%\VignetteDepends{hyperSpec, matrixStats}
 \documentclass{article}
 \begin{document}
 <<>>=
@@ -44,15 +44,15 @@ plot (log10 (svd (laser [[]])$d), pch = 20)
 
 sd <- matrix (0, ncol = nwl (laser), nrow = nwl (laser))
 diag (sd) <- colMeans (laser [[]])
-zero <- rmvnorm (n = nrow (laser), sigma=sd)
+zero <- rmmvnorm (n = nrow (laser), mean = matrix (0, nrow = 1, ncol = nwl (laser)), sigma=sd)
 points (log10 (svd (zero)$d), pch = 20, cex = 0.75, col = "green")
 
 diag (sd) <- colMaxs (laser [[]])
-zero <- rmvnorm (n = nrow (laser), sigma=sd)
+zero <- rmmvnorm (n = nrow (laser), mean = matrix (0, nrow = 1, ncol = nwl (laser)), sigma=sd)
 points (log10 (svd (zero)$d), pch = 20, cex = 0.5, col = "green")
 
 diag (sd) <- colMins (laser [[]])
-zero <- rmvnorm (n = nrow (laser), sigma=sd)
+zero <- rmmvnorm (n = nrow (laser), mean = matrix (0, nrow = 1, ncol = nwl (laser)), sigma=sd)
 points (log10 (svd (zero)$d), pch = 20, cex = 0.5, col = "green")
 @
 

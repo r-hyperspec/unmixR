@@ -12,6 +12,7 @@ License: GPL (>= 3)
 Depends:
     hyperSpec,
     MASS,
+    matrixStats,
     nnls
 Suggests:
     knitr
@@ -42,3 +43,4 @@ Collate:
     'vca05.R'
     'vcaLopez.R'
     'vcaMod.R'
+RoxygenNote: 5.0.1
