@@ -1,5 +1,5 @@
 ##' Modified Vertex Component Analysis
-##' 
+##'
 ##' Modified VCA algorithm that aims to reduced the algorithmic complexity of
 ##' the original.
 ##' Intended to be called from \code{\link{nfindr}}.
@@ -22,17 +22,17 @@ vcaMod <- function(data, p) {
 
   data <- as.matrix(data)
   Y <- t(prcomp(data)$x[,1:p])
-  
+
   E <- matrix(0, nrow=p, ncol=p+1)
   E[p,1] <- 1
   U <- matrix(0, nrow=p, ncol=p)
   w <- array(1, p)
   proj_acc <- array(0, p)
   indices <- array(0, p)
-  
+
   for (i in 1:p) {
     U[,i] <- E[,i]
-    
+
     if (i >= 3) {
       for (j in 3:p) {
         # E[,i] and U[,j-1] are the same on 3rd iter, projection produces
@@ -41,24 +41,32 @@ vcaMod <- function(data, p) {
         U[,i] <- U[,i] - proj_e_u
       }
     }
-    
+
     # error for p >= 3 on iter 3 due to U[,i] being 0 so projection fails
     proj_w_u <- .proj(w, U[,i])
     proj_acc <- proj_acc + proj_w_u
     f <- as.vector(w - proj_acc)
-    
+
     if (i == 1) {
       proj_acc <- array(0, p)
     }
-    
+
     v <- crossprod(f, Y)
-    
+
     index <- which.max(v) # always appears to produce the same index
+
+    if (.options ("debuglevel") >= 1L){
+      print (which.max (v))
+      print (which.min (v))
+    }
+
     indices[i] <- index
-    
+
     E[,i+1] <- Y[,index]
   }
-  indices <- sort(indices)
+
+  indices <- sort (indices)
+
   indices
 }
 

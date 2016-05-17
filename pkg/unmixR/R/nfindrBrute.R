@@ -1,5 +1,5 @@
 ##' Brute Force N-FINDR
-##' 
+##'
 ##' This method exhaustively checks every possible simplex that could be
 ##' formed from \code{p} points and returns the indices that generated the simplex
 ##' with the largest volume. This should indicate the endmembers based on the
@@ -20,18 +20,20 @@ nfindrBrute <- function(data, p, ...) {
   # generate all possible unique combinations of p indices
   combos <- combn(nrow(data), p, simplify=TRUE)
   n <- ncol(combos)
-  
+
   # generate the volumes of all the simplexes using the indices
   volumes <- sapply(1:n, function(i) {
     idx <- combos[,i]
-#    simplex <- rbind(rep(1, p), data[idx,])
+
+    #    simplex <- rbind(rep(1, p), data[idx,])
     simplex <- rbind(rep(1, p), t(data[idx,])) # Bryan's fix
     
     abs(det(simplex))
   })
-  
+
   # return the indices that formed the largest simplex
   col <- which.max(volumes)
+
   indices <- sort(combos[, col])
   indices
 }
