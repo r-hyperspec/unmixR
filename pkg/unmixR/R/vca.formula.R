@@ -1,7 +1,9 @@
 ##' @name vca
 ##' @rdname vca
 ##' @export
+##' @include unmixR-package.R
 ##' @include vca.default.R
+
 
 vca.formula <- function(formula, frame, p, method="Mod", seed=NULL, ...) {
 
@@ -19,7 +21,7 @@ vca.formula <- function(formula, frame, p, method="Mod", seed=NULL, ...) {
 }
 
 .test (vca.formula) <- function (){
-  # error on response in formula
+  # error on response term in formula
   checkException (vca (x ~ ., data.frame (x = matrix (1:4, 2)), p = 2))
 
   # test: check the formula interface

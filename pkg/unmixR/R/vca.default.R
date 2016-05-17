@@ -1,6 +1,7 @@
 ##' @name vca
 ##' @rdname vca
 ##' @export
+##' @include unmixR-package.R
 ##' @include vca.R
 
 vca.default <- function(data, p, method= c("Mod", "Lopez", "05"), seed=NULL, ...) {
@@ -24,21 +25,18 @@ vca.default <- function(data, p, method= c("Mod", "Lopez", "05"), seed=NULL, ...
   vcaFunc <- get(paste("vca", method, sep=""))
   val <- vcaFunc(data, p, ...)
 
-  if (method == "05") {
-    struct <- val
-  } else {
-    struct <- list(
-      data = data,
-      indices = sort(val)
+  struct <- list(
+    data = data,
+    indices = sort(val) # TODO: sort should not be necessary at this point 
+    # as all functions already sort 
     )
-  }
 
-
-  structure(struct, class = "vca")
+    structure(struct, class = "vca")
 }
 
 
 .test(vca.default) <- function() {
+  # Note: .testdata$x matches all columns of .testdata, which are x.L1, x.L2, x.L3
   # test: vca produces error for invalid values of p
   checkException (vca (.testdata$x, p = "---"))
   checkException (vca (.testdata$x, p = 0))
@@ -48,7 +46,8 @@ vca.default <- function(data, p, method= c("Mod", "Lopez", "05"), seed=NULL, ...
   # test: vca produces error for invalid method
   checkException(vca (.testdata$x, p, method="invalid"))
 
-  ## test correct calculations for the available methods
+  # test correct calculations for the available methods
+
   methods <- eval (formals (vca.default)$method)
 
   for (m in methods) {
@@ -56,7 +55,11 @@ vca.default <- function(data, p, method= c("Mod", "Lopez", "05"), seed=NULL, ...
     model <- vca (.testdata$x, p = 2, method = m)
     checkTrue (all (model$indices %in% .correct),
                msg = sprintf ("%s: .testdata, p = 2 yields %s", m, paste (model$indices, collapse = " ")))
-
+    
+    # BH changed to p = 3, since once in VCA05 this data passes to the 2nd block where d = p - 1 
+    checkTrue (all (vca (.testdata$x, p = 3, method = m)$indices %in% .correct), 
+               msg = sprintf ("%s: .testdata, p = 2", m))
+    
     ## all 3 components should be recovered, vca output is sorted.
     model <- vca (.testdata$x, p = 3, method = m)
     checkEquals (model$indices, .correct,

@@ -3,7 +3,6 @@
 ##' @include nfindr.R
 ##' @export
 
-
 nfindr.default <- function(data, p,
                            method="LDU", indices=sample(nrow(data), p), ...,
                            drop=FALSE) {
@@ -14,6 +13,7 @@ nfindr.default <- function(data, p,
   # check if the method passed in was found
   if (is.null (nfindrFunc)) {
     stop ('Invalid option for method parameter, try: "99", "LDU", "SeqLDU", "Brute"')
+    ## TODO: automatic list of available options 
   }
 
   ## check for p being with the valid range, >= 2
@@ -36,8 +36,9 @@ nfindr.default <- function(data, p,
 
   # call the function to get the indices of the endmembers
   indices <- nfindrFunc(data, p, indices, ...)
+  
   # sort the indices to normalise the order between runs
-  indices <- sort (indices)
+  indices <- sort (indices) # TODO: post-processing? 
 
   # return a model
   structure(list(

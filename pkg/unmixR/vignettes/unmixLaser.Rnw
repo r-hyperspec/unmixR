@@ -1,6 +1,6 @@
 %\VignetteEngine{knitr::knitr}
 %\VignetteIndexEntry{hyperSpec's laser data set analysed with spectral unmixing algorithms}
-%\VignetteDepends{hyperSpec, matrixStats}
+%\VignetteDepends{hyperSpec}
 \documentclass{article}
 \begin{document}
 <<>>=
@@ -9,7 +9,6 @@ knitr::opts_chunk$set (fig.width=10, fig.height=6)
 
 require ("unmixR")
 require ("hyperSpec")
-require ("matrixStats")
 @
 
 <<>>=
@@ -56,7 +55,6 @@ zero <- rmmvnorm (n = nrow (laser), mean = matrix (0, nrow = 1, ncol = nwl (lase
 points (log10 (svd (zero)$d), pch = 20, cex = 0.5, col = "green")
 @
 
-
 Winter 1999:
 <<>>=
 
@@ -67,14 +65,14 @@ lines (pca$x [,1:2])
 
 pairs (pca$x [, 1: 4], panel = function (x, ...) {points (x, ..., type = "b")}, pch = 19, col = alois.palette (nrow (laser)))
 
-e <- nfindr (laser, method = "99",  p=2)
+e <- nfindr (laser, p=2)
 plot (endmembers (e), col = 1 : 2)
 
 matplot (laser$t / 60, predict (e), type = "l", lty = 1, main = "N-FINDR Winter1999", xlab = "t / min")
 @
 
 <<>>=
-e <- nfindr (laser, method = "99", p=3)
+e <- nfindr (laser, p=3)
 plot (endmembers (e), stacked = T)
 
 matplot (laser$t / 60, predict (e), type = "l", lty = 1, main = "N-FINDR Winter1999", xlab = "t / min")

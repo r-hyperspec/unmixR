@@ -26,16 +26,16 @@
 ##'   selected method for options
 ##' @param drop Boolean that indicates whether the \code{data} parameter
 ##'   should be stored in the resulting structure. This should only be set to
-##'   \code{True} when \code{data} was passed in already reduced
-##'
+##'   \code{TRUE} when \code{data} was passed in already reduced
+##' 
 ##' @return A structure which contains:
 ##'   \itemize{
 ##'     \item \strong{data}: the original data or reduced data if drop is
-##'                          set to \code{True}
+##'                          set to \code{TRUE}
 ##'     \item \strong{indices}: the indices of the spectra which increased
 ##'                             the simplex volume the most. These are the
 ##'                             indices of the endmembers. If drop is set to
-##'                             \code{True} then indices will be 1 to p
+##'                             \code{TRUE} then indices will be 1 to p
 ##'   }
 ##'
 ##' @rdname nfindr

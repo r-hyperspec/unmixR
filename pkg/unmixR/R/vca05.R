@@ -2,7 +2,8 @@
 ##'
 ##' This algorithm is based on the geometry of convex sets. It exploits the
 ##' fact that endmembers occupy the vertices of a simplex.
-##'
+##' Intended to be called from \code{\link{vca}}.
+##' 
 ##' @param data Data to unmix. It will be converted to a matrix using
 ##'   as.matrix. The matrix should contain a spectrum per row.
 ##' @param p Number of endmembers
@@ -15,11 +16,12 @@
 ##'
 ##' @references Nascimento, J.M.P.; Bioucas Dias, J.M., "Vertex component
 ##'   analysis: a fast algorithm to unmix hyperspectral data," Geoscience and
-##'   Remote Sensing, vol.43, no.4, pp.898,910, April 2005;
+##'   Remote Sensing, vol. 43, no. 4, pp.898-910, April 2005,
 ##'   doi: 10.1109/TGRS.2005.844293
 ##' @export
 
 vca05 <- function(data, p, SNR=estSNR(data, p)) {
+
   data <- t(as.matrix(data))
   N <- ncol(data)
 
@@ -43,10 +45,12 @@ vca05 <- function(data, p, SNR=estSNR(data, p)) {
     # repeat the column of row means so that it matches the size of the data
     repMean <- .repvec.col(rowMean, N)
     zMean <- data - repMean # zero mean the data
-    Ud <- svd(tcrossprod(zMean) / N, nv=p)$u[,1:p]
+#    Ud <- svd(tcrossprod(zMean) / N, nv=p)$u[,1:p] # Conor original
+    Ud <- svd(tcrossprod(zMean) / N, nv=p)$u[,1:d] # BH fix?
     zProj <- crossprod(Ud, zMean) # project the zero mean data
 
     x <- zProj[1:d, ]
+#    print(str(Ud))
     dataProj <- Ud[, 1:d] %*% x + repMean
     c <- max(sum(x^2))^0.5
     y <- rbind(x, c)
@@ -72,8 +76,7 @@ vca05 <- function(data, p, SNR=estSNR(data, p)) {
     A[,i] <- y[, indices[i]]
   }
 
-  list(
-    data = t(dataProj),
-    indices = sort(indices)
-  )
+   indices <- sort (indices)
+   indices
+
 }
