@@ -23,24 +23,13 @@ Depends:
     matrixStats,
     nnls
 Suggests:
-<<<<<<< HEAD
-    knitr,
     svUnit
-Imports:
-    amap
-VignetteBuilder: knitr
-Collate:
-    'abundanceImage.R'
-=======
-    knitr
 Imports:
     svUnit,
     settings
 VignetteBuilder: knitr
 Collate:
-    'endmembers.R'
-    'estSNR.R'
->>>>>>> master
+    'abundanceImage.R'
     'unmixR-package.R'
     'cosdist.R'
     'endmembers.R'
@@ -52,18 +41,12 @@ Collate:
     'nfindrBrute.R'
     'nfindrLDU.R'
     'nfindrSeqLDU.R'
-<<<<<<< HEAD
-=======
     'options.R'
->>>>>>> master
     'predict.R'
     'repvec.col.R'
     'repvec.row.R'
     'simplex.R'
-<<<<<<< HEAD
     'spectralDist.R'
-=======
->>>>>>> master
     'unittests.R'
     'vca.R'
     'vca.default.R'
@@ -71,7 +54,4 @@ Collate:
     'vca05.R'
     'vcaLopez.R'
     'vcaMod.R'
-<<<<<<< HEAD
-=======
 RoxygenNote: 5.0.1
->>>>>>> master
