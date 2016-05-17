@@ -1,8 +1,8 @@
 ##' Retrieve N-FINDR/VCA Endmembers
-##' 
+##'
 ##' Retrieves the endmembers from a dataset using the model returned by
 ##' \code{\link{nfindr}} or \code{\link{vca}}
-##' 
+##'
 ##' @param object The N-FINDR/VCA structure returned by the general
 ##'   \code{\link{nfindr}}/\code{\link{vca}} interface
 ##' @param newdata If the data stored in the object does not actually contain

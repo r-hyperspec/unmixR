@@ -1,10 +1,10 @@
 ##' General interface to N-FINDR spectral unmixing implementations
-##' 
+##'
 ##' All the N-FINDR techniques are based on the fact that, in N spectral
 ##' dimensions, the N-volume contained by a simplex formed of the purest
 ##' pixels is larger than any other volume formed from any other combination
 ##' of pixels.
-##' 
+##'
 ##' @param data Data to unmix. It will be converted to a matrix using
 ##'   as.matrix. The matrix should contain a spectrum per row. This data will
 ##'   be dimensionally reduced using PCA. If you want to reduce the data using
@@ -37,12 +37,12 @@
 ##'                             indices of the endmembers. If drop is set to
 ##'                             \code{TRUE} then indices will be 1 to p
 ##'   }
-##' 
+##'
 ##' @rdname nfindr
 ##' @export
 ##' @include unmixR-package.R
 
-nfindr <- function(...) {
+nfindr <- function (x, ...) {
   UseMethod("nfindr")
 }
 
@@ -50,33 +50,36 @@ nfindr <- function(...) {
   data <- as.matrix(laser)
   p <- 2
   indices <- c(1, 2)
-  
+
   # test: nfindr produces error for invalid values of p
-  
+
   checkException(nfindr(data, p="---"))
   checkException(nfindr(data, p=0))
-  
+
   # test: nfindr produces error for invalid method
-  
+
   checkException(nfindr(data, p, method="invalid"))
-  
+
   # test: nfindr default produces the correct answer
-  
+
   output <- nfindr(data, p)$indices
   checkTrue(output == c(4, 79))
-  
+
   # test: all N-FINDR methods produce the same output
-  
-  methods <- c("99", "LDU", "SeqLDU", "CB", "Brute")
-  
+
+  methods <- c("99", "LDU", "SeqLDU", "Brute")
+
   outputs <- sapply(1:4, function(i) {
     nfindr(data, p, methods[i])$indices
   })
-  
+
   checkTrue(all(outputs[,1] == outputs))
-  
+
   # test: check the formula interface
-  
+
   output.formula <- nfindr(~ 0 + ., as.data.frame(data), p)$indices
   checkEquals(output.formula, output)
+
+  # test: check other (hyperSpec) objects
+#  nfindr (laser, p = 2)
 }
