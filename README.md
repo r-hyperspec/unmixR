@@ -1,7 +1,9 @@
 ### unmixR
 #### An R package for unmixing of hyperspectral images
 
-`unmixR` is **WORK IN PROGRESS**.  The fundamental structures & behavior may change frequently. Use at your own risk.
+`unmixR` is **WORK IN PROGRESS**.  The fundamental structures & behavior may change. For the time being, use at your own risk.
+
+Hyperspectral data are also called 'imaging spectroscopy' and 'imaging spectrometer data' depending upon the discipline.  Such data consists of spectra collected over an x, y grid.  Data sets like this are found in airborne land imaging studies, biomedical studies and art history investigations.  The spectra are often visible, infrared, near-infrared, raman spectra or mass spectrometer data sets.
 
 **Installation:** works easiest using `devtools::install_git`:
 
@@ -10,35 +12,5 @@ require ("devtools")
 install_git ("https://gitlab.com/chemometrics/unmixR.git", subdir = "pkg/unmixR")
 ```
 
-`unmixR` was supported by [Google Summer of Code 2013](http://www.google-melange.com/gsoc/homepage/google/gsoc2013).  Thank you!
-
-Note: hyperspectral data are also called 'imaging spectroscopy' and 'imaging spectrometer data' depending upon the discipline.  Such data consists of spectra collected over an x, y grid.  Data sets like this are found in airborne land imaging studies, biomedical studies and art history investigations.  The spectra are often visible, infrared, near-infrared, raman spectra or mass spectrometer data sets.
-
-#### Things to do and Things to remember + Misc Notes
-
-An informal list to keep us on track.  Naturally, edit as you see fit.
-
-##### Top priority
-* Unit tests on nfindr variants
-* Add'l comments for nfindrLDU and nfindrSeqLDU
-* Add options beyond nnls to predict.nfindr
-* Improve endmember.R
-* nfindr variants (do these all work as expected?)
-    * nfindr99
-    * nfindrLDU
-    * nfindrSeqLDU
-* class definition(s): nfindr currently informally defined at end of nfindr.default.  Do we need/want to create an Rd page about it?
-* changes needed for build & check (?)
-* vignettes
-
-##### Lower priority
-
-* methods for finding the number of endmembers (recommended in Harsayni2012)
-    * hfc (hfcVAR and hfcSAMPLE need discussion and testing)
-    * nwhfc
-    * sml (second moment linear)
-    * Hysime (hyperspectral signal subspace identification by minimum error)
-
-##### Misc notes
-
-* ?
+Development of `unmixR` has been supported by Google Summer of Code 2013 (Conor McManus) and 2016 (Anton Belov).  Thank you Google!
+![GSOC 2016 logo](GSOC2016Logo.jpg)
