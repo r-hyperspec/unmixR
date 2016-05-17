@@ -1,7 +1,7 @@
 ##' Estimates Signal to Noise Ratio
-##' 
+##'
 ##' Estimate the signal to noise ratio of a hyperspectral image
-##' 
+##'
 ##' @param data The hyperspectral image whose signal to noise ratio needs to
 ##'   be estimated.  Samples in rows, frequencies in columns, but.  Note: be careful,
 ##'   when this function is called by vca05 the data is already transposed due to
@@ -19,7 +19,7 @@
 estSNR <- function(data, p) {
   u <- NULL # suppresses check warnings about no visible global binding
   E <- function(M, n) sum(c(M)^2 / n) # expectation operator
-  
+
   # NOTE: we don't need to transpose here, because when this
   # is called internally by vca05, the data is already tranposed
   # and lazy evaluation applies (the SNR argument to vca05 is not
@@ -31,8 +31,10 @@ estSNR <- function(data, p) {
   # If we don't transpose, the definitions below are reversed
   # compared to how we have used them other places.
   #p <- p - 1 # BH added by analogy to the VCA functions (?)
+
+  ##CB TODO: double check all this
   
-  L <- nrow(data) # no of frequencies
+  L <- nrow(data) # no of frequencies 
   N <- ncol(data) # no of samples
   
   rowMean <- apply(data, 1, mean) # get the mean of each row
@@ -73,5 +75,8 @@ estSNR <- function(data, p) {
   # Otherwise compute according to Eqn 13
   SNR <- 10 * log10((prp - (p / L) * pr) / (pr - prp))
    
+  if (abs (SNR) < sqrt (.Machine$double.eps)) ## perfect reconstruction
+    SNR <- .Machine$double.eps # make sure the log returns useful number
+
   SNR
 }
