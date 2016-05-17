@@ -1,9 +1,16 @@
 ### unmixR
 #### An R package for unmixing of hyperspectral images
 
-`unmixR is a WORK IN PROGRESS`.  The fundamental structures & behavior are changing frequently.  `unmixR` currently builds and checks w/o vignettes and with limited unit tests, but there are probably errors in the results.  Don't trust it!
+`unmixR` is **WORK IN PROGRESS**.  The fundamental structures & behavior may change frequently. Use at your own risk.
 
-`unmixR` is supported by [Google Summer of Code](http://www.google-melange.com/gsoc/homepage/google/gsoc2013).  Thank you!
+**Installation:** works easiest using `devtools::install_git`:
+
+```r
+require ("devtools")
+install_git ("https://gitlab.com/chemometrics/unmixR.git", subdir = "pkg/unmixR")
+```
+
+`unmixR` was supported by [Google Summer of Code 2013](http://www.google-melange.com/gsoc/homepage/google/gsoc2013).  Thank you!
 
 Note: hyperspectral data are also called 'imaging spectroscopy' and 'imaging spectrometer data' depending upon the discipline.  Such data consists of spectra collected over an x, y grid.  Data sets like this are found in airborne land imaging studies, biomedical studies and art history investigations.  The spectra are often visible, infrared, near-infrared, raman spectra or mass spectrometer data sets.
 
@@ -31,4 +38,4 @@ An informal list to keep us on track.
     
 ##### Misc notes
 
-* Bryan is wondering: we are doing a lot of PCA manually in our functions, I believe they are all unscaled.  If we scaled, one would get quite different answers.  Do we want to add scaling as an option, or (better?) just mention this in the documentation somewhere?  Is it even important to note this?
+
