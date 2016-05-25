@@ -52,6 +52,7 @@ Collate:
     'vca.default.R'
     'vca.formula.R'
     'vca05.R'
+    'vcaFromScratch.R'
     'vcaLopez.R'
     'vcaMod.R'
 RoxygenNote: 5.0.1
