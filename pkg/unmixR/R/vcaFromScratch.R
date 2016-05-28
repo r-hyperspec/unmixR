@@ -21,6 +21,7 @@
  
 
 vcaFromScratch <- function(data, p, SNR=estSNR(data, p)){
+    data <- t(as.matrix(data))
     SNRth <- 15 + 10 * log10(p)
     N <- nrow(data)
     if(SNR > SNRth){
@@ -49,11 +50,11 @@ vcaFromScratch <- function(data, p, SNR=estSNR(data, p)){
         A[, i] <- Y[, k]
         indices[i] <- k
     }
-    if(SNR > SNRth){
-        M <- U_d %*% X[, indices]
-    }else{
-        M <- u_d %*% X[, indices] + r_
-    }
+    # if(SNR > SNRth){
+    #     M <- U_d %*% X[, indices]
+    # }else{
+    #     M <- u_d %*% X[, indices] + r_
+    # }
     indices <- sort(indices)
     indices
 }
