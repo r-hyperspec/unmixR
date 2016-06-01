@@ -23,7 +23,8 @@ Depends:
     matrixStats,
     nnls
 Suggests:
-    svUnit
+    svUnit,
+    testthat
 Imports:
     svUnit,
     settings
