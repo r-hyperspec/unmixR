@@ -26,7 +26,8 @@ Suggests:
     svUnit
 Imports:
     svUnit,
-    settings
+    settings,
+    limSolve
 VignetteBuilder: knitr
 Collate:
     'abundanceImage.R'
@@ -34,6 +35,7 @@ Collate:
     'cosdist.R'
     'endmembers.R'
     'estSNR.R'
+    'ice.R'
     'nfindr.R'
     'nfindr.default.R'
     'nfindr.formula.R'
