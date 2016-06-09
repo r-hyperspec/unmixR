@@ -1,7 +1,8 @@
 ##' @rdname options
 ##' @import settings
 .options <- options_manager (
-  debuglevel = 0L
+  debuglevel = 0L,
+  implementation.search = "package:unmixR"
   )
 
 ##' unmixR's package options
@@ -12,8 +13,13 @@
 ##' The following package-specific options are defined:
 ##'
 ##' \tabular{lll}{
-##' debuglevel \tab >= 0L \tab indicates how much debuging output is to be produced.
+##' debuglevel \tab >= 0L \tab indicates how much debuging output is to be produced.\\
+##' implementation.search \tab "package:unmixR" \tab indicate environments where unmixing implementations can be found
 ##' }
+##'
+##' @details 
+##' \code{implementation.search}: register packages providing additional implementations by appending \code{"package:packagename"}. 
+##' Implementations. The global environment can be added as \code{".GlobalEnv"}.
 ##'
 ##' @param ... either \code{key = value} pairs to set options or the names of
 ##'   the options to retrieve. If no paramaters are passed, a list of all
@@ -34,6 +40,6 @@ unmixR.options <- function (...) {
 
   ## check list of defined options against (manually kept) list of documented
   ## options.
-  checkEquals (c("debuglevel"), names (.options ()))
+  checkEquals (c("debuglevel", "implementation.search"), names (.options ()))
 
 }

@@ -35,6 +35,7 @@ Collate:
     'cosdist.R'
     'endmembers.R'
     'estSNR.R'
+    'getimplementations.R'
     'nfindr.R'
     'nfindr.default.R'
     'nfindr.formula.R'
