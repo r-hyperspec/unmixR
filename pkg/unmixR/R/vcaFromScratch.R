@@ -4,7 +4,8 @@
 ##' fact that endmembers occupy the vertices of a simplex.
 ##' Intended to be called from \code{\link{vca}}.
 ##' 
-##' @param data Data to unmix.  TODO
+##' @param data Data to unmix. It will be converted to a matrix using
+##'   as.matrix. The matrix should contain a spectrum per row.
 ##' @param p Number of endmembers
 ##' @param SNR The Signal-to-Noise ratio of the data. By default it will be
 ##'   estimated using \code{\link{estSNR}}
@@ -24,29 +25,45 @@ vcaFromScratch <- function(data, p, SNR=estSNR(data, p)){
     data <- t(as.matrix(data))
     SNRth <- 15 + 10 * log10(p)
     N <- nrow(data)
+    
+    #Dimensionality reduction
     if(SNR > SNRth){
+        #d - number of dimensions
         d <- p
-        U_d <- svd((data %*% t(data)) / N, d, d)$u
-        X <- t(U_d) %*% data
+        #obtaining projection matrix
+        U_d <- svd(tcrossprod(data) / N, d, d)$u
+        #projecting data on subspace
+        X <- crossprod(U_d, data)
+        #rescaling to amlify noise
         u <- apply(X, 1, mean)
-        Y <- t(t(X) / (t(X) %*% u))
+        Y <- t(t(X) / crossprod(X, u))
     }else{
+        #d - number of dimensions
         d <- p - 1
+        #mean is subtracted to aplify noise
         r_ <- apply(data, 1, mean)
-        u_d <- prcomp((data - r_) %*% t(data - r_) / N)$x[, 1:d]
-        X <- t(u_d) %*% (data - r_)
+        #obtaining projection matrix
+        u_d <- prcomp(tcrossprod(data - r_) / N)$x[, 1:d]
+        #projecting data on subspace
+        X <- crossprod(u_d, data - r_)
+        #the value of c aasures that collatitude angle betwee u and any vector from X is between 0 and 45
         c <- max(apply(X, 2, function(x){sqrt(sum(x^2))}))
         Y <- rbind(X, c)
     }
     indices <- array(0, p)
+    # the matrix A stores the projection of the estimated endmembers sianatures
     A <- matrix(0, nrow = p, ncol = p)
     A[p, 1] <- 1
     for(i in 1:p){
+        #getting vector f orthonormal to the space spanned by A
         w <- rnorm(p, sd = 1)
         f <- (diag(p) - A %*% ginv(A)) %*% w
         f <- f / sqrt(sum(f^2))
-        v <- t(f) %*% Y
+        #projecting data onto f
+        v <- crossprod(f, Y)
+        #getting index of the maximal projection
         k <- which.max(abs(v))
+        #ith column of A is set to estimated endmember
         A[, i] <- Y[, k]
         indices[i] <- k
     }
