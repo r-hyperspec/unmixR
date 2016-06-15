@@ -7,6 +7,8 @@
 ##' @param data Data to unmix. It will be converted to a matrix using
 ##'   as.matrix. The matrix should contain a spectrum per row.
 ##' @param p Number of endmembers
+##' @param SNR Signal-to-Noise ratio.
+##'
 ##' @return The indices that indicate the position of the endmembers in the
 ##'   original dataset
 ##' 
@@ -16,6 +18,7 @@
 ##' Geoscience & Remote Sensing Letters, IEEE, vol. 9 no. 3 pp. 502- 506, May 2012
 ##' doi: 10.1109/LGRS.2011.2172771
 ##' @export
+##' @importFrom stats prcomp
 
 vcaLopezFromScratch <- function(data, p, SNR=estSNR(data, p)){
     data <- t(as.matrix(data))
@@ -39,7 +42,9 @@ vcaLopezFromScratch <- function(data, p, SNR=estSNR(data, p)){
         #mean is subtracted to aplify noise
         r_ <- apply(data, 1, mean)
         #obtaining projection matrix
-        u_d <- prcomp(tcrossprod(data - r_) / N)$x[, 1:d]
+        #u <- stats::prcomp(tcrossprod(data - r_) / N)$x[, 1:d] # orig version by AB
+        u <- stats::prcomp(tcrossprod(data - r_) / N)
+        u_d <- u["x", 1:d]
         #projecting data on subspace
         X <- crossprod(u_d, data - r_)
         #the value of c aasures that collatitude angle betwee u and any vector from X is between 0 and 45

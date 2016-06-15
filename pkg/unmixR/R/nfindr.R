@@ -9,9 +9,13 @@
 ##'   as.matrix. The matrix should contain a spectrum per row. This data will
 ##'   be dimensionally reduced using PCA. If you want to reduce the data using
 ##'   some other method then reduce it first and set drop to \code{TRUE}
+##'
 ##' @param formula Formula object
+##'
 ##' @param frame Data frame containing the hyperspectral data
+##'
 ##' @param p Number of endmembers
+##'
 ##' @param method The N-FINDR algorithm to use. Options:
 ##'   \itemize{
 ##'     \item 99 (\code{\link{nfindr99}})
@@ -20,10 +24,13 @@
 ##'     \item Brute (\code{\link{nfindrBrute}})
 ##'   }
 ##'   Default: LDU as it generally performs the best
+##'
 ##' @param indices Locations of the rows in the dataset that will be used to
 ##'   form the initial simplex. Default: Randomly selected indices
+##'
 ##' @param ... Extra parameters that will get passed into selected method, see
 ##'   selected method for options
+##'
 ##' @param drop Boolean that indicates whether the \code{data} parameter
 ##'   should be stored in the resulting structure. This should only be set to
 ##'   \code{TRUE} when \code{data} was passed in already reduced
@@ -41,8 +48,13 @@
 ##' @rdname nfindr
 ##' @export
 ##' @include unmixR-package.R
+##' @importFrom svUnit checkException checkTrue checkEquals
 
-nfindr <- function (x, ...) {
+# nfindr <- function (x, ...) {
+  # UseMethod("nfindr")
+# }
+
+nfindr <- function (...) {
   UseMethod("nfindr")
 }
 
@@ -53,17 +65,17 @@ nfindr <- function (x, ...) {
 
   # test: nfindr produces error for invalid values of p
 
-  checkException(nfindr(data, p="---"))
-  checkException(nfindr(data, p=0))
+  svUnit::checkException(nfindr(data, p="---"))
+  svUnit::checkException(nfindr(data, p=0))
 
   # test: nfindr produces error for invalid method
 
-  checkException(nfindr(data, p, method="invalid"))
+  svUnit::checkException(nfindr(data, p, method="invalid"))
 
   # test: nfindr default produces the correct answer
 
   output <- nfindr(data, p)$indices
-  checkTrue(output == c(4, 79))
+  svUnit::checkTrue(output == c(4, 79))
 
   # test: all N-FINDR methods produce the same output
 
@@ -73,12 +85,12 @@ nfindr <- function (x, ...) {
     nfindr(data, p, methods[i])$indices
   })
 
-  checkTrue(all(outputs[,1] == outputs))
+  svUnit::checkTrue(all(outputs[,1] == outputs))
 
   # test: check the formula interface
 
   output.formula <- nfindr(~ 0 + ., as.data.frame(data), p)$indices
-  checkEquals(output.formula, output)
+  svUnit::checkEquals(output.formula, output)
 
   # test: check other (hyperSpec) objects
 #  nfindr (laser, p = 2)

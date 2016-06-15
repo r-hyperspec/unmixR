@@ -6,7 +6,9 @@
 ##' 
 ##' @param data Data to unmix. It will be converted to a matrix using
 ##'   as.matrix. The matrix should contain a spectrum per row.
+##'
 ##' @param p Number of endmembers
+##'
 ##' @param SNR The Signal-to-Noise ratio of the data. By default it will be
 ##'   estimated using \code{\link{estSNR}}
 ##'
@@ -18,9 +20,11 @@
 ##'   analysis: a fast algorithm to unmix hyperspectral data," Geoscience and
 ##'   Remote Sensing, vol. 43, no. 4, pp.898-910, April 2005,
 ##'   doi: 10.1109/TGRS.2005.844293
+##'
 ##' @export
+##' @importFrom stats runif
 
-vca05 <- function(data, p, SNR=estSNR(data, p)) {
+vca05 <- function(data, p, SNR = estSNR(data, p)) {
 
   data <- t(as.matrix(data))
   N <- ncol(data)
@@ -46,11 +50,12 @@ vca05 <- function(data, p, SNR=estSNR(data, p)) {
     repMean <- .repvec.col(rowMean, N)
     zMean <- data - repMean # zero mean the data
 #    Ud <- svd(tcrossprod(zMean) / N, nv=p)$u[,1:p] # Conor original
-    Ud <- svd(tcrossprod(zMean) / N, nv=p)$u[,1:d] # BH fix?
+    Ud <- svd(tcrossprod(zMean) / N)$u[,1:d] # BH fix
+    # BH: Using .testdata$x, and p = 2, Ud is a vector, not a matrix
+    # Avoid this in the tests!
     zProj <- crossprod(Ud, zMean) # project the zero mean data
 
     x <- zProj[1:d, ]
-#    print(str(Ud))
     dataProj <- Ud[, 1:d] %*% x + repMean
     c <- max(sum(x^2))^0.5
     y <- rbind(x, c)
@@ -61,7 +66,7 @@ vca05 <- function(data, p, SNR=estSNR(data, p)) {
   A[p,1] <- 1
 
   for (i in 1:p) {
-    w <- runif(p)
+    w <- stats::runif(p)
     f <- w - A %*% ginv(A) %*% w;
     f <- f / sqrt(sum(f^2));
 

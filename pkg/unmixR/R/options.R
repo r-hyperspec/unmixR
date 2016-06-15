@@ -1,6 +1,6 @@
 ##' @rdname options
-##' @import settings
-.options <- options_manager (
+##' @importFrom settings options_manager stop_if_reserved
+.options <- settings::options_manager (
   debuglevel = 0L
   )
 
@@ -26,7 +26,7 @@
 ##' unmixR.options (debuglevel = 0L)
 ##' @export
 unmixR.options <- function (...) {
-  stop_if_reserved (...)
+  settings::stop_if_reserved (...)
   .options (...)
 }
 
@@ -34,6 +34,6 @@ unmixR.options <- function (...) {
 
   ## check list of defined options against (manually kept) list of documented
   ## options.
-  checkEquals (c("debuglevel"), names (.options ()))
+  svUnit::checkEquals (c("debuglevel"), names (.options ()))
 
 }

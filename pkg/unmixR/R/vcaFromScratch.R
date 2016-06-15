@@ -19,6 +19,7 @@
 ##'   Remote Sensing, vol. 43, no. 4, pp.898-910, April 2005,
 ##'   doi: 10.1109/TGRS.2005.844293
 ##' @export
+##' @importFrom stats prcomp rnorm
  
 
 vcaFromScratch <- function(data, p, SNR=estSNR(data, p)){
@@ -43,8 +44,10 @@ vcaFromScratch <- function(data, p, SNR=estSNR(data, p)){
         #mean is subtracted to aplify noise
         r_ <- apply(data, 1, mean)
         #obtaining projection matrix
-        u_d <- prcomp(tcrossprod(data - r_) / N)$x[, 1:d]
-        #projecting data on subspace
+        u <- stats::prcomp(tcrossprod(data - r_) / N)
+#		u_d <- u$x[, 1:d] # this approach causes check problems BH
+		u_d <- u["x", 1:d]
+       #projecting data on subspace
         X <- crossprod(u_d, data - r_)
         #the value of c aasures that collatitude angle betwee u and any vector from X is between 0 and 45
         c <- max(apply(X, 2, function(x){sqrt(sum(x^2))}))
@@ -56,7 +59,7 @@ vcaFromScratch <- function(data, p, SNR=estSNR(data, p)){
     A[p, 1] <- 1
     for(i in 1:p){
         #getting vector f orthonormal to the space spanned by A
-        w <- rnorm(p, sd = 1)
+        w <- stats::rnorm(p, sd = 1)
         f <- (diag(p) - A %*% ginv(A)) %*% w
         f <- f / sqrt(sum(f^2))
         #projecting data onto f

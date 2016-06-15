@@ -16,12 +16,13 @@
 ##' Geoscience & Remote Sensing Letters, IEEE, vol. 9 no. 3 pp. 502- 506, May 2012
 ##' doi: 10.1109/LGRS.2011.2172771
 ##' @export
+##' @importFrom stats prcomp
 
 vcaMod <- function(data, p) {
   x <- NULL # suppresses check warnings about no visible global binding
 
   data <- as.matrix(data)
-  Y <- t(prcomp(data)$x[,1:p])
+  Y <- t(stats::prcomp(data)[["x"]][,1:p])
 
   E <- matrix(0, nrow=p, ncol=p+1)
   E[p,1] <- 1

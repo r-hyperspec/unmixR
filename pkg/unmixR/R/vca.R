@@ -29,7 +29,8 @@
 ##' 
 ##' @rdname vca
 ##' @export
-
+##' @include unmixR-package.R
+##'
 vca <- function(...) {
   UseMethod("vca")
 }
