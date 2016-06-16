@@ -47,39 +47,54 @@ nfindr <- function (x, ...) {
 }
 
 .test(nfindr) <- function() {
+  context ("nfindr")
+  
   data <- as.matrix(laser)
   p <- 2
   indices <- c(1, 2)
 
   # test: nfindr produces error for invalid values of p
 
-  checkException(nfindr(data, p="---"))
-  checkException(nfindr(data, p=0))
-
-  # test: nfindr produces error for invalid method
-
-  checkException(nfindr(data, p, method="invalid"))
-
-  # test: nfindr default produces the correct answer
-
-  output <- nfindr(data, p)$indices
-  checkTrue(output == c(4, 79))
-
-  # test: all N-FINDR methods produce the same output
-
-  methods <- c("99", "LDU", "SeqLDU", "Brute")
-
-  outputs <- sapply(1:4, function(i) {
-    nfindr(data, p, methods[i])$indices
+  test_that ("Exceptions", {
+    # invalid p
+    expect_error (checkException(nfindr(data, p="---")))
+    expect_error (nfindr(data, p=0))  
+    
+    # test: nfindr produces error for invalid method
+    expect_error (nfindr(data, p, method="invalid"))
   })
 
-  checkTrue(all(outputs[,1] == outputs))
+  ## test that at least the implementations provided by unmixR are available
+  test_that ("Implementations available", {
+    implementations <- get.implementations("nfindr")
+    expect_true (all (implementations %in% c ("99", "LDU", "SeqLDU", "Brute")))
+  })
+
+  # test: nfindr default produces the correct answer
+  correct <- c (4, 79)
+  test_that ("correct endmembers", {
+    output <- nfindr(data, p)$indices
+    expect_equal (output, correct)
+  })
+
+  # test: all N-FINDR methods produce the same output
+  test_that ("Implementations return correct results", {
+    outputs <- sapply(implementations, 
+                      function(i) {
+                        nfindr(data, p, i)$indices
+                      })
+    expect_true(all (outputs == correct))
+  })
 
   # test: check the formula interface
-
-  output.formula <- nfindr(~ 0 + ., as.data.frame(data), p)$indices
-  checkEquals(output.formula, output)
-
+  test_that ("Formula Interface", {
+    expect_equal(nfindr (~ ., as.data.frame(data), p)$indices, correct)  
+  })
+  
   # test: check other (hyperSpec) objects
-#  nfindr (laser, p = 2)
+  test_that ("hyperSpec object", {
+    output <- nfindr (laser, 2)
+    expect_equal (output$data, laser)  
+    expect_equal (output$indices, correct)
+  })
 }
