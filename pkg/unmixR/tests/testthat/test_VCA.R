@@ -1,4 +1,7 @@
-source("testData.R")
+library ("unmixR")
+
+testData <- unmixR:::.testdata$x
+correct  <- unmixR:::.correct
 
 # BH: Expanded error messages
 # BH: Which ever one of these is related to vca05, it
