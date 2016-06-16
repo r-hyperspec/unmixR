@@ -32,21 +32,20 @@ vcaFromScratch <- function(data, p, SNR=estSNR(data, p)){
         #d - number of dimensions
         d <- p
         #obtaining projection matrix
-        U_d <- svd(tcrossprod(data) / N, d, d)$u
+        U_d <- svd(tcrossprod(data) / N, nu =  d, nv = 0)$u
         #projecting data on subspace
         X <- crossprod(U_d, data)
         #rescaling to amlify noise
         u <- apply(X, 1, mean)
-        Y <- t(t(X) / crossprod(X, u))
+        Y <- t(t(X) / as.vector(crossprod(X, u)))
     }else{
         #d - number of dimensions
         d <- p - 1
         #mean is subtracted to aplify noise
         r_ <- apply(data, 1, mean)
         #obtaining projection matrix
-        u <- stats::prcomp(tcrossprod(data - r_) / N)
-#		u_d <- u$x[, 1:d] # this approach causes check problems BH
-		u_d <- u["x", 1:d]
+        u_d <- stats::prcomp(tcrossprod(data - r_) / N)$x[, 1:d] # this approach causes check problems BH
+		#u_d <- u["x", 1:d]
        #projecting data on subspace
         X <- crossprod(u_d, data - r_)
         #the value of c aasures that collatitude angle betwee u and any vector from X is between 0 and 45
