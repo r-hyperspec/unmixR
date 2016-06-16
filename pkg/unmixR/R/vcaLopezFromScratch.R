@@ -42,9 +42,9 @@ vcaLopezFromScratch <- function(data, p, SNR=estSNR(data, p)){
         #mean is subtracted to aplify noise
         r_ <- apply(data, 1, mean)
         #obtaining projection matrix
-        u_d <- stats::prcomp(tcrossprod(data - r_) / N)$x[, 1:d] # orig version by AB
-        #u <- stats::prcomp(tcrossprod(data - r_) / N)
-        #u_d <- u["x", 1:d]
+        #u <- stats::prcomp(tcrossprod(data - r_) / N)$x[, 1:d] # orig version by AB
+        u <- stats::prcomp(tcrossprod(data - r_) / N)
+        u_d <- u[["x"]][, sequence (d), drop = FALSE]
         #projecting data on subspace
         X <- crossprod(u_d, data - r_)
         #the value of c aasures that collatitude angle betwee u and any vector from X is between 0 and 45
