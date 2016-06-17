@@ -3,6 +3,7 @@
 ##' @export
 ##' @include nfindr.default.R
 ##' @importFrom stats model.matrix
+##'
 nfindr.formula <- function(formula, frame, p,
                            method="LDU", indices = sample (nrow (data), p), ...,
                            drop=FALSE) {

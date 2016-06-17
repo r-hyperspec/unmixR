@@ -1,4 +1,4 @@
-##' Functions implementing the N-FINDR, Interated Constrained Endmembers (ICE)
+##' Functions implementing the N-FINDR, Iterated Constrained Endmembers (ICE)
 ##' and Vertex Component Analysis (VCA) algorithms which can recover pure
 ##' component spectra and their respective concentrations from a hyperspectral data set.
 ##'
@@ -6,12 +6,14 @@
 ##' @title Hyperspectral Unmixing Methods
 ##' @docType package
 ##'
-##' @author Conor McManus
+##' @author Anton Belov, Conor McManus, Claudia Beleites, Bryan A. Hanson, Simon Fuller.
 ##'
 ##' Maintainer: Claudia Beleites <chemometrie@beleites.de>
+##'
 ##' @rdname unmixR-package
 ##' @aliases unmixR
 ##' @keywords package
+##" @keywords hyperspectral
 ##' @import hyperSpec
 ##' @import nnls
 ##' @import MASS

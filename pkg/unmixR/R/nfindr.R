@@ -1,4 +1,4 @@
-##' General interface to N-FINDR spectral unmixing implementations
+##' General Interface to N-FINDR Spectral Unmixing Implementations
 ##'
 ##' All the N-FINDR techniques are based on the fact that, in N spectral
 ##' dimensions, the N-volume contained by a simplex formed of the purest

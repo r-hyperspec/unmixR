@@ -1,23 +1,23 @@
-##' Vertex Component Analysis unmixing algorithm
+##' Vertex Component Analysis Unmixing Algorithm
 ##'
 ##' This algorithm is based on the geometry of convex sets. It exploits the
 ##' fact that endmembers occupy the vertices of a simplex.
 ##' Intended to be called from \code{\link{vca}}.
 ##' 
-##' @param data Data to unmix. It will be converted to a matrix using
-##'   as.matrix. The matrix should contain a spectrum per row.
-##' @param p Number of endmembers
+##' @param data Data matrix.
+##'
+##' @param p Number of endmembers.
+##'
 ##' @param SNR The Signal-to-Noise ratio of the data. By default it will be
-##'   estimated using \code{\link{estSNR}}
+##'   estimated using \code{\link{estSNR}}.
 ##'
-##' @return Although the other VCA algorithms return only indices, this
-##'   function returns the full structure to \code{\link{vca}} as the
-##'   endmembers should be taken out of a projected dataset which it generates
+##' @return The indices of the endmembers in the original dataset.
 ##'
-##' @references Nascimento, J.M.P.; Bioucas Dias, J.M., "Vertex component
+##' @references Nascimento, J.M.P. and Bioucas Dias, J.M. "Vertex component
 ##'   analysis: a fast algorithm to unmix hyperspectral data," Geoscience and
-##'   Remote Sensing, vol. 43, no. 4, pp.898-910, April 2005,
+##'   Remote Sensing, vol. 43, no. 4, pp. 898-910, April 2005,
 ##'   doi: 10.1109/TGRS.2005.844293
+##'
 ##' @export
 ##' @importFrom stats prcomp rnorm
  

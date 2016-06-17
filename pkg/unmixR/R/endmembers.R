@@ -10,7 +10,7 @@
 ##   the endmembers then this parameter allows for passing in new data
 ##'
 ##' @return A matrix where each row is an endmember as calculated by the
-##'   unmixing algorithm
+##'   unmixing algorithm.
 ##'
 ##' @export
 
