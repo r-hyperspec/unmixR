@@ -13,7 +13,8 @@ nfindr.default <- function(data, p,
 
   # check if the method passed in was found
   if (is.null (nfindrFunc)) {
-    stop ('Invalid option for method parameter, try: "99", "LDU", "SeqLDU", "Brute"')
+    stop ('Invalid option for method parameter (', method ,') try: ', 
+          paste (get.implementations ("nfindr"), collapse = ", "))
     ## TODO: automatic list of available options 
   }
 
