@@ -35,7 +35,7 @@
 ##'   should be stored in the resulting structure. This should only be set to
 ##'   \code{TRUE} when \code{data} was passed in already reduced
 ##' 
-##' @return A structure which contains:
+##' @return A list which contains:
 ##'   \itemize{
 ##'     \item \strong{data}: the original data or reduced data if drop is
 ##'                          set to \code{TRUE}
@@ -49,10 +49,6 @@
 ##' @export
 ##' @include unmixR-package.R
 ##' @importFrom svUnit checkException checkTrue checkEquals
-
-# nfindr <- function (x, ...) {
-  # UseMethod("nfindr")
-# }
 
 nfindr <- function (...) {
   UseMethod("nfindr")

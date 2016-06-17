@@ -48,6 +48,8 @@ vca05 <- function(data, p, SNR = estSNR(data, p)) {
     zMean <- data - repMean # zero mean the data
 #    Ud <- svd(tcrossprod(zMean) / N, nv=p)$u[,1:p] # Conor original
     Ud <- svd(tcrossprod(zMean) / N, nv = p)[["u"]][, sequence(d), drop = FALSE]
+    
+    print(dim(Ud))
     zProj <- crossprod(Ud, zMean) # project the zero mean data
 
     x <- zProj[1:d, ]

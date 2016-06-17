@@ -1,4 +1,5 @@
-# revised version
+
+# BH revised version to avoid "no global binding" on CRAN check
 
 .predict <- function(object, newdata, ...) {
 
@@ -39,6 +40,7 @@
   	# ))
 # }
 
+
 ##' Predict Endmember Abundances
 ##'
 ##' Predicts the abundance percentages of each endmember at all sample points
@@ -59,12 +61,14 @@
 ##' @return A matrix where the abundances for an endmember are returned
 ##'   column-wise. Each value is in the range \code{0 - 1}
 ##'
-##' @rdname nfindr
+##' @name predict
+##' @rdname predict
 ##' @export
 
 predict.nfindr <- .predict
 
-##' @rdname vca
+##' @rdname predict
 ##' @export
 
 predict.vca <- .predict
+

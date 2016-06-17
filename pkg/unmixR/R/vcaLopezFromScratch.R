@@ -18,7 +18,6 @@
 ##' Geoscience & Remote Sensing Letters, IEEE, vol. 9 no. 3 pp. 502-506, May 2012
 ##' doi: 10.1109/LGRS.2011.2172771
 ##'
-
 ##' @export
 ##' @importFrom stats prcomp
 
