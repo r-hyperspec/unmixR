@@ -50,9 +50,8 @@ vca05 <- function(data, p, SNR = estSNR(data, p)) {
     repMean <- .repvec.col(rowMean, N)
     zMean <- data - repMean # zero mean the data
 #    Ud <- svd(tcrossprod(zMean) / N, nv=p)$u[,1:p] # Conor original
-    Ud <- svd(tcrossprod(zMean) / N)$u[,1:d] # BH fix
-    # BH: Using .testdata$x, and p = 2, Ud is a vector, not a matrix
-    # Avoid this in the tests!
+    Ud <- svd(tcrossprod(zMean) / N, nv = p) # fix pt 1
+    Ud <- Ud[["u"]][, sequence(d), drop = FALSE] # fix pt 2
     zProj <- crossprod(Ud, zMean) # project the zero mean data
 
     x <- zProj[1:d, ]

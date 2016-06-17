@@ -17,7 +17,6 @@
 ##' @export
 
 estSNR <- function(data, p) {
-  u <- NULL # suppresses check warnings about no visible global binding
   E <- function(M, n) sum(c(M)^2 / n) # expectation operator
 
   # NOTE: we don't need to transpose here, because when this
@@ -41,7 +40,8 @@ estSNR <- function(data, p) {
   # repeat the column of row means so that it matches the size of the data
   repMean <- .repvec.col(rowMean, N)
   zMean <- data - repMean # zero mean the data
-  Ud <- svd(tcrossprod(zMean) / N, nv=p)$u[,1:p]
+  Ud <- svd(tcrossprod(zMean) / N, nv=p)
+  Ud <- Ud[["u"]][, sequence(p), drop = FALSE]
   zProj <- crossprod(Ud, zMean) # project the zero mean data
 
   # Conor's original code + BH comments
