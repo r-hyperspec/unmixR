@@ -1,8 +1,5 @@
-##' @rdname options
-##' @importFrom settings options_manager stop_if_reserved
-.options <- settings::options_manager (
-  debuglevel = 0L
-  )
+## @rdname options
+
 
 ##' unmixR's package options
 ##'
@@ -24,6 +21,7 @@
 ##' unmixR.options ()
 ##' unmixR.options ("debuglevel")
 ##' unmixR.options (debuglevel = 0L)
+##' @importFrom settings options_manager stop_if_reserved
 ##' @export
 unmixR.options <- function (...) {
   settings::stop_if_reserved (...)
@@ -37,3 +35,7 @@ unmixR.options <- function (...) {
   svUnit::checkEquals (c("debuglevel"), names (.options ()))
 
 }
+
+.options <- settings::options_manager (
+  debuglevel = 0L
+  )

@@ -11,8 +11,9 @@
 ##' @param indices Locations of the rows in the dataset to use in the simplex
 ##' @return The simplex, a p x p matrix whose first row contains only 1s
 ##' 
-##' @rdname simplex
 ##' @include unmixR-package.R
+
+## @rdname simplex
 
 # The following is Bryan's modification so that the function does what
 # it is claimed to do, return a p x p matrix

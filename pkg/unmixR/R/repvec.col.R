@@ -7,8 +7,9 @@
 ##' @param n The number of columns in the resulting matrix
 ##' @return A matrix with \code{n} columns where each column is \code{v}
 ##' 
-##' @rdname repvec.col
 ##' @include unmixR-package.R
+
+## @rdname repvec.col
 
 .repvec.col <- function(v, n) as.matrix(v)[, rep(1, n)]
 

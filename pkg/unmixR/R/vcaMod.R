@@ -19,10 +19,9 @@
 ##' @importFrom stats prcomp
 
 vcaMod <- function(data, p) {
-  x <- NULL # suppresses check warnings about no visible global binding
 
   data <- as.matrix(data)
-  Y <- t(stats::prcomp(data)[["x"]][,1:p])
+  Y <- t(stats::prcomp(data)[["x"]][, sequence(p), drop = FALSE])
 
   E <- matrix(0, nrow=p, ncol=p+1)
   E[p,1] <- 1

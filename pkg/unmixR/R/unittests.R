@@ -11,7 +11,6 @@
 ##' @importFrom svUnit clearLog errorLog runTest stats is.test Log
 
 unmixR.unittest <- function () {
-  warn <- NULL # suppresses check warnings about no visible global binding
 
   if (!requireNamespace("svUnit", quietly=TRUE)) {
     warning("svUnit required to run the unit tests.")
@@ -24,7 +23,7 @@ unmixR.unittest <- function () {
 
   svUnit::clearLog()
 
-  warnlevel <- options()$warn
+  warnlevel <- options()[["warn"]]
   options(warn=0)
   for (t in seq_along(tests)) {
     svUnit::runTest(tests[[t]], names(tests)[t])
