@@ -84,23 +84,40 @@ nfindr <- function (...) {
 
   # test: nfindr default produces the correct answer
   correct <- c (4, 79)
-  test_that ("correct endmembers", {
+  test_that ("correct endmembers laser data, default method", {
     output <- nfindr(data, p)$indices
     expect_equal (output, correct)
   })
 
   # test: all N-FINDR methods produce the same output
-  test_that ("Implementations return correct results", {
+  test_that ("All implementations return correct results for laser data", {
     outputs <- sapply(implementations, 
                       function(i) {
                         nfindr(data = data, p = p, method = i)$indices
                       })
     expect_true(all (outputs == correct))
   })
+  
+  ## test triangle data
+  triangle <- .testdata$x
+  triangle.correct <- .correct
+
+  test_that ("correct endmembers triangle data, default method", {
+    output <- nfindr(triangle, p = 3)$indices
+    expect_equal (output, triangle.correct)
+  })
+  
+  test_that ("All implementations return correct results for triangle data", {
+    outputs <- sapply(implementations, 
+                      function(i) {
+                        nfindr(data = triangle, p = 3, method = i)$indices
+                      })
+    expect_true(all (outputs == triangle.correct))
+  })
 
   # test: check the formula interface
   test_that ("Formula Interface", {
-    expect_equal(nfindr (~ ., as.data.frame(data), p)$indices, correct)  
+    expect_equal(nfindr (~ ., as.data.frame (data), p)$indices, correct)  
   })
   
   # test: check other (hyperSpec) objects
