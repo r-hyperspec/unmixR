@@ -14,9 +14,10 @@
 get.implementations  <- function (method, search.paths = unmixR.options("implementation.search")){
   search.paths <- lapply (search.paths, as.environment)
   
-  implementations <- sapply (search.paths, ls, pattern = method)
+  implementations <- sapply (search.paths, ls, pattern = sprintf ("^%s[^.].*", method))
   
   implementations <- gsub (method, "", implementations)
+  
   implementations <- implementations [nzchar (implementations)] 
   
   implementations
