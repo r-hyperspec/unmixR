@@ -52,3 +52,9 @@ dimnames(.C) <- list(samples = 1:10, wavelengths = paste("L", 1:3, sep = "")) # 
 rm (.C)
 .correct <- c (1, 4, 10)
 }
+
+##' get test that is attached to object as "test" attribute
+##' @noRd
+get.test <- function (object)
+  attr (object, "test")
+
