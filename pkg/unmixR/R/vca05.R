@@ -34,7 +34,7 @@ vca05 <- function(data, p, SNR = estSNR(data, p)) {
   # if the estimated SNR is over a certain threshold ...
   if (SNR > SNRth) {
     d <- p
-    Ud <- svd(tcrossprod(data) / N)$u[,1:d]
+    Ud <- svd(tcrossprod(data) / N)[["u"]][, sequence(d), drop = FALSE]
 
     x <- crossprod(Ud, data)
     u <- apply(x, 1, mean)
@@ -50,8 +50,7 @@ vca05 <- function(data, p, SNR = estSNR(data, p)) {
     repMean <- .repvec.col(rowMean, N)
     zMean <- data - repMean # zero mean the data
 #    Ud <- svd(tcrossprod(zMean) / N, nv=p)$u[,1:p] # Conor original
-    Ud <- svd(tcrossprod(zMean) / N, nv = p) # fix pt 1
-    Ud <- Ud[["u"]][, sequence(d), drop = FALSE] # fix pt 2
+    Ud <- svd(tcrossprod(zMean) / N, nv = p)[["u"]][, sequence(d), drop = FALSE]
     zProj <- crossprod(Ud, zMean) # project the zero mean data
 
     x <- zProj[1:d, ]

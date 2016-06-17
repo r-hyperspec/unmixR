@@ -32,8 +32,7 @@ nfindr.default <- function(data, p,
   # reduce the dimensionality of the data using PCA
   # do nothing if the data was passed in already reduced
   if (ncol(data) != p - 1) {
-#    data <- stats::prcomp(data)$x[, 1:(p-1), drop=FALSE] # orig
-    data <- stats::prcomp(data)[["x"]][, 1:(p-1), drop=FALSE]
+    data <- stats::prcomp(data)[["x"]][, sequence(p-1), drop=FALSE]
   }
 
   # call the function to get the indices of the endmembers
