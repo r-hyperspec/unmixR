@@ -41,9 +41,8 @@ nfindr.default <- function(data, p,
   # sort the indices to normalise the order between runs
   indices <- sort (indices) # TODO: post-processing? 
 
-  # return a model
-  structure(list(
-    data = if (!drop) orig else orig[indices,],
-    indices = if (!drop) indices else 1:p
-  ), class = "nfindr")
+  res <- list(data = if (!drop) orig else orig[indices,],
+              indices = if (!drop) indices else 1:p)
+  class(res) <- "nfindr"
+  return(res)
 }

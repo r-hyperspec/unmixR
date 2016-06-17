@@ -24,13 +24,10 @@ vca.default <- function(data, p, method= c("Mod", "Lopez", "05"), seed=NULL, ...
   vcaFunc <- get(paste("vca", method, sep=""))
   val <- vcaFunc(data, p, ...)
 
-  struct <- list(
-    data = data,
-    indices = sort(val) # TODO: sort should not be necessary at this point 
-    # as all functions already sort 
-    )
+  res <- list(data = data, indices = val)
+  class(res) = "vca"
+  return(res)
 
-    structure(struct, class = "vca")
 }
 
 
