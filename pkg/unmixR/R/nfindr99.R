@@ -6,19 +6,24 @@
 ##' Intended to be called from \code{\link{nfindr}}.
 ##' 
 ##' @param data Data matrix to unmix
+##'
 ##' @param p Number of endmembers
+##'
 ##' @param indices Indices used in the simplex estimation
+##'
 ##' @param iters Max number of iterations, defaults to 3*p
-##' @include unmixR-package.R
+##'
 ##' @return The indices that indicate the position of the endmembers in the
 ##'   original dataset
+##'
+##' @include unmixR-package.R
 ##' @export
 ##'
 ##' @references Michael E. Winter; "N-FINDR: an algorithm for fast autonomous
 ##'   spectral end-member determination in hyperspectral data", Proc.
 ##'   SPIE 3753, Imaging Spectrometry V, 266 (October 27, 1999), 
 ##'   doi:10.1117/12.366289
-##' @export
+##'
 nfindr99 <- function(data, p, indices, iters=3*p) {
   simplex <- .simplex(data, p, indices)
   nspectra <- nrow(data)

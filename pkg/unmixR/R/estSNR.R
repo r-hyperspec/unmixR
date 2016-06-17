@@ -74,9 +74,11 @@ estSNR <- function(data, p) {
   	
   # Otherwise compute according to Eqn 13
   SNR <- 10 * log10((prp - (p / L) * pr) / (pr - prp))
-   
-  if (abs (SNR) < sqrt (.Machine$double.eps)) ## perfect reconstruction
-    SNR <- .Machine$double.eps # make sure the log returns useful number
+  
+  # Note: .Machine[[1]] is .Machine$double.eps
+  
+  if (abs (SNR) < sqrt (.Machine[[1]])) # perfect reconstruction
+    SNR <- .Machine[[1]] # make sure the log returns useful number
 
   SNR
 }

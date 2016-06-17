@@ -15,6 +15,7 @@
 ##' @return The indices that indicate the position of the endmembers in the
 ##'   original dataset
 ##' @export
+##' @importFrom utils combn
 
 nfindrBrute <- function(data, p, ...) {
   # generate all possible unique combinations of p indices

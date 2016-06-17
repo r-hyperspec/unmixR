@@ -1,6 +1,6 @@
-##' unmixR implements N-FINDR and Vertex Component Analysis (VCA)
-##' algorithms which can recover pure component spectra and their
-##' respective concentrations from a hyperspectral data set.
+##' Functions implementing the N-FINDR, Interated Constrained Endmembers (ICE)
+##' and Vertex Component Analysis (VCA) algorithms which can recover pure
+##' component spectra and their respective concentrations from a hyperspectral data set.
 ##'
 ##' @name unmixR-package
 ##' @title Hyperspectral Unmixing Methods
@@ -15,7 +15,7 @@
 ##' @import hyperSpec
 ##' @import nnls
 ##' @import MASS
-# @import svUnit
+##' @importFrom svUnit test<-
 
 # This code needs to be here due to the order in which
 # things are sourced, apparently.  It made more sense to

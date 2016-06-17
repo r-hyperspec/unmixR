@@ -1,6 +1,6 @@
 
 NEWS file for package unmixR
-unmixR implements the N-FINDR and Vertex Component Analysis (VCA) algorithms which can recover pure component spectra and their respective concentrations from a hyperspectral data set.
+Functions implementing the N-FINDR, Interated Constrained Endmembers (ICE) and Vertex Component Analysis (VCA) algorithms which can recover pure component spectra and their respective concentrations from a hyperspectral data set.
 URL: gitlab.com/chemometrics/unmixR
 
 Changes in version 0.2-0 2016-?-?

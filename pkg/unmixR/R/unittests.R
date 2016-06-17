@@ -8,35 +8,36 @@
 ##' @keywords programming utilities
 ##' @export
 ##' @include unmixR-package.R
+##' @importFrom svUnit clearLog errorLog runTest stats is.test Log
 
 unmixR.unittest <- function () {
   warn <- NULL # suppresses check warnings about no visible global binding
 
-  if (!require("svUnit", quietly=TRUE)) {
+  if (!requireNamespace("svUnit", quietly=TRUE)) {
     warning("svUnit required to run the unit tests.")
     return(NA)
   }
 
-  tests <- unlist(eapply(env=getNamespace ("unmixR"), FUN=is.test, all.names=TRUE))
+  tests <- unlist(eapply(env=getNamespace ("unmixR"), FUN=svUnit::is.test, all.names=TRUE))
   tests <- names(tests[tests])
   tests <- sapply(tests, get, envir=getNamespace ("unmixR"))
 
-  clearLog()
+  svUnit::clearLog()
 
   warnlevel <- options()$warn
   options(warn=0)
   for (t in seq_along(tests)) {
-    runTest(tests[[t]], names(tests)[t])
+    svUnit::runTest(tests[[t]], names(tests)[t])
   }
   options(warn=warnlevel)
 
   if (interactive()) {
-    print(stats(Log()))
+    print(svUnit::stats(svUnit::Log()))
   } else {
-    print(stats(Log())[, c("kind", "msg")])
+    print(svUnit::stats(svUnit::Log())[, c("kind", "msg")])
   }
 
-  errorLog(summarize=FALSE)
+  svUnit::errorLog(summarize=FALSE)
   invisible(TRUE)
 }
 
