@@ -59,7 +59,7 @@ nfindr <- function (...) {
 }
 
 .test(nfindr) <- function() {
-  context ("nfindr")
+  context ("N-FINDR")
   
   data <- as.matrix(laser)
   p <- 2
@@ -69,7 +69,7 @@ nfindr <- function (...) {
 
   test_that ("Exceptions", {
     # invalid p
-    expect_error (checkException(nfindr(data, p="---")))
+    expect_error (nfindr(data, p="---"))
     expect_error (nfindr(data, p=0))  
     
     # test: nfindr produces error for invalid method
@@ -77,9 +77,9 @@ nfindr <- function (...) {
   })
 
   ## test that at least the implementations provided by unmixR are available
+  implementations <- get.implementations("nfindr")
   test_that ("Implementations available", {
-    implementations <- get.implementations("nfindr")
-    expect_true (all (implementations %in% c ("99", "LDU", "SeqLDU", "Brute")))
+    expect_true (all (c ("99", "Brute", "LDU", "SeqLDU") %in% implementations))
   })
 
   # test: nfindr default produces the correct answer
@@ -93,7 +93,7 @@ nfindr <- function (...) {
   test_that ("Implementations return correct results", {
     outputs <- sapply(implementations, 
                       function(i) {
-                        nfindr(data, p, i)$indices
+                        nfindr(data = data, p = p, method = i)$indices
                       })
     expect_true(all (outputs == correct))
   })
