@@ -24,7 +24,7 @@ vca.default <- function(data, p, method= c("Mod", "Lopez", "05"), seed=NULL, ...
   vcaFunc <- get(paste("vca", method, sep=""))
   val <- vcaFunc(data, p, ...)
 
-  res <- list(data = data, indices = val)
+  res <- list(data = data, indices = as.integer(val))
   class(res) = "vca"
   return(res)
 

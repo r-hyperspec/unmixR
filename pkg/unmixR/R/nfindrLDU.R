@@ -19,7 +19,7 @@
 ##'   
 ##' @references  Dowler, Shaun W., Takashima, Reymond, and Andrews, Mark
 ##'   "Reducing the complexity of the N-FINDR algorithm for hyperspectral
-##'   image analysis.", IEEE Trans Image Process. 2013 22(7):2835-48l
+##'   image analysis.", IEEE Trans Image Process. 2013 22(7):2835-2848
 ##'   doi: 10.1109/TIP.2012.2219546
 ##'
 ##' @export

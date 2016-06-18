@@ -39,7 +39,7 @@ nfindr.default <- function(data, p,
   indices <- nfindrFunc(data, p, indices, ...)
   
   # sort the indices to normalise the order between runs
-  indices <- sort (indices) # TODO: post-processing? 
+  indices <- sort (indices) 
 
   res <- list(data = if (!drop) orig else orig[indices,],
               indices = if (!drop) indices else 1:p)

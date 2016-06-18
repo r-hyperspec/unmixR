@@ -3,12 +3,16 @@
 ##' Estimate the signal to noise ratio of a hyperspectral image.
 ##'
 ##' @param data The hyperspectral image whose signal to noise ratio needs to
-##'   be estimated.  Samples in rows, frequencies in columns, but.  Note: be careful,
-##'   when this function is called by vca05 the data is already transposed due to
+##'   be estimated.  Samples in rows, frequencies in columns.
+##'
+##' @section Warning:
+##'   Be careful,
+##'   when this function is called by \code{\link{vca05}} the data is already
+##'   transposed due to
 ##'   lazy evaluation.  If you want to get the same answer by calling this function
 ##'   directly, you'll need to transpose the data first!
 ##'
-##' @param p The number of endmembers, used for data reduction.
+##' @param p The number of endmembers.
 ##'
 ##' @return The estimated signal to noise ratio in decibels.
 ##' 

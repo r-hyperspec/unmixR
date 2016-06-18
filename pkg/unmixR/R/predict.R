@@ -44,7 +44,7 @@
 ##' Predict Endmember Abundances
 ##'
 ##' Predicts the abundance percentages of each endmember at all sample points
-##' using the Non-Negative Least Squares method
+##' using the Non-Negative Least Squares method.
 ##'
 ##' @param object The N-FINDR/VCA structure returned by the
 ##'   \code{\link{nfindr}} or \code{\link{vca}} interface.
@@ -59,7 +59,7 @@
 ##'   will be used.
 ##'
 ##' @return A matrix where the abundances for an endmember are returned
-##'   column-wise. Each value is in the range \code{0 - 1}
+##'   column-wise. Each value is in the range \code{[0 - 1]}.
 ##'
 ##' @name predict
 ##' @rdname predict

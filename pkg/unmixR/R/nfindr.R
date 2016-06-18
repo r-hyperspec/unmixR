@@ -8,13 +8,13 @@
 ##' @param data Data to unmix. It will be converted to a matrix using
 ##'   as.matrix. The matrix should contain a spectrum per row. This data will
 ##'   be dimensionally reduced using PCA. If you want to reduce the data using
-##'   some other method then reduce it first and set drop to \code{TRUE}
+##'   some other method then reduce it first and set drop to \code{TRUE}.
 ##'
-##' @param formula Formula object
+##' @param formula Formula object.
 ##'
-##' @param frame Data frame containing the hyperspectral data
+##' @param frame Data frame containing the hyperspectral data.
 ##'
-##' @param p Number of endmembers
+##' @param p Number of endmembers.
 ##'
 ##' @param method The N-FINDR algorithm to use. Options:
 ##'   \itemize{
@@ -23,27 +23,30 @@
 ##'     \item SeqLDU (\code{\link{nfindrSeqLDU}})
 ##'     \item Brute (\code{\link{nfindrBrute}})
 ##'   }
-##'   Default: LDU as it generally performs the best
+##'   Default: LDU as it generally performs the best.
 ##'
 ##' @param indices Locations of the rows in the dataset that will be used to
-##'   form the initial simplex. Default: Randomly selected indices
+##'   form the initial simplex. Default: Randomly selected indices.
 ##'
 ##' @param ... Extra parameters that will get passed into selected method, see
-##'   selected method for options
+##'   selected method for options.
 ##'
 ##' @param drop Boolean that indicates whether the \code{data} parameter
 ##'   should be stored in the resulting structure. This should only be set to
-##'   \code{TRUE} when \code{data} was passed in already reduced
+##'   \code{TRUE} when \code{data} was passed in already reduced.
 ##' 
 ##' @return A list which contains:
 ##'   \itemize{
 ##'     \item \strong{data}: the original data or reduced data if drop is
-##'                          set to \code{TRUE}
+##'                          set to \code{TRUE}.
 ##'     \item \strong{indices}: the indices of the spectra which increased
 ##'                             the simplex volume the most. These are the
 ##'                             indices of the endmembers. If drop is set to
-##'                             \code{TRUE} then indices will be 1 to p
+##'                             \code{TRUE} then indices will be 1 to p.
 ##'   }
+##'
+##' @seealso \code{\link{endmembers}} to extract the spectra; \code{\link{predict}}
+##' to determine abundances of endmembers in each sample.
 ##'
 ##' @rdname nfindr
 ##' @export

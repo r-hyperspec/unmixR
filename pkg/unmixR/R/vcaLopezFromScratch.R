@@ -2,7 +2,7 @@
 ##'
 ##' Modified VCA algorithm that aims to reduced the algorithmic complexity of
 ##' the original.
-##' Intended to be called from \code{\link{nfindr}}.
+##' Intended to be called from \code{\link{vca}}.
 ##' 
 ##' @param data Data matrix.
 ##'

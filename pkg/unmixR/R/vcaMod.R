@@ -8,7 +8,7 @@
 ##'
 ##' @param p Number of endmembers.
 ##'
-##' @return The indices of the endmembers in the original dataset
+##' @return The indices of the endmembers in the original dataset.
 ##' 
 ##' @references Lopez, S., Horstrand, P., Callico, G.M., Lopez J.F. and
 ##' Sarmiento, R., "A Low-Computational-Complexity Algorithm for

@@ -21,18 +21,22 @@
 ##'   }
 ##'   Default: Mod, as it is the most efficient.
 ##'
-##' @param seed vca05 and vcaLopez both need to generate a random vector. Set
-##'   the random number generator seed with this
+##' @param seed Both vca05 and vcaLopez need to generate a random vector. Set
+##'   the random number generator seed with this argument.
 ##'
 ##' @param ... Extra parameters that will get passed into selected method, see
 ##'   selected method for options.
 ##' 
 ##' @return A list which contains:
 ##'   \itemize{
-##'     \item \strong{data}: the original data
-##'     \item \strong{indices}: the indices of the calculated endmembers
+##'     \item \strong{data}: the original data.
+##'     \item \strong{indices}: the indices of the calculated endmembers.
 ##'   }
 ##' 
+##'
+##' @seealso \code{\link{endmembers}} to extract the spectra; \code{\link{predict}}
+##' to determine abundances of endmembers in each sample.
+##'
 ##' @rdname vca
 ##' @export
 ##' @include unmixR-package.R
@@ -40,4 +44,3 @@
 vca <- function(...) {
   UseMethod("vca")
 }
-
