@@ -1,9 +1,12 @@
-##' Run the unit tests
+##' Run the Unit Tests
 ##'
-##' Run the unit tests attached to the functions via \link[svUnit]{svUnit}
-##' @return invisibly \code{TRUE} if the tests pass, \code{NA} if \link[svUnit]{svUnit} is not
+##' Run the unit tests for the package.
+##' 
+##' @return Invisibly returns \code{TRUE} if the tests pass, \code{NA} if \link[svUnit]{svUnit} is not
 ##' available. Stops if errors are encountered.
+##'
 ##' @author Claudia Beleites
+##'
 ##' @seealso  \link[svUnit]{svUnit}
 ##' @keywords programming utilities
 ##' @export

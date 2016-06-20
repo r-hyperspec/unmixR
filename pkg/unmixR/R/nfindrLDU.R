@@ -1,24 +1,28 @@
-##' LDU N-FINDR: 2013 Improved N-FINDR algorithm based on LU decompositions
+##' LDU N-FINDR: 2013 Improved N-FINDR Algorithm Based on LU Decompositions
 ##' 
 ##' This approach calculates M LU decompositions, one with each column
-##' permuted to the last position and reuses those decompositions on each
+##' permuted to the last position, and reuses those decompositions on each
 ##' pixel until a permanent replacement requires the calculation of a new set
 ##' of decompositions.
 ##' Intended to be called from \code{\link{nfindr}}.
 ##' 
-##' @param data Data matrix to unmix
-##' @param p Number of endmembers
-##' @param indices Indices used in the simplex estimation
-##' @param ... Extra unused parameters that get passed in from
-##'   \code{\link{nfindr}}
-##' @return The indices that indicate the position of the endmembers in the
-##'   original dataset
-##' @export
+##' @param data Data matrix to unmix.
 ##'
-##' @references  Dowler, Shaun W.; Takashima, Reymond; Andrews, Mark;
+##' @param p Number of endmembers.
+##'
+##' @param indices Indices used in the simplex estimation.
+##'
+##' @param ... Extra unused parameters passed in from
+##'   \code{\link{nfindr}}.
+##'
+##' @return The indices of the endmembers in the original dataset.
+##'   
+##' @references  Dowler, Shaun W., Takashima, Reymond, and Andrews, Mark
 ##'   "Reducing the complexity of the N-FINDR algorithm for hyperspectral
-##'   image analysis.", IEEE Trans Image Process. 2013 Jul;22(7):2835-48l
+##'   image analysis.", IEEE Trans Image Process. 2013 22(7):2835-2848
 ##'   doi: 10.1109/TIP.2012.2219546
+##'
+##' @export
 ##'
 
 nfindrLDU <- function(data, p, indices, ...) {

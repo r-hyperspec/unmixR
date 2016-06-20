@@ -1,15 +1,15 @@
 Package: unmixR
 Type: Package
 Title: Hyperspectral Unmixing Methods
-Version: 0.2.91
-Date: 2016-06-17
+Version: 0.2.125
+Date: 2016-06-20
 Authors@R: c(person("Anton", "Belov", role = "aut"),
 	person("Conor", "McManus", role = "aut"),
 	person("Claudia", "Beleites", role = c("aut", "cre"),
 		email ="chemometrie@beleites.de"),
-	person("Simon", "Fuller", role = "aut"),
-	person("Bryan A.", "Hanson", role = "aut"))
-Description: Functions implementing the N-FINDR, Interated Constrained
+	person("Bryan A.", "Hanson", role = "aut"),
+	person("Simon", "Fuller", role = "aut"))
+Description: Functions implementing the N-FINDR, Iterated Constrained
     Endmembers (ICE) and Vertex Component Analysis (VCA) algorithms which can
     recover pure component spectra and their respective concentrations from a
     hyperspectral data set.
