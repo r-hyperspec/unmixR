@@ -30,6 +30,7 @@ Imports:
     settings
 VignetteBuilder: knitr
 Collate:
+    'dimensionalityReduction.R'
     'endmembers.R'
     'estSNR.R'
     'unmixR-package.R'
