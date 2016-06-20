@@ -28,8 +28,7 @@
 ##' @param indices Locations of the rows in the dataset that will be used to
 ##'   form the initial simplex. Default: Randomly selected indices.
 ##'
-##' @param ... Extra parameters that will get passed into selected method, see
-##'   selected method for options.
+##' @param ... Additional parameters for the methods (currently unused).
 ##'
 ##' @param drop Boolean that indicates whether the \code{data} parameter
 ##'   should be stored in the resulting structure. This should only be set to

@@ -24,8 +24,7 @@
 ##' @param seed Both vca05 and vcaLopez need to generate a random vector. Set
 ##'   the random number generator seed with this argument.
 ##'
-##' @param ... Extra parameters that will get passed into selected method, see
-##'   selected method for options.
+##' @param ... Additional parameters for the methods (currently unused).
 ##' 
 ##' @return A list which contains:
 ##'   \itemize{
