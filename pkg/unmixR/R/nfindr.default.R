@@ -15,7 +15,6 @@ nfindr.default <- function(data, p,
   if (is.null (nfindrFunc)) {
     stop ('Invalid option for method parameter (', method ,') try: ', 
           paste (get.implementations ("nfindr"), collapse = ", "))
-    ## TODO: automatic list of available options 
   }
 
   ## check for p being with the valid range, >= 2
