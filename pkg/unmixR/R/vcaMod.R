@@ -21,57 +21,52 @@
 
 
 vcaMod <- function(data, p) {
-
-  data <- as.matrix(data)
-  Y <- t(stats::prcomp(data)[["x"]][, sequence(p), drop = FALSE])
-
-  E <- matrix(0, nrow=p, ncol=p+1)
-  E[p,1] <- 1
-  U <- matrix(0, nrow=p, ncol=p)
-  w <- array(1, p)
-  proj_acc <- array(0, p)
-  indices <- array(0, p)
-
-  for (i in 1:p) {
-    U[,i] <- E[,i]
-
-    if (i >= 3) {
-      for (j in 3:p) {
-        # E[,i] and U[,j-1] are the same on 3rd iter, projection produces
-        # no change, thus U[,i] - proj_e_u = 0
-        proj_e_u <- .proj(E[,i], U[,j-1])
-        U[,i] <- U[,i] - proj_e_u
-      }
+    data <- t(as.matrix(data))
+    
+    Y <- dimensionalityReduction(data, p, estSNR(data, p))
+    
+    #matrix of endmembers
+    E <- matrix(0, nrow = p, ncol = p + 1)
+    E[p, 1] <- 1
+    #U stores the set of orthogonal vectors
+    U <- matrix(0, nrow = p, ncol = p)
+    #px1 vector
+    w <- c(rep(1, p))
+    proj_acc <- c(rep(0, p))
+    indices <- c(rep(0, p))
+    for (i in 1:p) {
+        #U_i is initialized with the endmember computed in the last iteration
+        U[, i] <- E[, i]
+        
+        #Gram-Schmidt orthogonalization
+        if(i >= 3)
+        {
+            for (j in 3:i) {
+                proj_ei_uj_1 <- (crossprod(E[, i], U[, j - 1])) / (crossprod(U[, j - 1])) * U[, j - 1]
+                U[, i] <- U[, i] - proj_ei_uj_1
+            }
+        }
+        #U_i is orthogonal to other i-1 vectors
+        
+        #projecting w onto U_i
+        proj_w_ui <- (crossprod(w, U[, i])) / (crossprod(U[, i])) * U[, i]
+        
+        #vector f is orthogonal to to the subspace spaned by columns of E
+        proj_acc <- proj_acc + proj_w_ui
+        f <- w - proj_acc
+        
+        #projection accumulator is reset on the first iteration
+        if(i == 1){
+            proj_acc <- c(rep(0, p))
+        }
+        #projecting data onto f
+        v <- crossprod(f, Y)
+        #getting index of the maximal projection
+        index <- which.max(abs(v))
+        indices[i] <- index
+        #estimated endmember is stored in E
+        E[, i + 1] <- Y[, index]
     }
-
-    # error for p >= 3 on iter 3 due to U[,i] being 0 so projection fails
-    proj_w_u <- .proj(w, U[,i])
-    proj_acc <- proj_acc + proj_w_u
-    f <- as.vector(w - proj_acc)
-
-    if (i == 1) {
-      proj_acc <- array(0, p)
-    }
-
-    v <- crossprod(f, Y)
-
-    index <- which.max(v) # always appears to produce the same index
-
-    if (.options ("debuglevel") >= 1L){
-      print (which.max (v))
-      print (which.min (v))
-    }
-
-    indices[i] <- index
-
-    E[,i+1] <- Y[,index]
-  }
-
-  indices <- sort (indices)
-
-  indices
-}
-
-.proj <- function(x, y) {
-  as.vector((crossprod(x, y) / crossprod(y)) %*% y)
+    indices <- sort(indices)
+    indices
 }

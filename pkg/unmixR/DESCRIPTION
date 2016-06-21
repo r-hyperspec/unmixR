@@ -53,6 +53,5 @@ Collate:
     'vca05.R'
     'vcaFromScratch.R'
     'vcaLopez.R'
-    'vcaLopezFromScratch.R'
     'vcaMod.R'
 RoxygenNote: 5.0.1

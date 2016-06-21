@@ -39,7 +39,7 @@ vcaLopez <- function(data, p) {
     f <- x / sqrt(sum(x^2))
     v <- crossprod(f, Y)
 
-    index <- which.max(v)
+    index <- which.max(abs(v))
 
     if (.options ("debuglevel") >= 1L){
       print (which.max (v))
