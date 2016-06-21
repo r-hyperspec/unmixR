@@ -1,9 +1,12 @@
-##' Run the unit tests
+##' Run the Unit Tests
 ##'
-##' Run the unit tests attached to the functions via \link[svUnit]{svUnit}
-##' @return invisibly \code{TRUE} if the tests pass, \code{NA} if \link[svUnit]{svUnit} is not
+##' Run the unit tests for the package.
+##' 
+##' @return Invisibly returns \code{TRUE} if the tests pass, \code{NA} if \link[svUnit]{svUnit} is not
 ##' available. Stops if errors are encountered.
+##'
 ##' @author Claudia Beleites
+##'
 ##' @seealso  \link[svUnit]{svUnit}
 ##' @keywords programming utilities
 ##' @export
@@ -11,7 +14,6 @@
 ##' @importFrom svUnit clearLog errorLog runTest stats is.test Log
 
 unmixR.unittest <- function () {
-  warn <- NULL # suppresses check warnings about no visible global binding
 
   if (!requireNamespace("svUnit", quietly=TRUE)) {
     warning("svUnit required to run the unit tests.")
@@ -24,7 +26,7 @@ unmixR.unittest <- function () {
 
   svUnit::clearLog()
 
-  warnlevel <- options()$warn
+  warnlevel <- options()[["warn"]]
   options(warn=0)
   for (t in seq_along(tests)) {
     svUnit::runTest(tests[[t]], names(tests)[t])

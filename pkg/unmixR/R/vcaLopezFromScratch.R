@@ -2,55 +2,29 @@
 ##'
 ##' Modified VCA algorithm that aims to reduced the algorithmic complexity of
 ##' the original.
-##' Intended to be called from \code{\link{nfindr}}.
+##' Intended to be called from \code{\link{vca}}.
 ##' 
-##' @param data Data to unmix. It will be converted to a matrix using
-##'   as.matrix. The matrix should contain a spectrum per row.
-##' @param p Number of endmembers
+##' @param data Data matrix.
+##'
+##' @param p Number of endmembers.
+##'
 ##' @param SNR Signal-to-Noise ratio.
 ##'
-##' @return The indices that indicate the position of the endmembers in the
-##'   original dataset
+##' @return The indices of the endmembers in the original dataset
 ##' 
-##' @references Lopez, S.; Horstrand, P.; Callico, G.M.; Lopez, J.F.;
+##' @references Lopez, S., Horstrand, P., Callico, G.M., Lopez J.F. and
 ##' Sarmiento, R., "A Low-Computational-Complexity Algorithm for
 ##' Hyperspectral Endmember Extraction: Modified Vertex Component Analysis,"
-##' Geoscience & Remote Sensing Letters, IEEE, vol. 9 no. 3 pp. 502- 506, May 2012
+##' Geoscience & Remote Sensing Letters, IEEE, vol. 9 no. 3 pp. 502-506, May 2012
 ##' doi: 10.1109/LGRS.2011.2172771
+##'
 ##' @export
 ##' @importFrom stats prcomp
 
 vcaLopezFromScratch <- function(data, p, SNR=estSNR(data, p)){
     data <- t(as.matrix(data))
-    SNRth <- 15 + 10 * log10(p)
-    N <- nrow(data)
     
-    #Dimensionality reduction
-    if(SNR > SNRth){
-        #d - number of dimensions
-        d <- p
-        #obtaining projection matrix
-        U_d <- svd(tcrossprod(data) / N, d, d)$u
-        #projecting data on subspace
-        X <- crossprod(U_d, data)
-        #rescaling to amlify noise
-        u <- apply(X, 1, mean)
-        Y <- t(t(X) / crossprod(X, u))
-    }else{
-        #d - number of dimensions
-        d <- p - 1
-        #mean is subtracted to aplify noise
-        r_ <- apply(data, 1, mean)
-        #obtaining projection matrix
-        #u <- stats::prcomp(tcrossprod(data - r_) / N)$x[, 1:d] # orig version by AB
-        u <- stats::prcomp(tcrossprod(data - r_) / N)
-        u_d <- u[["x"]][, sequence (d), drop = FALSE]
-        #projecting data on subspace
-        X <- crossprod(u_d, data - r_)
-        #the value of c aasures that collatitude angle betwee u and any vector from X is between 0 and 45
-        c <- max(apply(X, 2, function(x){sqrt(sum(x^2))}))
-        Y <- rbind(X, c)
-    }
+    Y <- dimensionalityReduction(data, p, SNR)
     
     #matrix of endmembers
     E <- matrix(0, nrow = p, ncol = p + 1)

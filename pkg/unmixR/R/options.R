@@ -1,14 +1,6 @@
-##' @rdname options
-##' @importFrom settings options_manager stop_if_reserved
-.options <- options_manager (
-  debuglevel = 0L,
-  implementation.search = "package:unmixR"
-  )
-
 ##' unmixR's package options
 ##'
-##' \pkg{unmixR} uses \pkg{settings} for option management. Options can either
-##' be set by \code{unmixR.options (key = value)}
+##' \pkg{unmixR} uses \pkg{settings} for option management.
 ##'
 ##' The following package-specific options are defined:
 ##'
@@ -22,19 +14,29 @@
 ##' Implementations. The global environment can be added as \code{".GlobalEnv"}.
 ##'
 ##' @param ... either \code{key = value} pairs to set options or the names of
-##'   the options to retrieve. If no paramaters are passed, a list of all
+##'   the options to retrieve. If no parameters are passed, a list of all
 ##'   options is returned.
-##' @return list of options
-##' @rdname options
+##'
+##' @return Either a list of current options or the value of a requested option.
+##'
 ##' @examples
-##' unmixR.options ()
-##' unmixR.options ("debuglevel")
-##' unmixR.options (debuglevel = 0L)
+##' unmixR.options () # show all options
+##' unmixR.options ("debuglevel") # show just this one option
+##' unmixR.options (debuglevel = 0L) # set an option
+##"
+##' @importFrom settings options_manager stop_if_reserved
 ##' @export
+##' @rdname options
+
 unmixR.options <- function (...) {
   settings::stop_if_reserved (...)
   .options (...)
 }
+
+.options <- settings::options_manager (
+  debuglevel = 0L,
+  implementation.search = "package:unmixR"
+  )
 
 .test (unmixR.options) <- function (){
 
@@ -42,3 +44,4 @@ unmixR.options <- function (...) {
   ## options.
   checkEquals (c("debuglevel", "implementation.search"), names (.options ()))
 }
+

@@ -1,23 +1,27 @@
-##' LDU-Sequential N-FINDR: Slightly modified LDU N-FINDR
+##' LDU-Sequential N-FINDR: Slightly Modified LDU N-FINDR
 ##' 
 ##' While LDU N-FINDR examines a single pixel in each endmember position and
 ##' repeats over all pixels, this algorithm considers all pixels in a single
 ##' endmember position and then repeats over all endmember positions.
 ##' Intended to be called from \code{\link{nfindr}}.
 ##' 
-##' @param data Data matrix to unmix
-##' @param p Number of endmembers
-##' @param indices Indices used in the simplex estimation
-##' @param ... Extra unused parameters that get passed in from
-##'   \code{\link{nfindr}}
-##' @return The indices that indicate the position of the endmembers in the
-##'   original dataset
-##' @export
+##' @param data Data matrix to unmix.
 ##'
-##' @references  Dowler, Shaun W.; Takashima, Reymond; Andrews, Mark;
+##' @param p Number of endmembers.
+##'
+##' @param indices Indices used in the simplex estimation.
+##'
+##' @param ... Extra unused parameters passed in from
+##'   \code{\link{nfindr}}.
+##'
+##' @return The indices of the endmembers in the original dataset.
+##'   
+##' @references  Dowler, Shaun W., Takashima, Reymond, and Andrews, Mark
 ##'   "Reducing the complexity of the N-FINDR algorithm for hyperspectral
-##'   image analysis.", IEEE Trans Image Process. 2013 Jul;22(7):2835-48l
+##'   image analysis.", IEEE Trans Image Process. 2013 22(7):2835-2848
 ##'   doi: 10.1109/TIP.2012.2219546
+##'
+##' @export
 ##'
 
 nfindrSeqLDU <- function(data, p, indices, ...) {

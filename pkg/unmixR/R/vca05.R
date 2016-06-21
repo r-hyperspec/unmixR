@@ -1,24 +1,21 @@
-##' Vertex Component Analysis unmixing algorithm
+##' Vertex Component Analysis Unmixing Algorithm
 ##'
 ##' This algorithm is based on the geometry of convex sets. It exploits the
 ##' fact that endmembers occupy the vertices of a simplex.
 ##' Intended to be called from \code{\link{vca}}.
 ##' 
-##' @param data Data to unmix. It will be converted to a matrix using
-##'   as.matrix. The matrix should contain a spectrum per row.
+##' @param data Data matrix.
 ##'
-##' @param p Number of endmembers
+##' @param p Number of endmembers.
 ##'
 ##' @param SNR The Signal-to-Noise ratio of the data. By default it will be
-##'   estimated using \code{\link{estSNR}}
+##'   estimated using \code{\link{estSNR}}.
 ##'
-##' @return Although the other VCA algorithms return only indices, this
-##'   function returns the full structure to \code{\link{vca}} as the
-##'   endmembers should be taken out of a projected dataset which it generates
+##' @return The indices of the endmembers in the original dataset.
 ##'
-##' @references Nascimento, J.M.P.; Bioucas Dias, J.M., "Vertex component
+##' @references Nascimento, J.M.P. and Bioucas Dias, J.M. "Vertex component
 ##'   analysis: a fast algorithm to unmix hyperspectral data," Geoscience and
-##'   Remote Sensing, vol. 43, no. 4, pp.898-910, April 2005,
+##'   Remote Sensing, vol. 43, no. 4, pp. 898-910, April 2005,
 ##'   doi: 10.1109/TGRS.2005.844293
 ##'
 ##' @export
@@ -34,7 +31,7 @@ vca05 <- function(data, p, SNR = estSNR(data, p)) {
   # if the estimated SNR is over a certain threshold ...
   if (SNR > SNRth) {
     d <- p
-    Ud <- svd(tcrossprod(data) / N)$u[,1:d]
+    Ud <- svd(tcrossprod(data) / N)[["u"]][, sequence(d), drop = FALSE]
 
     x <- crossprod(Ud, data)
     u <- apply(x, 1, mean)
@@ -50,9 +47,8 @@ vca05 <- function(data, p, SNR = estSNR(data, p)) {
     repMean <- .repvec.col(rowMean, N)
     zMean <- data - repMean # zero mean the data
 #    Ud <- svd(tcrossprod(zMean) / N, nv=p)$u[,1:p] # Conor original
-    Ud <- svd(tcrossprod(zMean) / N)$u[,1:d] # BH fix
-    # BH: Using .testdata$x, and p = 2, Ud is a vector, not a matrix
-    # Avoid this in the tests!
+    Ud <- svd(tcrossprod(zMean) / N, nv = p)[["u"]][, sequence(d), drop = FALSE]
+    
     zProj <- crossprod(Ud, zMean) # project the zero mean data
 
     x <- zProj[1:d, ]

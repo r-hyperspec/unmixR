@@ -4,25 +4,26 @@
 ##' the original.
 ##' Intended to be called from \code{\link{nfindr}}.
 ##' 
-##' @param data Data to unmix. It will be converted to a matrix using
-##'   as.matrix. The matrix should contain a spectrum per row.
-##' @param p Number of endmembers
-##' @return The indices that indicate the position of the endmembers in the
-##'   original dataset
+##' @param data Data matrix.
+##'
+##' @param p Number of endmembers.
+##'
+##' @return The indices of the endmembers in the original dataset.
 ##' 
-##' @references Lopez, S.; Horstrand, P.; Callico, G.M.; Lopez, J.F.;
+##' @references Lopez, S., Horstrand, P., Callico, G.M., Lopez J.F. and
 ##' Sarmiento, R., "A Low-Computational-Complexity Algorithm for
 ##' Hyperspectral Endmember Extraction: Modified Vertex Component Analysis,"
-##' Geoscience & Remote Sensing Letters, IEEE, vol. 9 no. 3 pp. 502- 506, May 2012
+##' Geoscience & Remote Sensing Letters, IEEE, vol. 9 no. 3 pp. 502-506, May 2012
 ##' doi: 10.1109/LGRS.2011.2172771
+##'
 ##' @export
 ##' @importFrom stats prcomp
 
+
 vcaMod <- function(data, p) {
-  x <- NULL # suppresses check warnings about no visible global binding
 
   data <- as.matrix(data)
-  Y <- t(stats::prcomp(data)[["x"]][,1:p])
+  Y <- t(stats::prcomp(data)[["x"]][, sequence(p), drop = FALSE])
 
   E <- matrix(0, nrow=p, ncol=p+1)
   E[p,1] <- 1

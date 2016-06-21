@@ -1,23 +1,29 @@
-##' Estimates Signal to Noise Ratio
+##' Estimate Signal to Noise Ratio
 ##'
-##' Estimate the signal to noise ratio of a hyperspectral image
+##' Estimate the signal to noise ratio of a hyperspectral image.
 ##'
 ##' @param data The hyperspectral image whose signal to noise ratio needs to
-##'   be estimated.  Samples in rows, frequencies in columns, but.  Note: be careful,
-##'   when this function is called by vca05 the data is already transposed due to
+##'   be estimated.  Samples in rows, frequencies in columns.
+##'
+##' @section Warning:
+##'   Be careful,
+##'   when this function is called by \code{\link{vca05}} the data is already
+##'   transposed due to
 ##'   lazy evaluation.  If you want to get the same answer by calling this function
 ##'   directly, you'll need to transpose the data first!
-##' @param p The number of endmembers, used for data reduction.
+##'
+##' @param p The number of endmembers.
+##'
 ##' @return The estimated signal to noise ratio in decibels.
 ##' 
-##' @references Nascimento, J.M.P.; Bioucas Dias, J.M., "Vertex component
+##' @references Nascimento, J.M.P. and Bioucas Dias, J.M. "Vertex component
 ##'   analysis: a fast algorithm to unmix hyperspectral data," Geoscience and
-##'   Remote Sensing, vol. 43, no. 4, pp.898-910, April 2005, 
+##'   Remote Sensing, vol. 43, no. 4, pp. 898-910, April 2005, 
 ##'   doi: 10.1109/TGRS.2005.844293
+##'
 ##' @export
 
 estSNR <- function(data, p) {
-  u <- NULL # suppresses check warnings about no visible global binding
   E <- function(M, n) sum(c(M)^2 / n) # expectation operator
 
   # NOTE: we don't need to transpose here, because when this
@@ -41,7 +47,8 @@ estSNR <- function(data, p) {
   # repeat the column of row means so that it matches the size of the data
   repMean <- .repvec.col(rowMean, N)
   zMean <- data - repMean # zero mean the data
-  Ud <- svd(tcrossprod(zMean) / N, nv=p)$u[,1:p]
+  Ud <- svd(tcrossprod(zMean) / N, nv=p)
+  Ud <- Ud[["u"]][, sequence(p), drop = FALSE]
   zProj <- crossprod(Ud, zMean) # project the zero mean data
 
   # Conor's original code + BH comments
