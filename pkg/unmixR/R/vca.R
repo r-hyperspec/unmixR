@@ -40,6 +40,11 @@
 ##' @export
 ##' @include unmixR-package.R
 ##'
+##' @examples
+##' data(demo_data)
+##' demo <- vca(demo_data, 2, method = "Lopez")
+##' demo$indices
+
 vca <- function(...) {
   UseMethod("vca")
 }

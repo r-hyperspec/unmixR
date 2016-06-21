@@ -47,6 +47,11 @@
 ##' @seealso \code{\link{endmembers}} to extract the spectra; \code{\link{predict}}
 ##' to determine abundances of endmembers in each sample.
 ##'
+##' @examples
+##' data(demo_data)
+##' demo <- nfindr(demo_data, 2, method = "99")
+##' demo$indices
+##'
 ##' @rdname nfindr
 ##' @export
 ##' @include unmixR-package.R

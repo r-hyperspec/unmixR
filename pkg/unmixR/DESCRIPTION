@@ -1,7 +1,7 @@
 Package: unmixR
 Type: Package
 Title: Hyperspectral Unmixing Methods
-Version: 0.2.125
+Version: 0.2.142
 Date: 2016-06-20
 Authors@R: c(person("Anton", "Belov", role = "aut"),
 	person("Conor", "McManus", role = "aut"),
@@ -30,6 +30,7 @@ Imports:
     settings
 VignetteBuilder: knitr
 Collate:
+    'demo_data.R'
     'dimensionalityReduction.R'
     'endmembers.R'
     'estSNR.R'
