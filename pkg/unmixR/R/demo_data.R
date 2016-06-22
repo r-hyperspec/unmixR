@@ -15,7 +15,13 @@
 ##' data(demo_data)
 ##' # plot the (nearly pure) endmembers
 ##' matplot(t(demo_data[c(3, 7, 9),]), type = "l",
-##'   xlab = "frequency", ylab = "intensity")
+##'   col = c("black", "red", "blue"), lty = 1,
+##'   xlab = "frequency", ylab = "intensity",
+##'   main = "demo_data")
+##' leg.txt <- c("Endmember 1", "Endmember 2", "Endmember 3")
+##' legend("topright", leg.txt, col = c("black", "red", "blue"),
+##' cex = 0.75, lty = 1)
+##'
 ##' \dontrun{
 ##' # demo_data was created as follows
 ##' set.seed(123)

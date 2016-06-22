@@ -17,12 +17,8 @@
 ##'
 ##' @export
 ##'
-##' @examples
-##' data(demo_data)
-##' demo <- nfindr(demo_data, 2, method = "99")
-##' res <- endmembers(demo)
-##' res <- rbind(demo_data[c(3,9),], res)
-##' matplot(t(res), type = "l", xlab = "frequency", ylab = "intensity")
+##' @seealso \code{\link{vca}} and \code{\link{nfindr}} for examples.
+##'
 
 # BH: this doesn't handle drop = TRUE for nfindr series correctly.
 # need to determine if we want to keep drop = TRUE
