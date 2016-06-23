@@ -1,22 +1,23 @@
 
 # BH revised version to avoid "no global binding" on CRAN check
+# Also made a significant fix (basically, it didn't work due to
+# transpositions at the wrong time)
 
 .predict <- function(object, newdata, ...) {
 
-	if (missing(newdata)) {
-		newdata <- object[["data"]]
-		}
-		
-	if (! is.matrix (newdata)) newdata <- as.matrix (newdata)
-
-	endmembers <- endmembers (object)
-  
-	if (! is.matrix (endmembers)) { # TODO BH: when would this occur?
-    		endmembers <- as.matrix (endmembers)
-    		endmembers <- t (endmembers)
-	}
+	OK <- ((class(object) == "nfindr") | (class(object) == "vca"))
+	if (!OK) stop("You must provide either an nfindr or vca object")
 	
-	t(apply(newdata, 1, function(spectrum) { nnls(endmembers, spectrum)[["x"]]}))
+	if (missing(newdata)) newdata <- object[["data"]]
+		
+	if (! is.matrix (newdata)) newdata <- as.matrix (newdata) # verify if passed in
+
+	if (ncol(object[["data"]]) != ncol(newdata)) stop("Dimensions of newdata don't match")
+	
+	endmembers <- endmembers (object)
+  	
+  	t(apply(newdata, 1, function(spectrum) {nnls(t(endmembers), spectrum)[["x"]]}))
+  	
 }
 
 # original version 
@@ -64,6 +65,35 @@
 ##' @name predict
 ##' @rdname predict
 ##' @export
+##'
+##' @examples
+##' data(demo_data)
+##' demo <- nfindr(demo_data, p = 3)
+##' pred_wM <- predict(demo)
+##'
+##' # The following is from demo_data
+##' set.seed(123)
+##'
+##' n <- 10 # no. of samples
+##' p <- 20 # no. of frequencies
+##'
+##' ## endmembers / pure spectra / endmember matrix
+##' em1 <- c(0, 0, 0, 5, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0)
+##' em2 <- c(0, 0, 0, 0, 0, 8, 7, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0)
+##' em3 <- c(0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0)
+##' eM <- matrix(c(em1, em2, em3), byrow = TRUE, ncol = 20)
+##'
+##' ## weights matrix 
+##' wM <- matrix(runif(30), nrow = n)
+##' # set certain samples (weights) to pure endmembers
+##' wM[3, c(2, 3)] <- 0 # em1
+##' wM[7, c(1, 3)] <- 0 # em2
+##' wM[9, c(1, 2)] <- 0 # em3
+##' wM <- wM/rowSums(wM) # normalize weights matrix
+##'
+##' # Now compare the predicted abundances to the known values
+##' hist(pred_wM - wM, breaks = 50)
+##'
 
 predict.nfindr <- .predict
 
