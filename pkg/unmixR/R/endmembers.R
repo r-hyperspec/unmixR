@@ -16,6 +16,9 @@
 ##' \code{raw_data[unmixR_results$indices,]}.
 ##'
 ##' @export
+##'
+##' @seealso \code{\link{vca}} and \code{\link{nfindr}} for examples.
+##'
 
 # BH: this doesn't handle drop = TRUE for nfindr series correctly.
 # need to determine if we want to keep drop = TRUE
