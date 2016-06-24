@@ -96,7 +96,7 @@ nfindrLDU <- function (data, p, indices, ..., debuglevel = unmixR.options("debug
 .test (nfindrLDU) <- function (){
   context ("nfindrLDU")
 
-  ## nfindrLDA fails when simplex is on straight line
+  ## nfindrLDU fails when simplex is on straight line
   test_that ("nfindrLDU with simplex corners being straight line", {
   expect_equal (nfindrLDU (data = .testdata$x, p = 3, indices = 1 : 3),
                 .correct)    
