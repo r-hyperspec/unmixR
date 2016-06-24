@@ -37,8 +37,13 @@
 }
 
 .test(.simplex) <- function() {
-  checkException (.simplex (data, 2, indices))
-  checkException (.simplex (data [, rep (1, 3)], 3, indices))
+  
+  context ("simplex")
+  
+  test_that("simplex exceptions", {
+    expect_error (.simplex (data, 2, indices))
+    expect_error (.simplex (data [, rep (1, 3)], 3, indices))
+  })
   
   p <- 3
   rows <- 5
@@ -50,7 +55,9 @@
   expected <- matrix(c (1, 1,  1,
                         1, 5,  9, 
                         2, 6, 10), ncol = p, byrow = TRUE)
-  
-  checkEquals (expected, .simplex (data, p, indices))
+ 
+  test_that("correct simplex", {
+    expect_equal (expected, .simplex (data, p, indices))
+  }) 
   
 }
