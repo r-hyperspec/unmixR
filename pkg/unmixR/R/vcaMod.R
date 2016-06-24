@@ -42,14 +42,14 @@ vcaMod <- function(data, p) {
         if(i >= 3)
         {
             for (j in 3:i) {
-                proj_ei_uj_1 <- (crossprod(E[, i], U[, j - 1])) / (crossprod(U[, j - 1])) * U[, j - 1]
+                proj_ei_uj_1 <- (crossprod(E[, i], U[, j - 1]) / crossprod(U[, j - 1])) * U[, j - 1]
                 U[, i] <- U[, i] - proj_ei_uj_1
             }
         }
         #U_i is orthogonal to other i-1 vectors
         
         #projecting w onto U_i
-        proj_w_ui <- (crossprod(w, U[, i])) / (crossprod(U[, i])) * U[, i]
+        proj_w_ui <- (crossprod(w, U[, i]) / crossprod(U[, i])) * U[, i]
         
         #vector f is orthogonal to to the subspace spaned by columns of E
         proj_acc <- proj_acc + proj_w_ui

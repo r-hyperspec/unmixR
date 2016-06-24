@@ -47,11 +47,11 @@ vca05 <- function(data, p, SNR = estSNR(data, p)) {
     repMean <- .repvec.col(rowMean, N)
     zMean <- data - repMean # zero mean the data
 #    Ud <- svd(tcrossprod(zMean) / N, nv=p)$u[,1:p] # Conor original
-    Ud <- svd(tcrossprod(zMean) / N, nv = p)[["u"]][, sequence(d), drop = FALSE]
+    Ud <- svd(tcrossprod(zMean) / N, nu = p)[["u"]][, sequence(d), drop = FALSE]
     
     zProj <- crossprod(Ud, zMean) # project the zero mean data
 
-    x <- zProj[1:d, ]
+    x <- zProj#[1:d, ]
     dataProj <- Ud[, 1:d] %*% x + repMean
     c <- max(sum(x^2))^0.5
     y <- rbind(x, c)
@@ -63,8 +63,8 @@ vca05 <- function(data, p, SNR = estSNR(data, p)) {
 
   for (i in 1:p) {
     w <- stats::runif(p)
-    f <- w - A %*% ginv(A) %*% w;
-    f <- f / sqrt(sum(f^2));
+    f <- w - A %*% ginv(A) %*% w
+    f <- f / sqrt(sum(f^2))
 
     v <- abs(crossprod(f, y))
     indices[i] <- which.max(v) # get index of max value
