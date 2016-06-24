@@ -40,8 +40,13 @@ unmixR.options <- function (...) {
 
 .test (unmixR.options) <- function (){
 
+  context ("options")
+  
   ## check list of defined options against (manually kept) list of documented
   ## options.
-  checkEquals (c("debuglevel", "implementation.search"), names (.options ()))
+  test_that("manual check of option list",{
+    expect_equal(sort (names (.options ())),
+                 c("debuglevel", "implementation.search"))
+  })
 }
 
