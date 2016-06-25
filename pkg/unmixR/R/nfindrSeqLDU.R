@@ -32,7 +32,17 @@ nfindrSeqLDU <- function(data, p, indices, ...) {
   V <- pm1
 
   replace <- TRUE
+  Vtest <- 0 # initialize for debug reporting
+  iter <- 1 # initialize for debug reporting
+
   while (replace == TRUE) {
+
+	if (.options ("debuglevel") >= 1L) {
+	  cat("Iteration", iter, "\n")
+	  cat("\tcurrent endmembers:", sort(indices), "\n")
+	  cat("\tvolume:", Vtest, "\n")
+	  }
+
     replace <- FALSE
 
     for (i in 1:p) {
@@ -63,7 +73,11 @@ nfindrSeqLDU <- function(data, p, indices, ...) {
         }
       }
     }
+
+    iter <- iter + 1
+    
   }
+  
   indices <- sort(indices)
 
   indices

@@ -28,11 +28,17 @@ nfindrBrute <- function(data, p, ...) {
   volumes <- sapply(1:n, function(i) {
     idx <- combos[,i]
 
-    #    simplex <- rbind(rep(1, p), data[idx,])
+    # simplex <- rbind(rep(1, p), data[idx,])
     simplex <- rbind(rep(1, p), t(data[idx,])) # Bryan's fix
     
     abs(det(simplex))
   })
+
+  if (.options ("debuglevel") >= 1L) {
+  	DF <- as.data.frame(cbind(t(combos), volumes))
+  	cat("Endmember combinations & their volumes:\n")
+  	print(DF[order(DF$volumes),], row.names = FALSE)
+    }
 
   # return the indices that formed the largest simplex
   col <- which.max(volumes)

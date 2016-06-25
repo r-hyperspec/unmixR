@@ -24,6 +24,7 @@
 ##' @export
 ##'
 nfindr99 <- function(data, p, indices, iters=3*p) {
+
   simplex <- .simplex(data, p, indices)
   nspectra <- nrow(data)
 
@@ -32,10 +33,22 @@ nfindr99 <- function(data, p, indices, iters=3*p) {
   volume.prev <- -1
   volume.now <- volume
 
+  # if (.options ("debuglevel") >= 1L) {
+    # cat("Initial guess at endmembers:", indices, "\n")
+    # cat("\tinitial volume:", volume, "\n")
+    # }
+
   # keep replacing endmembers until there is never an increase in volume
   # or the max iterations are reached (indicates pure endmembers not found)
   iter <- 1
   while (volume.now > volume.prev && iter <= iters) {
+
+	if (.options ("debuglevel") >= 1L) {
+	  cat("Iteration", iter, "\n")
+	  cat("\tcurrent endmembers:", sort(indices), "\n")
+	  cat("\tvolume:", volume.now, "\n")
+	  }
+
     for (k in 1:p) {
       for (i in 1:nspectra) {
         # store current sample as it may need to be placed back into the
@@ -57,7 +70,7 @@ nfindr99 <- function(data, p, indices, iters=3*p) {
         else {
           simplex[2:p,k] <- sample
         }
-      }
+      } # end of (i in 1:nspectra) loop
     } # end of (k in 1:p) loop
     
     iter <- iter+1

@@ -30,6 +30,7 @@ nfindrLDU <- function(data, p, indices, ...) {
   nspectra <- nrow(data)
   pm1 <- 1:(p-1) # create a range from 1 to p minus 1
 
+  # local function
   update <- function(simplex, p) {
     g <- matrix(0, nrow=p, ncol=p-1)
     V <- pm1
@@ -50,7 +51,7 @@ nfindrLDU <- function(data, p, indices, ...) {
     }
 
     list(simplex=simplex, V=V, g=g)
-  }
+  } # end of local function
 
   vars <- update(simplex, p)
   simplex <- vars$simplex
@@ -58,7 +59,17 @@ nfindrLDU <- function(data, p, indices, ...) {
   V <- vars$V
 
   replace <- TRUE
+  Vtest <- 0 # initialize for debug reporting
+  iter <- 1 # initialize for debug reporting
+	  
   while (replace == TRUE) {
+
+	if (.options ("debuglevel") >= 1L) {
+	  cat("Iteration", iter, "\n")
+	  cat("\tcurrent endmembers:", sort(indices), "\n")
+	  cat("\tvolume:", Vtest, "\n")
+	  }
+
     replace <- FALSE
 
     for (j in 1:nspectra) {
@@ -78,10 +89,13 @@ nfindrLDU <- function(data, p, indices, ...) {
           simplex <- vars$simplex
           g <- vars$g
           V <- vars$V
-        }
-      }
-    }
-  }
+        } # end of if (Vtest)
+      } # end of for (i in 1:p)
+    } # end of for (j in 1:nspectra)
+
+    iter <- iter + 1
+    
+  } # end of while
 
   indices <- sort(indices)
 
