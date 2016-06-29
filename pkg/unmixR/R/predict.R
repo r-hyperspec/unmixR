@@ -16,8 +16,9 @@
 	
 	endmembers <- endmembers (object)
   	
-  	t(apply(newdata, 1, function(spectrum) {nnls(t(endmembers), spectrum)[["x"]]}))
+  	raw <- t(apply(newdata, 1, function(spectrum) {nnls(t(endmembers), spectrum)[["x"]]}))
   	
+  	return(raw/rowSums(raw))
 }
 
 # original version 
