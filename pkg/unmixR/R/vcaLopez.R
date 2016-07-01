@@ -20,7 +20,7 @@
 ##' @importFrom stats prcomp
 
 
-vcaMod <- function(data, p) {
+vcaLopez <- function(data, p) {
     data <- t(as.matrix(data))
     
     Y <- dimensionalityReduction(data, p, estSNR(data, p))

@@ -23,7 +23,7 @@
 ##' @export
 ##' @importFrom stats prcomp runif
 
-vcaLopez <- function(data, p) {
+vcaMod <- function(data, p) {
   data <- as.matrix(data)
   Y <- t(stats::prcomp(data)[["x"]][,1:p])
 
