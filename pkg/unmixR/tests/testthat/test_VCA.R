@@ -13,20 +13,8 @@ test_that("vcaFromScratch works on test data, p = 2", {
     expect_false(any(duplicated(indices)))
 })
 
-test_that("vcaLopezFromScratch works on test data, p = 2", {
-    indices <- vcaLopezFromScratch(testData, 2)
-    expect_true(all(indices %in% correct))
-    expect_false(any(duplicated(indices)))
-})
-
 test_that("vcaFromScratch works on test data, p = 3", {
     indices <- vcaFromScratch(testData, 3)
-    expect_true(all(indices %in% correct))
-    expect_false(any(duplicated(indices)))
-})
-
-test_that("vcaLopezFromScratch works on test data, p = 3", {
-    indices <- vcaLopezFromScratch(testData, 3)
     expect_true(all(indices %in% correct))
     expect_false(any(duplicated(indices)))
 })

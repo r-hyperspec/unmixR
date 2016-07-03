@@ -2,10 +2,24 @@
 ##' 
 ##' Reduces dimensionality of data
 ##' 
-##' @noRd
+##' @param data Data matrix.
+##'
+##' @param p Number of endmembers.
+##'
+##' @param SNR The Signal-to-Noise ratio of the data. By default it will be
+##'   estimated using \code{\link{estSNR}}.
+##'
+##' @return data with dimensionality equal to 15 + 10\lg p
+##'
+##' @references Nascimento, J.M.P. and Bioucas Dias, J.M. "Vertex component
+##'   analysis: a fast algorithm to unmix hyperspectral data," Geoscience and
+##'   Remote Sensing, vol. 43, no. 4, pp. 898-910, April 2005,
+##'   doi: 10.1109/TGRS.2005.844293
+##' @export
 ##' 
 
 dimensionalityReduction <- function(data, p, SNR){
+    data <- t(as.matrix(data))
     
     SNRth <- 15 + 10 * log10(p)
     N <- nrow(data)
@@ -19,7 +33,7 @@ dimensionalityReduction <- function(data, p, SNR){
         #projecting data on subspace
         X <- crossprod(U_d, data)
         #rescaling to amlify noise
-        u <- apply(X, 1, mean)
+        u <- rowMeans(X)
         Y <- t(t(X) / as.vector(crossprod(X, u)))
     }else{
         #d - number of dimensions
@@ -44,5 +58,5 @@ dimensionalityReduction <- function(data, p, SNR){
         c <- max(apply(X, 2, function(x){sqrt(sum(x^2))}))
         Y <- rbind(X, c)
     }
-    Y
+    t(Y)
 }

@@ -24,6 +24,7 @@
 ##' @export
 
 estSNR <- function(data, p) {
+    data <- as.matrix(data)
   E <- function(M, n) sum(c(M)^2 / n) # expectation operator
 
   # NOTE: we don't need to transpose here, because when this

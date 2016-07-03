@@ -23,10 +23,9 @@
  
 
 vcaFromScratch <- function(data, p, SNR=estSNR(data, p)){
-    data <- t(as.matrix(data))
-    
+    force(SNR)
     Y <- dimensionalityReduction(data, p, SNR)
-    
+    Y <- t(Y)
     indices <- array(0, p)
     # the matrix A stores the projection of the estimated endmembers sianatures
     A <- matrix(0, nrow = p, ncol = p)

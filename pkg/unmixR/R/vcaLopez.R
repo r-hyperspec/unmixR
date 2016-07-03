@@ -20,11 +20,11 @@
 ##' @importFrom stats prcomp
 
 
-vcaLopez <- function(data, p) {
-    data <- t(as.matrix(data))
+vcaLopez <- function(data, p, SNR = estSNR(data, p)) {
+    force(SNR)
     
-    Y <- dimensionalityReduction(data, p, estSNR(data, p))
-    
+    Y <- dimensionalityReduction(data, p, SNR)
+    Y <- t(Y)
     #matrix of endmembers
     E <- matrix(0, nrow = p, ncol = p + 1)
     E[p, 1] <- 1
