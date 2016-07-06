@@ -2,11 +2,14 @@
 ##'
 ##' Modified VCA algorithm that aims to reduced the algorithmic complexity of
 ##' the original.
-##' Intended to be called from \code{\link{nfindr}}.
+##' Intended to be called from \code{\link{vca}}.
 ##' 
 ##' @param data Data matrix.
 ##'
 ##' @param p Number of endmembers.
+##'
+##' @param SNR The Signal-to-Noise ratio of the data. By default it will be
+##'   estimated using \code{\link{estSNR}}.
 ##'
 ##' @return The indices of the endmembers in the original dataset.
 ##' 
@@ -20,7 +23,7 @@
 ##' @importFrom stats prcomp
 
 
-vcaLopez <- function(data, p, SNR = estSNR(data, p)) {
+mvca <- function(data, p, SNR = estSNR(data, p)) {
     force(SNR)
     
     Y <- dimensionalityReduction(data, p, SNR)

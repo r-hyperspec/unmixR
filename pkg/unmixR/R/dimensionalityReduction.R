@@ -9,7 +9,7 @@
 ##' @param SNR The Signal-to-Noise ratio of the data. By default it will be
 ##'   estimated using \code{\link{estSNR}}.
 ##'
-##' @return data with dimensionality equal to 15 + 10\lg p
+##' @return data with dimensionality equal to 15 + 10*log p
 ##'
 ##' @references Nascimento, J.M.P. and Bioucas Dias, J.M. "Vertex component
 ##'   analysis: a fast algorithm to unmix hyperspectral data," Geoscience and
