@@ -69,6 +69,21 @@ mvca <- function(data, p, SNR = estSNR(data, p)) {
         indices[i] <- index
         #estimated endmember is stored in E
         E[, i + 1] <- Y[, index]
+
+	    if (.options ("debuglevel") >= 1L){
+	    	  cat("Iteration", i, "\n")
+	    	  cat("\tcurrent endmembers:", sort(indices[1:i]), "\n")
+	    	  # To monitor the process, capture the volume
+	    	  # of the current simplex using the same process
+	    	  # as in nfindr.default, except the data set
+	    	  # grows with each iteration
+          inds <- indices[1:i] # limit to non-zero indices
+          red_data <- stats::prcomp(data)[["x"]][, sequence(length(inds)-1), drop=FALSE]
+          simplex <- .simplex(red_data, length(inds), inds)
+	    	  vol <- abs(det(simplex))
+	    	  cat("\tvolume:", vol, "\n")
+		}
+
     }
     indices <- sort(indices)
     indices

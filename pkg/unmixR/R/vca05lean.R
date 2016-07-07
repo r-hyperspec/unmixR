@@ -33,13 +33,27 @@ vca05lean <- function(data, p) {
 
     index <- which.max(abs(v))
 
-    if (.options ("debuglevel") >= 1L){
-      print (which.max (v))
-      print (which.min (v))
-    }
+    # if (.options ("debuglevel") >= 1L){ # CB early version
+      # print (which.max (v))
+      # print (which.min (v))
+    # }
 
     indices[i] <- index
     E[, i] <- Y[, index]
+
+    if (.options ("debuglevel") >= 1L){
+   	  cat("Iteration", i, "\n")
+      cat("\tcurrent endmembers:", sort(indices[1:i]), "\n")
+      # To monitor the process, capture the volume
+      # of the current simplex using the same process
+      # as in nfindr.default, except the data set
+      # grows with each iteration
+      inds <- indices[1:i] # limit to non-zero indices
+      red_data <- stats::prcomp(data)[["x"]][, sequence(length(inds)-1), drop=FALSE]
+      simplex <- .simplex(red_data, length(inds), inds)
+      vol <- abs(det(simplex))
+      cat("\tvolume:", vol, "\n")
+	}
   }
 
   indices <- sort(indices)
