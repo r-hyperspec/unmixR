@@ -27,7 +27,7 @@ vcaFromScratch <- function(data, p, SNR=estSNR(data, p)){
     Y <- dimensionalityReduction(data, p, SNR)
     Y <- t(Y)
     indices <- array(0, p)
-    # the matrix A stores the projection of the estimated endmembers sianatures
+    # the matrix A stores the projection of the estimated endmember siganatures
     A <- matrix(0, nrow = p, ncol = p)
     A[p, 1] <- 1
     for(i in 1:p){
@@ -39,9 +39,24 @@ vcaFromScratch <- function(data, p, SNR=estSNR(data, p)){
         v <- crossprod(f, Y)
         #getting index of the maximal projection
         k <- which.max(abs(v))
+		
         #ith column of A is set to estimated endmember
         A[, i] <- Y[, k]
         indices[i] <- k
+
+	    if (.options ("debuglevel") >= 1L){
+	    	  cat("Iteration", i, "\n")
+	    	  cat("\tcurrent endmembers:", sort(indices[1:i]), "\n")
+	    	  # To monitor the process, capture the volume
+	    	  # of the current simplex using the same process
+	    	  # as in nfindr.default, except the data set
+	    	  # grows with each iteration
+          inds <- indices[1:i] # limit to non-zero indices
+          red_data <- stats::prcomp(data)[["x"]][, sequence(length(inds)-1), drop=FALSE]
+          simplex <- .simplex(red_data, length(inds), inds)
+	    	  vol <- abs(det(simplex))
+	    	  cat("\tvolume:", vol, "\n")
+		}
     }
     
     #computation of mixing matrices

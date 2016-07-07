@@ -55,8 +55,9 @@ dimensionalityReduction <- function(data, p, SNR){
         X <- crossprod(u_d, data)
         
         #the value of c aasures that collatitude angle betwee u and any vector from X is between 0 and 45
-        c <- max(apply(X, 2, function(x){sqrt(sum(x^2))}))
-        Y <- rbind(X, c)
+        # BH: changed c to ca since c is a key function in R
+        ca <- max(apply(X, 2, function(x){sqrt(sum(x^2))}))
+        Y <- rbind(X, ca)
     }
     t(Y)
 }
