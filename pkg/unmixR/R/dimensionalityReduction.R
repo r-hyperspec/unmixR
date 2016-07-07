@@ -18,7 +18,7 @@
 ##' @export
 ##' 
 
-dimensionalityReduction <- function(data, p, SNR){
+dimensionalityReduction <- function(data, p, SNR = estSNR(data, p)){
     data <- t(as.matrix(data))
     
     SNRth <- 15 + 10 * log10(p)
