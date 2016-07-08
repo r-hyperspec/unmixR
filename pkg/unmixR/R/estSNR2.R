@@ -1,6 +1,6 @@
 ##' Estimate Signal to Noise Ratio
 ##'
-##' Estimate the signal to noise ratio of a hyperspectral image.
+##' Estimate the signal to noise ratio of a hyperspectral image.  NEEDS TO BE UPDATED!
 ##'
 ##' @param data The hyperspectral image whose signal to noise ratio needs to
 ##'   be estimated.  Samples in rows, frequencies in columns.
@@ -44,7 +44,8 @@ estSNR2 <- function(data, p) {
   
   noise <- data - signal
   
-  snr <- (sum(c(signal)^2)/N) / var(c(noise))
+  snr <- mean(signal^2) / var(c(noise)) # snr for random noise and random signal
+  #snr <- max(signal^2) / var(c(noise)) # "peak" snr (not monotonic vs p @ small p)
 
   SNR <- 10 * log10(snr)
   
