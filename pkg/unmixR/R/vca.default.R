@@ -3,7 +3,7 @@
 ##' @include vca.R
 ##' @export
 
-vca.default <- function(data, p, method= c("Mod", "Lopez", "05"), seed=NULL, ...) {
+vca.default <- function(data, p, method = c("05lean", "mvca", "05"), seed = NULL, ...) {
 
   # check if the method passed in is valid
   method <- match.arg (method)
@@ -21,7 +21,8 @@ vca.default <- function(data, p, method= c("Mod", "Lopez", "05"), seed=NULL, ...
     set.seed(seed)
   }
 
-  vcaFunc <- get(paste("vca", method, sep=""))
+  if (method == "mvca") vcaFunc <- mvca
+  if (method != "mvca") vcaFunc <- get(paste("vca", method, sep=""), mode = "function")
   val <- vcaFunc(data, p, ...)
 
   res <- list(data = data, indices = as.integer(val))
@@ -46,7 +47,7 @@ vca.default <- function(data, p, method= c("Mod", "Lopez", "05"), seed=NULL, ...
 
   methods <- eval (formals (vca.default)$method)
 
-# BH: original version, fails because Mod & Lopez give wrong answer, see next chunk
+# BH: original version, fails because vca05lean & mvca give wrong answer, see next chunk
   # for (m in methods) {
     # ## .testdata has 3 components, so picking 2 out of 3
     # model <- vca (.testdata$x, p = 2, method = m)
@@ -62,7 +63,7 @@ vca.default <- function(data, p, method= c("Mod", "Lopez", "05"), seed=NULL, ...
                  # msg = sprintf ("%s: .testdata, p = 2 yields %s", m, paste (model$indices, collapse = " ")))
   # }
 
-# BH commented the above out; Mod and Lopez are returning the wrong answer
+# BH commented the above out; vca05lean and mvca are returning the wrong answer
 # BH: this chunk only runs vca05 and uses p = 3
 # BH: everything here needs review after the bug fix is done
   for (m in methods[3]) {

@@ -69,12 +69,28 @@ vca05 <- function(data, p, SNR = estSNR(data, p)) {
     v <- abs(crossprod(f, y))
     indices[i] <- which.max(v) # get index of max value
 
-    if (.options ("debuglevel") >= 1L){
-      print (which.max (v))
-      print (which.min (v))
-    }
+    # if (.options ("debuglevel") >= 1L){ # CB early version
+      # print (which.max (v))
+      # print (which.min (v))
+    # }
 
     A[,i] <- y[, indices[i]]
+
+    if (.options ("debuglevel") >= 1L){
+	  cat("Iteration", i, "\n")
+      cat("\tcurrent endmembers:", sort(indices[1:i]), "\n")
+      # To monitor the process, capture the volume
+      # of the current simplex using the same process
+      # as in nfindr.default, except the data set
+      # grows with each iteration
+      inds <- indices[1:i] # limit to non-zero indices
+      # note for vca05 only need to transpose here as data was transposed above
+      red_data <- stats::prcomp(t(data))[["x"]][, sequence(length(inds)-1), drop=FALSE]
+      simplex <- .simplex(red_data, length(inds), inds)
+      vol <- abs(det(simplex))
+      cat("\tvolume:", vol, "\n")
+	}
+
   }
 
    indices <- sort (indices)

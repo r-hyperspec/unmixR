@@ -9,7 +9,7 @@
 ##' @param SNR The Signal-to-Noise ratio of the data. By default it will be
 ##'   estimated using \code{\link{estSNR}}.
 ##'
-##' @return data with dimensionality equal to 15 + 10\lg p
+##' @return data with dimensionality equal to 15 + 10*log p
 ##'
 ##' @references Nascimento, J.M.P. and Bioucas Dias, J.M. "Vertex component
 ##'   analysis: a fast algorithm to unmix hyperspectral data," Geoscience and
@@ -55,8 +55,9 @@ dimensionalityReduction <- function(data, p, SNR = estSNR(data, p)){
         X <- crossprod(u_d, data)
         
         #the value of c aasures that collatitude angle betwee u and any vector from X is between 0 and 45
-        c <- max(apply(X, 2, function(x){sqrt(sum(x^2))}))
-        Y <- rbind(X, c)
+        # BH: changed c to ca since c is a key function in R
+        ca <- max(apply(X, 2, function(x){sqrt(sum(x^2))}))
+        Y <- rbind(X, ca)
     }
     t(Y)
 }
