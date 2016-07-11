@@ -23,9 +23,9 @@
 
 vca05 <- function(data, p, SNR = estSNR(data, p)) {
 
+    force(SNR)
   data <- t(as.matrix(data))
   N <- ncol(data)
-
   SNRth <- 15 + 10 * log10(p)
 
   # if the estimated SNR is over a certain threshold ...

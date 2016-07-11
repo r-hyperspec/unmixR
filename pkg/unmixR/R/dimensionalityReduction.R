@@ -41,18 +41,16 @@ dimensionalityReduction <- function(data, p, SNR = estSNR(data, p)){
         
         #mean is subtracted to aplify noise
         #r_ <- apply(data, 1, mean) original
-        #r_ <- rowMeans(data) the variable is not used but it will be required if we decide to return abundances
+        r_ <- rowMeans(data)
         
         #obtaining projection matrix
-        #u <- stats::prcomp(tcrossprod(data - r_) / N) no need to substract mean since pca centers the data
-        u <- stats::prcomp(tcrossprod(data) / N)
+        U_d <- svd(tcrossprod(data - r_) / N, nu = d, nv = 0)$u
         
-        #		u_d <- u$x[, 1:d] # this approach causes check problems BH
-        u_d <- u[["rotation"]][, sequence (d), drop = FALSE]
+        #U_d <- u$x[, 1:d] # this approach causes check problems BH
+        #U_d <- u[["rotation"]][, sequence (d), drop = FALSE]
         
         #projecting data on subspace
-        #X <- crossprod(u_d, data - r_) no need to substract mean since pca centers the data
-        X <- crossprod(u_d, data)
+        X <- crossprod(U_d, data - r_)
         
         #the value of c assures that collatitude angle between u and any vector from X is between 0 and 45
         # BH: changed c to ca since c is a key function in R
