@@ -22,78 +22,48 @@
 ##' @importFrom stats runif
 
 vca05 <- function(data, p, SNR = estSNR(data, p)) {
-
     force(SNR)
-  data <- t(as.matrix(data))
-  N <- ncol(data)
-  SNRth <- 15 + 10 * log10(p)
-
-  # if the estimated SNR is over a certain threshold ...
-  if (SNR > SNRth) {
-    d <- p
-    Ud <- svd(tcrossprod(data) / N)[["u"]][, sequence(d), drop = FALSE]
-
-    x <- crossprod(Ud, data)
-    u <- apply(x, 1, mean)
-    dataProj <- Ud %*% x[1:d,] # project the input matrix
-
-    repu <- .repvec.col(u, N)
-    y <- x / .repvec.row(apply(t(x * repu), 1, sum), d)
-  } else {
-    d <- p - 1
-
-    rowMean <- apply(data, 1, mean) # get the mean of each row
-    # repeat the column of row means so that it matches the size of the data
-    repMean <- .repvec.col(rowMean, N)
-    zMean <- data - repMean # zero mean the data
-#    Ud <- svd(tcrossprod(zMean) / N, nv=p)$u[,1:p] # Conor original
-    Ud <- svd(tcrossprod(zMean) / N, nu = p)[["u"]][, sequence(d), drop = FALSE]
+    Y <- dimensionalityReduction(data, p, SNR)
+    Y <- t(Y)
+    indices <- array(0, p)
+    # the matrix A stores the projection of the estimated endmember siganatures
+    A <- matrix(0, nrow = p, ncol = p)
+    A[p, 1] <- 1
+    for(i in 1:p){
+        #getting vector f orthonormal to the space spanned by A
+        w <- stats::rnorm(p, sd = 1)
+        f <- (diag(p) - A %*% ginv(A)) %*% w
+        f <- f / sqrt(sum(f^2))
+        #projecting data onto f
+        v <- crossprod(f, Y)
+        #getting index of the maximal projection
+        k <- which.max(abs(v))
+        
+        #ith column of A is set to estimated endmember
+        A[, i] <- Y[, k]
+        indices[i] <- k
+        
+        if (.options ("debuglevel") >= 1L){
+            cat("Iteration", i, "\n")
+            cat("\tcurrent endmembers:", sort(indices[1:i]), "\n")
+            # To monitor the process, capture the volume
+            # of the current simplex using the same process
+            # as in nfindr.default, except the data set
+            # grows with each iteration
+            inds <- indices[1:i] # limit to non-zero indices
+            red_data <- stats::prcomp(data)[["x"]][, sequence(length(inds)-1), drop=FALSE]
+            simplex <- .simplex(red_data, length(inds), inds)
+            vol <- abs(det(simplex))
+            cat("\tvolume:", vol, "\n")
+        }
+    }
     
-    zProj <- crossprod(Ud, zMean) # project the zero mean data
-
-    x <- zProj#[1:d, ]
-    dataProj <- Ud[, 1:d] %*% x + repMean
-    c <- max(sum(x^2))^0.5
-    y <- rbind(x, c)
-  }
-
-  indices <- array(0, p)
-  A <- matrix(0, nrow=p, ncol=p)
-  A[p,1] <- 1
-
-  for (i in 1:p) {
-    w <- stats::runif(p)
-    f <- w - A %*% ginv(A) %*% w
-    f <- f / sqrt(sum(f^2))
-
-    v <- abs(crossprod(f, y))
-    indices[i] <- which.max(v) # get index of max value
-
-    # if (.options ("debuglevel") >= 1L){ # CB early version
-      # print (which.max (v))
-      # print (which.min (v))
+    #computation of mixing matrices
+    # if(SNR > SNRth){
+    #     M <- U_d %*% X[, indices]
+    # }else{
+    #     M <- u_d %*% X[, indices] + r_
     # }
-
-    A[,i] <- y[, indices[i]]
-
-    if (.options ("debuglevel") >= 1L){
-	  cat("Iteration", i, "\n")
-      cat("\tcurrent endmembers:", sort(indices[1:i]), "\n")
-      # To monitor the process, capture the volume
-      # of the current simplex using the same process
-      # as in nfindr.default, except the data set
-      # grows with each iteration
-      inds <- indices[1:i] # limit to non-zero indices
-      # note for vca05 only need to transpose here as data was transposed above
-      red_data <- stats::prcomp(t(data))[["x"]][, sequence(length(inds)-1), drop=FALSE]
-      simplex <- .simplex(red_data, length(inds), inds)
-      vol <- abs(det(simplex))
-      cat("\tvolume:", vol, "\n")
-	}
-
-  }
-
-   indices <- sort (indices)
-   indices
-
+    indices <- sort(indices)
+    indices
 }
