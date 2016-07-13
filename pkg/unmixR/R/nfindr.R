@@ -47,6 +47,20 @@
 ##' @seealso \code{\link{endmembers}} to extract the spectra; \code{\link{predict}}
 ##' to determine abundances of endmembers in each sample.
 ##'
+##' @examples
+##' data(demo_data)
+##' demo <- nfindr(demo_data, 2, method = "99")
+##' em <- endmembers(demo)
+##' em <- rbind(demo_data[c(3,7),], em)
+##' em[3:4,] <- em[3:4,] + 0.5 # a small offset for the found em's
+##' matplot(t(em), type = "l",
+##'    col = c("black", "red", "black", "red"), lty = c(1, 1, 2, 2),
+##'    xlab = "frequency", ylab = "intensity",
+##'    main = "N-FINDR 99 of demo_data")
+##' leg.txt <- c("Endmember 1", "Endmember 2", "Endmember 1 (found)", "Endmember 2 (found)")
+##' legend("topright", leg.txt, col = c("black", "red", "black", "red"),
+##' lty = c(1, 1, 2, 2), cex = 0.75)
+##'
 ##' @rdname nfindr
 ##' @export
 ##' @include unmixR-package.R

@@ -33,6 +33,7 @@ nfindrLDU <- function (data, p, indices, ..., debuglevel = unmixR.options("debug
   nspectra <- nrow (data)
   pm1 <- sequence (p - 1) # create a range from 1 to p minus 1
 
+  # local function
   update <- function(simplex, p) {
     g <- matrix (0, nrow = p, ncol = p - 1)
     V <- pm1
@@ -53,8 +54,8 @@ nfindrLDU <- function (data, p, indices, ..., debuglevel = unmixR.options("debug
       V [i] <- as.numeric(abs (d - crossprod (g [i,], b)))
     }
 
-    list (simplex = simplex, V = V, g = g)
-  }
+    list(simplex=simplex, V=V, g=g)
+  } # end of local function
 
   vars <- update (simplex, p)
   simplex <- vars$simplex
@@ -62,7 +63,17 @@ nfindrLDU <- function (data, p, indices, ..., debuglevel = unmixR.options("debug
   V <- vars$V
 
   replace <- TRUE
+  Vtest <- 0 # initialize for debug reporting
+  iter <- 1 # initialize for debug reporting
+	  
   while (replace == TRUE) {
+
+	if (.options ("debuglevel") >= 1L) {
+	  cat("Iteration", iter, "\n")
+	  cat("\tcurrent endmembers:", sort(indices), "\n")
+	  cat("\tvolume:", Vtest, "\n")
+	  }
+
     replace <- FALSE
 
     for (j in sequence (nspectra)) {
@@ -83,10 +94,13 @@ nfindrLDU <- function (data, p, indices, ..., debuglevel = unmixR.options("debug
           simplex <- vars$simplex
           g <- vars$g
           V <- vars$V
-        }
-      }
-    }
-  }
+        } # end of if (Vtest)
+      } # end of for (i in 1:p)
+    } # end of for (j in 1:nspectra)
+
+    iter <- iter + 1
+    
+  } # end of while
 
   indices <- sort (indices)
 

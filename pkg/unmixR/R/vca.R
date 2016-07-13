@@ -13,15 +13,15 @@
 ##'
 ##' @param p Number of endmembers.
 ##'
-##' @param method The N-FINDR algorithm to use. Options:
+##' @param method The VCA algorithm to use. Options:
 ##'   \itemize{
 ##'     \item 05 (\code{\link{vca05}})
-##'     \item Lopez (\code{\link{vcaLopez}})
-##'     \item Mod (\code{\link{vcaMod}})
+##'     \item mvca (\code{\link{mvca}})
+##'     \item 05lean (\code{\link{vca05lean}})
 ##'   }
-##'   Default: Mod, as it is the most efficient.
+##'   Default: 05lean, as it is the most efficient.
 ##'
-##' @param seed Both vca05 and vcaLopez need to generate a random vector. Set
+##' @param seed Both vca05 and mvca need to generate a random vector. Set
 ##'   the random number generator seed with this argument.
 ##'
 ##' @param ... Additional parameters for the methods (currently unused).
@@ -40,6 +40,20 @@
 ##' @export
 ##' @include unmixR-package.R
 ##'
+##' @examples
+##' data(demo_data)
+##' demo <- vca(demo_data, 2, method = "mvca")
+##' em <- endmembers(demo)
+##' em <- rbind(demo_data[c(7,9),], em)
+##' em[3:4,] <- em[3:4,] + 0.5 # a small offset for the found em's
+##' matplot(t(em), type = "l",
+##'    col = c("black", "blue", "black", "blue"), lty = c(1, 1, 2, 2),
+##'    xlab = "frequency", ylab = "intensity",
+##'    main = "mvca of demo_data")
+##' leg.txt <- c("Endmember 2", "Endmember 3", "Endmember 2 (found)", "Endmember 3 (found)")
+##' legend("topright", leg.txt, col = c("black", "blue", "black", "blue"),
+##' lty = c(1, 1, 2, 2), cex = 0.75)
+
 vca <- function(...) {
   UseMethod("vca")
 }

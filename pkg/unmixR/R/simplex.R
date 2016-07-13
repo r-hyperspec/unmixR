@@ -5,10 +5,13 @@
 ##' 
 ##' @param data Matrix whose rows will be included in the simplex. This
 ##'   matrix should be reduced using using PCA or some other process
-##'   so that it has p columns before calling this function.
+##'   so that it has p-1 columns before calling this function.
+##'
 ##' @param p Number of endmembers that should be found using the simplex.
 ##'   Defines the size of the simplex (will be p x p)
+##'
 ##' @param indices Locations of the rows in the dataset to use in the simplex
+##'
 ##' @return The simplex, a p x p matrix whose first row contains only 1s
 ##' 
 ##' @include unmixR-package.R

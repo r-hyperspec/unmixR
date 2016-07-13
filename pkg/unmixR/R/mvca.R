@@ -8,9 +8,10 @@
 ##'
 ##' @param p Number of endmembers.
 ##'
-##' @param SNR Signal-to-Noise ratio.
+##' @param SNR The Signal-to-Noise ratio of the data. By default it will be
+##'   estimated using \code{\link{estSNR}}.
 ##'
-##' @return The indices of the endmembers in the original dataset
+##' @return The indices of the endmembers in the original dataset.
 ##' 
 ##' @references Lopez, S., Horstrand, P., Callico, G.M., Lopez J.F. and
 ##' Sarmiento, R., "A Low-Computational-Complexity Algorithm for
@@ -21,11 +22,12 @@
 ##' @export
 ##' @importFrom stats prcomp
 
-vcaLopezFromScratch <- function(data, p, SNR=estSNR(data, p)){
-    data <- t(as.matrix(data))
+
+mvca <- function(data, p, SNR = estSNR(data, p)) {
+    force(SNR)
     
     Y <- dimensionalityReduction(data, p, SNR)
-    
+    Y <- t(Y)
     #matrix of endmembers
     E <- matrix(0, nrow = p, ncol = p + 1)
     E[p, 1] <- 1
@@ -43,14 +45,14 @@ vcaLopezFromScratch <- function(data, p, SNR=estSNR(data, p)){
         if(i >= 3)
         {
             for (j in 3:i) {
-            proj_ei_uj_1 <- (crossprod(E[, i], U[, j - 1])) / (crossprod(U[, j - 1])) * U[, j - 1]
-            U[, i] <- U[, i] - proj_ei_uj_1
+                proj_ei_uj_1 <- (crossprod(E[, i], U[, j - 1]) / crossprod(U[, j - 1])) * U[, j - 1]
+                U[, i] <- U[, i] - proj_ei_uj_1
             }
         }
         #U_i is orthogonal to other i-1 vectors
         
         #projecting w onto U_i
-        proj_w_ui <- (crossprod(w, U[, i])) / (crossprod(U[, i])) * U[, i]
+        proj_w_ui <- (crossprod(w, U[, i]) / crossprod(U[, i])) * U[, i]
         
         #vector f is orthogonal to to the subspace spaned by columns of E
         proj_acc <- proj_acc + proj_w_ui
@@ -67,6 +69,21 @@ vcaLopezFromScratch <- function(data, p, SNR=estSNR(data, p)){
         indices[i] <- index
         #estimated endmember is stored in E
         E[, i + 1] <- Y[, index]
+
+	    if (.options ("debuglevel") >= 1L){
+	    	  cat("Iteration", i, "\n")
+	    	  cat("\tcurrent endmembers:", sort(indices[1:i]), "\n")
+	    	  # To monitor the process, capture the volume
+	    	  # of the current simplex using the same process
+	    	  # as in nfindr.default, except the data set
+	    	  # grows with each iteration
+          inds <- indices[1:i] # limit to non-zero indices
+          red_data <- stats::prcomp(data)[["x"]][, sequence(length(inds)-1), drop=FALSE]
+          simplex <- .simplex(red_data, length(inds), inds)
+	    	  vol <- abs(det(simplex))
+	    	  cat("\tvolume:", vol, "\n")
+		}
+
     }
     indices <- sort(indices)
     indices

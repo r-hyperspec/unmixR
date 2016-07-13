@@ -4,9 +4,12 @@
 ##'
 ##' The following package-specific options are defined:
 ##'
-##' \tabular{lll}{
-##' debuglevel \tab >= 0L \tab indicates how much debuging output is to be produced.\\
-##' implementation.search \tab "package:unmixR" \tab indicate environments where unmixing implementations can be found
+##' \describe{
+##'   \item{debuglevel}{Indicates how much debuging output is to be produced.
+##' A value of 1 reports on the overall progress of identifying the endmembers.
+##' Values > 1 give additional details about the internal processing.}
+##'  \item{implementation.search}{(default: \code{"package:unmixR"}) 
+##'  Environments which to search for unmixing algorithm implementations.}
 ##' }
 ##'
 ##' @details 

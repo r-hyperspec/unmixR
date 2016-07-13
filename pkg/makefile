@@ -84,7 +84,7 @@ install: $(TGZ)
 
 clean:
 	rm -f $(TGZs)
-	rm -f -r unmixR.Rcheck
+	rm -f -r $(PKG_NAME).Rcheck
 
 ### Edit the relevant files to increment version number & date
 # note: important not to quote $(NEW_VERSION)
