@@ -11,15 +11,22 @@
 ##'
 ##' @param p Number of endmembers.
 ##'
-##' @param ... Extra unused parameters passed in from
-##'   \code{\link{nfindr}}.
+##' @param ... Extra unused parameters passed in from 
+##' \code{\link{nfindr}}.
 ##'
-##' @return The indices of the endmembers in the original dataset.
+##' @param get.volumes Boolean indicating whether a data.frame with the actual 
+##' volumes should be returned.
+##' 
+##' @param debuglevel If \code{>= 1L}, print all simplices with their 
+##' corresponding volume.
+##' 
+##' @return The indices of the endmembers in the original dataset or 
+##' a data.frame holding indices and corresponding volume if \code{volume = TRUE}.
 ##'
 ##' @export
 ##' @importFrom utils combn
 
-nfindrBrute <- function(data, p, ...) {
+nfindrBrute <- function(data, p, ..., get.volumes = FALSE, debuglevel = .options ("debuglevel")) {
   # generate all possible unique combinations of p indices
   combos <- combn(nrow(data), p, simplify=TRUE)
   n <- ncol(combos)
@@ -34,15 +41,29 @@ nfindrBrute <- function(data, p, ...) {
     abs(det(simplex))
   })
 
-  if (.options ("debuglevel") >= 1L) {
-  	DF <- as.data.frame(cbind(t(combos), volumes))
-  	cat("Endmember combinations & their volumes:\n")
-  	print(DF[order(DF$volumes),], row.names = FALSE)
-    }
+  if (debuglevel >= 1L || get.volumes) {
+  	rownames (combos) <- paste0 ("Index", seq_len(ncol (combos)))
+    DF <- as.data.frame(cbind(t (combos), volumes))
+    print (colnames (DF))
+  	DF <- DF [order(DF$volumes),]
+  }
+  
+  if (debuglevel >= 1L) 
+    cat("Endmember combinations & their volumes:\n")
+  if (debuglevel == 1L)
+    print (tail (DF), row.names = FALSE)
+  else if (debuglevel > 1L)
+    print (DF, row.names = FALSE)
+  
+  
 
-  # return the indices that formed the largest simplex
-  col <- which.max(volumes)
-
-  indices <- sort(combos[, col])
-  indices
+  if (get.volumes) {
+    DF
+  } else {
+    ## return the indices that formed the largest simplex
+    col <- which.max (volumes)
+    
+    indices <- combos [, col]
+    indices
+  }
 }
