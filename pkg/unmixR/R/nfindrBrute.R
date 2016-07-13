@@ -14,9 +14,6 @@
 ##' @param ... Extra unused parameters passed in from 
 ##' \code{\link{nfindr}}.
 ##'
-##' @param get.volumes Boolean indicating whether a data.frame with the actual 
-##' volumes should be returned.
-##' 
 ##' @param debuglevel If \code{>= 1L}, print all simplices with their 
 ##' corresponding volume.
 ##' 
@@ -26,7 +23,7 @@
 ##' @export
 ##' @importFrom utils combn
 
-nfindrBrute <- function(data, p, ..., get.volumes = FALSE, debuglevel = .options ("debuglevel")) {
+nfindrBrute <- function(data, p, ..., debuglevel = .options ("debuglevel")) {
   # generate all possible unique combinations of p indices
   combos <- combn(nrow(data), p, simplify=TRUE)
   n <- ncol(combos)
@@ -35,35 +32,40 @@ nfindrBrute <- function(data, p, ..., get.volumes = FALSE, debuglevel = .options
   volumes <- sapply(1:n, function(i) {
     idx <- combos[,i]
 
-    # simplex <- rbind(rep(1, p), data[idx,])
-    simplex <- rbind(rep(1, p), t(data[idx,])) # Bryan's fix
-    
-    abs(det(simplex))
+    ## calling simplex.volume takes approx 2.5x as long, so leave it this way
+    simplex <- cbind (rep(1, p), data [idx,])
+    abs (det (simplex))
   })
 
-  if (debuglevel >= 1L || get.volumes) {
-  	rownames (combos) <- paste0 ("Index", seq_len(ncol (combos)))
+  if (debuglevel >= 1L) {
+    volumes <- volumes / factorial (p - 1)
+    
     DF <- as.data.frame(cbind(t (combos), volumes))
     print (colnames (DF))
   	DF <- DF [order(DF$volumes),]
+  
+  	cat("Endmember combinations & their volumes:\n")
   }
   
   if (debuglevel >= 1L) 
-    cat("Endmember combinations & their volumes:\n")
   if (debuglevel == 1L)
     print (tail (DF), row.names = FALSE)
   else if (debuglevel > 1L)
     print (DF, row.names = FALSE)
   
+  ## return the indices that formed the largest simplex
+  col <- which.max (volumes)
   
+  indices <- combos [, col]
+  indices
+}
 
-  if (get.volumes) {
-    DF
-  } else {
-    ## return the indices that formed the largest simplex
-    col <- which.max (volumes)
-    
-    indices <- combos [, col]
-    indices
-  }
+
+.test (nfindrBrute) <- function (){
+  context ("nfindrBrute")
+  
+  test_that("correct output for triangle", {
+    expect_equal(nfindr (.testdata$x, "Brute", p = 3)$indices, c (1, 4, 10))
+    expect_equal(nfindr (.testdata$x, "Brute", p = 3, debuglevel = 1)$indices, c (1, 4, 10))
+  })
 }
