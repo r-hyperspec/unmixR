@@ -5,7 +5,7 @@
 ##' @importFrom stats prcomp
 
 nfindr.default <- function(data, p,
-                           method="LDU", indices=sample(nrow(data), p), ...,
+                           method="99", indices=sample(nrow(data), p), ...,
                            drop=FALSE) {
 
   ## get the selected nfindr method
