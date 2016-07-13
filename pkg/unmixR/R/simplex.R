@@ -27,7 +27,7 @@
 ## (indices) and ncol (data)
 ## TODO: @CB check wheter data columns 1 : (p - 1) is needed
 
-.simplex <- function(data, p, indices) {
+.simplex <- function(data, p = length (indices), indices) {
   if (length (indices) != p) {
   	stop("p indices needed to form simplex")
   }
