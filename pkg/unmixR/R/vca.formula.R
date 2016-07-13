@@ -21,15 +21,21 @@ vca.formula <- function(formula, frame, p, method = "05lean", seed=NULL, ...) {
 }
 
 .test (vca.formula) <- function (){
-  # error on response term in formula
-  checkException (vca (x ~ ., data.frame (x = matrix (1:4, 2)), p = 2))
+  context ("vca.formula")
+  
+  test_that("error on response term in formula", {
+    expect_error(vca (x ~ ., data.frame (x = matrix (1:4, 2)), p = 2))
+  })
 
-  # test: check the formula interface
-  checkEquals (vca(~ x, .testdata, p = 3)$indices, vca(.testdata$x, p = 3)$indices)
+  test_that ("same results with formula interface", {
+    expect_equal(vca (~ x, .testdata, p = 3)$indices,
+                 vca (.testdata$x, p = 3)$indices)
+  })  
 
-  ## check conversion of classes
-  if (require ("hyperSpec")) {
-    checkEquals (vca(~ spc, laser, p = 2)$indices, c (4, 81))
-  }
+  test_that ("check conversion of classes", {
+    if (require ("hyperSpec")) {
+      expect_equal (vca(~ spc, laser, p = 2)$indices, c (4, 81))
+    }
+  })
 
 }
