@@ -64,3 +64,50 @@
   }) 
   
 }
+
+#' Volume of simples
+#'
+#' @param data matrix with coordinates in rows
+#' @param indices  indices of the  \code{ncol(data) + 1} vertex points. 
+#' Defaults to all rows.
+#' @param factorial logical indicating whether proper volumes 
+#' (i.e. not only the determinant, but actually taking into account the 
+#' proper 1 / n! prefactor) 
+#'
+#' @return volume of the simplex
+#' @export
+#'
+#' @examples
+simplex.volume <- function (data, indices = seq_len (nrow (data)), factorial = TRUE){
+  simplex <- .simplex (data = data, indices = indices, p = length (indices))
+  V = abs (det (simplex)) 
+  
+  if (factorial)
+    V <- V / factorial (length (indices) - 1)
+  
+  V
+}
+
+.test (simplex.volume) <- function (){
+  
+  context ("simplex.volume")
+  
+  data <- svd (.testdata$x, nv = 0)
+  
+  ## uncentered svd of .testdata$xhas column 1 constant
+  data <- data$u [c (1, 4, 10), -1] 
+  
+  ## data now has the axes aligned for direct calculation of triangle area
+  area <- apply (data, 2, range)
+  area <- apply (area, 2, diff)
+  area <- 1/2 * prod (area)
+  
+  expect_that("correct volumes for triangle data", {
+    expect_equal (simplex.volume (data, indices = 1 : 3, factorial = TRUE), area)
+    expect_equal (simplex.volume (data, indices = 1 : 3, factorial = FALSE), area * 2)
+    expect_equal (simplex.volume (data, factorial = TRUE), area)
+
+    data <- svd (.testdata$x, nv = 0)$u[, -1] # see above
+    expect_equal (simplex.volume (data, indices = c (1, 4, 10), factorial = TRUE), area)
+  })
+}
