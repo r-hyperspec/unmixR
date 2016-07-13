@@ -95,7 +95,7 @@ simplex.volume <- function (data, indices = seq_len (nrow (data)), factorial = T
   data <- svd (.testdata$x, nv = 0)
   
   ## uncentered svd of .testdata$xhas column 1 constant
-  data <- data$u [c (1, 4, 10), -1] 
+  data <- data$u [c (1, 4, 10), -1] %*% diag (data$d [-1])
   
   ## data now has the axes aligned for direct calculation of triangle area
   area <- apply (data, 2, range)
