@@ -15,8 +15,7 @@
 ##' @return The simplex, a p x p matrix whose first row contains only 1s
 ##' 
 ##' @include unmixR-package.R
-
-## @rdname simplex
+##' @rdname simplex
 
 # The following is Bryan's modification so that the function does what
 # it is claimed to do, return a p x p matrix
@@ -78,6 +77,11 @@
 #' @export
 #'
 #' @examples
+#' data <- prcomp (laser)$x [, 1 : 2]
+#' plot (data, pch = 19, col = matlab.dark.palette (nrow (data)))
+#' lines (data [c (1, 84, 50, 1),])
+#' 
+#' simplex.volume (data, indices = c (1, 84, 50))
 simplex.volume <- function (data, indices = seq_len (nrow (data)), factorial = TRUE){
   simplex <- .simplex (data = data, indices = indices, p = length (indices))
   V = abs (det (simplex)) 
