@@ -64,7 +64,6 @@
 ##' @rdname nfindr
 ##' @export
 ##' @include unmixR-package.R
-##' @importFrom svUnit checkException checkTrue checkEquals
 
 nfindr <- function (...) {
   UseMethod("nfindr")
@@ -73,19 +72,17 @@ nfindr <- function (...) {
 .test(nfindr) <- function() {
   context ("N-FINDR")
   
-  data <- as.matrix(laser)
-  p <- 2
-  indices <- c(1, 2)
-
+  expect_true(require (hyperSpec))
+  
   # test: nfindr produces error for invalid values of p
 
   test_that ("Exceptions", {
     # invalid p
-    expect_error (nfindr(data, p="---"))
-    expect_error (nfindr(data, p=0))  
+    expect_error (nfindr(.testdata$x, p="---"))
+    expect_error (nfindr(.testdata$x, p = 0))  
     
     # test: nfindr produces error for invalid method
-    expect_error (nfindr(data, p, method="invalid"))
+    expect_error (nfindr(.testdata$x, p, method="invalid"))
   })
 
   ## test that at least the implementations provided by unmixR are available
@@ -95,19 +92,14 @@ nfindr <- function (...) {
   })
 
   # test: nfindr default produces the correct answer
-  correct <- c (4, 79)
-  test_that ("correct endmembers laser data, default method", {
-    output <- nfindr(data, p)$indices
-    expect_equal (output, correct)
+  test_that ("correct endmembers by default method for laser", {
+    expect_equal (nfindr(data, p = 2)$indices, .correct.laser)
   })
 
   # test: all N-FINDR methods produce the same output
   test_that ("All implementations return correct results for laser data", {
-    outputs <- sapply(implementations, 
-                      function(i) {
-                        nfindr(data = data, p = p, method = i)$indices
-                      })
-    expect_true(all (outputs == correct))
+    for (i in implementations)
+      expect_equal(nfindr (laser, method = i, p = 2)$indices, .correct.laser)
   })
   
   ## test triangle data
@@ -115,22 +107,16 @@ nfindr <- function (...) {
   triangle.correct <- .correct
 
   test_that ("correct endmembers triangle data, default method", {
-    output <- nfindr(triangle, p = 3)$indices
-    expect_equal (output, triangle.correct)
+    expect_equal (nfindr(.testdata$x, p = 3)$indices, correct)
   })
   
   test_that ("All implementations return correct results for triangle data", {
-    outputs <- sapply(implementations, 
-                      function(i) {
-                        nfindr(data = triangle, p = 3, method = i)$indices
-                      })
-    expect_true(all (outputs == triangle.correct))
+    for (i in implementations)
+      expect_equal(nfindr (triangle, method = i, p = 3)$indices, triangle.correct)
   })
 
   # test: check the formula interface
-  test_that ("Formula Interface", {
-    expect_equal(nfindr (~ ., as.data.frame (data), p)$indices, correct)  
-  })
+  # -> nfindr.formula has its own test
   
   # test: check other (hyperSpec) objects
   test_that ("hyperSpec object", {
