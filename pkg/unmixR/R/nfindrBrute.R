@@ -63,9 +63,15 @@ nfindrBrute <- function(data, p, ..., debuglevel = .options ("debuglevel")) {
 
 .test (nfindrBrute) <- function (){
   context ("nfindrBrute")
+  expect_true (require (hyperSpec))
   
   test_that("correct output for triangle", {
-    expect_equal(nfindr (.testdata$x, "Brute", p = 3)$indices, c (1, 4, 10))
-    expect_equal(nfindr (.testdata$x, "Brute", p = 3, debuglevel = 1)$indices, c (1, 4, 10))
+    expect_equal(nfindr (.testdata$x, "Brute", p = 3)$indices, .correct)
+    expect_equal(nfindr (.testdata$x, "Brute", p = 3, debuglevel = 1)$indices, .correct)
   })
+
+  test_that("correct output for laser data", {
+    expect_equal(nfindr (laser, "Brute", p = 2)$indices, .correct.laser)
+  })
+  
 }
