@@ -61,13 +61,13 @@ vca.default <- function(data, p, method = c("05lean", "mvca", "05"), seed = NULL
   
   test_that("correct results for all available methods: triangle data", {
     for (i in implementations) {
-      expect_equal (vca (.testdata$x, p = 3, method = m), .correct)
+      expect_equal (vca (.testdata$x, p = 3, method = i), .correct)
     }
   })
 
   test_that("correct results for all available methods: laser data", {
     for (i in implementations) {
-      expect_equal (vca (laser$spc, p = 2, method = m), .correct.laser)
+      expect_equal (vca (laser$spc, p = 2, method = i), .correct.laser)
     }
   })
   
@@ -80,6 +80,6 @@ vca.default <- function(data, p, method = c("05lean", "mvca", "05"), seed = NULL
   # test: if hyperSpec is available, test on hyperSpec object
   # tests also the correct application of as.matrix.
   test_that("check conversion of classes", {
-    checkEquals (vca (laser, p = 2)$indices, .correct.laser)
+    expect_equal (vca (laser, p = 2)$indices, .correct.laser)
   })
 }
