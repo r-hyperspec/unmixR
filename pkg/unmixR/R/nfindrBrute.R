@@ -41,17 +41,16 @@ nfindrBrute <- function(data, p, ..., debuglevel = .options ("debuglevel")) {
     volumes <- volumes / factorial (p - 1)
     
     DF <- as.data.frame(cbind(t (combos), volumes))
-    print (colnames (DF))
   	DF <- DF [order(DF$volumes),]
   
-  	cat("Endmember combinations & their volumes:\n")
+  	message("Endmember combinations & their volumes:\n")
   }
   
   if (debuglevel >= 1L) 
   if (debuglevel == 1L)
-    print (tail (DF), row.names = FALSE)
+    message (tail (DF), row.names = FALSE)
   else if (debuglevel > 1L)
-    print (DF, row.names = FALSE)
+    message (DF, row.names = FALSE)
   
   ## return the indices that formed the largest simplex
   col <- which.max (volumes)
