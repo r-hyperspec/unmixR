@@ -28,12 +28,9 @@
 # things are sourced, apparently.  It made more sense to
 # me to put it unittests.R but that causes problems.  BH.
 	
-if (!requireNamespace ("svUnit", quietly = TRUE)){
+{
   `.test<-` <- function (f, value) {
-    class (value) <-  c ("svTest", "function")
     attr (f, "test") <- value
     f
   }
-} else {
-  `.test<-` <- svUnit::`test<-`
-}
+} 
