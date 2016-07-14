@@ -53,6 +53,8 @@ dimnames(.C) <- list(samples = 1:10, wavelengths = paste("L", 1:3, sep = "")) # 
 .testdata <- data.frame (sample = paste("s", 1:10, sep = ""), x = I (.C))
 rm (.C)
 .correct <- c (1, 4, 10)
+
+.correct.laser <- c (4, 79)
 }
 
 ##' get test that is attached to object as "test" attribute
