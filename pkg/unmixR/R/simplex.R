@@ -43,8 +43,8 @@
   context ("simplex")
   
   test_that("simplex exceptions", {
-    expect_error (.simplex (data, 2, indices))
-    expect_error (.simplex (data [, rep (1, 3)], 3, indices))
+    expect_error (.simplex (.testdata$x, 2, indices = 1 : 3))
+    expect_error (.simplex (.testdata$x [, rep (1, 3)], 3))
   })
   
   p <- 3
@@ -95,23 +95,21 @@ simplex.volume <- function (data, indices = seq_len (nrow (data)), factorial = T
 .test (simplex.volume) <- function (){
   
   context ("simplex.volume")
-  
   data <- svd (.testdata$x, nv = 0)
-  
+
   ## uncentered svd of .testdata$xhas column 1 constant
-  data <- data$u [c (1, 4, 10), -1] %*% diag (data$d [-1])
-  
+  data <- data$u [, -1] %*% diag (data$d [-1])
+  data.3p <- data [.correct, ]
+
   ## data now has the axes aligned for direct calculation of triangle area
-  area <- apply (data, 2, range)
+  area <- apply (data.3p, 2, range)
   area <- apply (area, 2, diff)
   area <- 1/2 * prod (area)
-  
-  expect_that("correct volumes for triangle data", {
-    expect_equal (simplex.volume (data, indices = 1 : 3, factorial = TRUE), area)
-    expect_equal (simplex.volume (data, indices = 1 : 3, factorial = FALSE), area * 2)
-    expect_equal (simplex.volume (data, factorial = TRUE), area)
 
-    data <- svd (.testdata$x, nv = 0)$u[, -1] # see above
-    expect_equal (simplex.volume (data, indices = c (1, 4, 10), factorial = TRUE), area)
+  test_that("correct volumes for triangle data", {
+    expect_equal (simplex.volume (data, indices = .correct, factorial = TRUE), area)
+    expect_equal (simplex.volume (data, indices = .correct, factorial = FALSE), area * 2)
+
+    expect_equal (simplex.volume (data.3p, factorial = TRUE), area)
   })
 }
