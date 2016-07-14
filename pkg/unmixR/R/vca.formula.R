@@ -3,11 +3,11 @@
 ##' @export
 ##' @include unmixR-package.R
 ##' @include vca.default.R
-##' @importFrom stats terms
+##' @importFrom stats terms model.matrix
 
 vca.formula <- function(formula, frame, p, method = "05lean", seed=NULL, ...) {
 
-  mt <- stats::terms(formula, data = frame)
+  mt <- terms(formula, data = frame)
 
   ## response term is not allowed
   if (attr(mt, "response") > 0L) stop("VCA models cannot have response")
