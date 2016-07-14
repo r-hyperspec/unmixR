@@ -22,6 +22,7 @@ vca.formula <- function(formula, frame, p, method = "05lean", seed=NULL, ...) {
 
 .test (vca.formula) <- function (){
   context ("vca.formula")
+  expect_true (require (hyperSpec))
   
   test_that("error on response term in formula", {
     expect_error(vca (x ~ ., data.frame (x = matrix (1:4, 2)), p = 2))
@@ -33,9 +34,12 @@ vca.formula <- function(formula, frame, p, method = "05lean", seed=NULL, ...) {
   })  
 
   test_that ("check conversion of classes", {
-    if (require ("hyperSpec")) {
-      expect_equal (vca(~ spc, laser, p = 2)$indices, c (4, 81))
-    }
+      expect_equal (vca (~ spc, laser, p = 2, seed = 12345)$indices, 
+                    vca (~ spc, laser$., p = 2, seed = 12345)$indices)
   })
 
+  test_that ("Formula Interface does not produce offset term", {
+    expect_false("(Intercept)" %in% colnames (vca (~ x, .testdata, p = 3)$data))
+  })
+  
 }

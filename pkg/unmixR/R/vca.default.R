@@ -33,57 +33,53 @@ vca.default <- function(data, p, method = c("05lean", "mvca", "05"), seed = NULL
 
 
 .test(vca.default) <- function() {
+  context ("vca")
+  
   # Note: .testdata$x matches all columns of .testdata, which are x.L1, x.L2, x.L3
-  # test: vca produces error for invalid values of p
-  checkException (vca (.testdata$x, p = "---"))
-  checkException (vca (.testdata$x, p = 0))
-  checkException (vca (.testdata$x, p = 1))
-  checkException (vca (.testdata$x, p = 4))
+  
+  test_that ("vca produces error for invalid values of p", {
+    expect_error (vca (.testdata$x, p = "---"))
+    expect_error (vca (.testdata$x, p = 0))
+    expect_error (vca (.testdata$x, p = 1))
+    expect_error (vca (.testdata$x, p = 4))
+  })
 
-  # test: vca produces error for invalid method
-  checkException(vca (.testdata$x, p, method="invalid"))
+  test_that ("vca produces error for invalid method", {
+    expect_error (vca (.testdata$x, p, method="invalid"))
+  })
+  
+  ## test that at least the implementations provided by unmixR are available
+  # this fails at the moment (correctly!) because we need to rename mvca again!
+  implementations <- get.implementations("vca")
+  test_that ("Implementations available", {
+    expect_true (all (c ("05", "05lean", "Modified") %in% implementations))
+  })
+  
 
   # test correct calculations for the available methods
+  implementations <- get.implementations("vca")
+  
+  test_that("correct results for all available methods: triangle data", {
+    for (i in implementations) {
+      expect_equal (vca (.testdata$x, p = 3, method = m), .correct)
+    }
+  })
 
-  methods <- eval (formals (vca.default)$method)
-
-# BH: original version, fails because vca05lean & mvca give wrong answer, see next chunk
-  # for (m in methods) {
-    # ## .testdata has 3 components, so picking 2 out of 3
-    # model <- vca (.testdata$x, p = 2, method = m)
-    # checkTrue (all (model$indices %in% .correct),
-               # msg = sprintf ("%s: .testdata, p = 2 yields %s", m, paste (model$indices, collapse = " ")))
-    
-    # checkTrue (all (vca (.testdata$x, p = 2, method = m)$indices %in% .correct), 
-               # msg = sprintf ("%s: .testdata, p = 2", m))
-    
-    # ## all 3 components should be recovered, vca output is sorted.
-    # model <- vca (.testdata$x, p = 2, method = m)
-    # checkEquals (model$indices, .correct,
-                 # msg = sprintf ("%s: .testdata, p = 2 yields %s", m, paste (model$indices, collapse = " ")))
-  # }
-
-# BH commented the above out; vca05lean and mvca are returning the wrong answer
-# BH: this chunk only runs vca05 and uses p = 3
-# BH: everything here needs review after the bug fix is done
-  for (m in methods[3]) {
-    ## .testdata has 3 components, so picking 2 out of 3
-    model <- vca (.testdata$x, p = 3, method = m)
-    checkTrue (all (model$indices %in% .correct),
-               msg = sprintf ("%s: .testdata, p = 3 yields %s", m, paste (model$indices, collapse = " ")))
-    
-    checkTrue (all (vca (.testdata$x, p = 3, method = m)$indices %in% .correct), 
-               msg = sprintf ("%s: .testdata, p = 3", m))
-    
-    ## all 3 components should be recovered, vca output is sorted.
-    model <- vca (.testdata$x, p = 3, method = m)
-    checkEquals (model$indices, .correct,
-                 msg = sprintf ("%s: .testdata, p = 3 yields %s", m, paste (model$indices, collapse = " ")))
-  }
+  test_that("correct results for all available methods: laser data", {
+    for (i in implementations) {
+      expect_equal (vca (laser$spc, p = 2, method = m), .correct.laser)
+    }
+  })
+  
+  ## all 3 components should be recovered, vca output is sorted.
+  test_that("vca output is sorted", {
+    indices <- vca (.testdata$x, p = 3)$indices
+    expect_equal(indices, sort (indices))
+  })
 
   # test: if hyperSpec is available, test on hyperSpec object
   # tests also the correct application of as.matrix.
-  if (require ("hyperSpec")) {
-    checkEquals (vca (laser, p = 2)$indices, c (4, 81))
-  }
+  test_that("check conversion of classes", {
+    checkEquals (vca (laser, p = 2)$indices, .correct.laser)
+  })
 }
