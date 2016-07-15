@@ -37,8 +37,8 @@ nfindr.formula <- function(formula, frame, ...) {
   })
   
   test_that ("Formula Interface", {
-    expect_equal(nfindr (~ x, .testdata, p = 3)$indices, correct)  
-    expect_equal(nfindr (~ ., as.data.frame (.testdata$x), p = 3)$indices, correct)  
+    expect_equal(nfindr (~ x, .testdata, p = 3)$indices, .correct)  
+    expect_equal(nfindr (~ ., as.data.frame (.testdata$x), p = 3)$indices, .correct)  
   })
   
   test_that ("Formula Interface does not produce offset term", {

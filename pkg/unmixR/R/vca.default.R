@@ -61,13 +61,13 @@ vca.default <- function(data, p, method = c("05lean", "mvca", "05"), seed = NULL
   
   test_that("correct results for all available methods: triangle data", {
     for (i in implementations) {
-      expect_equal (vca (.testdata$x, p = 3, method = i), .correct)
+      expect_equal (vca (.testdata$x, p = 3, method = i)$indices, .correct)
     }
   })
 
   test_that("correct results for all available methods: laser data", {
     for (i in implementations) {
-      expect_equal (vca (laser$spc, p = 2, method = i), .correct.laser)
+      expect_equal (vca (laser$spc, p = 2, method = i)$indices, .correct.laser)
     }
   })
   
