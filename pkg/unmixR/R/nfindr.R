@@ -72,17 +72,21 @@ nfindr <- function (...) {
 .test(nfindr) <- function() {
   context ("N-FINDR")
   
+  ## test triangle data
+  triangle <- .testdata$x
+  correct.triangle <- .correct
+  
   expect_true(require (hyperSpec))
   
   # test: nfindr produces error for invalid values of p
 
   test_that ("Exceptions", {
     # invalid p
-    expect_error (nfindr(.testdata$x, p="---"))
-    expect_error (nfindr(.testdata$x, p = 0))  
+    expect_error (nfindr(triangle, p="---"))
+    expect_error (nfindr(triangle, p = 0))  
     
     # test: nfindr produces error for invalid method
-    expect_error (nfindr(.testdata$x, p, method="invalid"))
+    expect_error (nfindr(triangle, p, method="invalid"))
   })
 
   ## test that at least the implementations provided by unmixR are available
@@ -93,7 +97,7 @@ nfindr <- function (...) {
 
   # test: nfindr default produces the correct answer
   test_that ("correct endmembers by default method for laser", {
-    expect_equal (nfindr(data, p = 2)$indices, .correct.laser)
+    expect_equal (nfindr(laser, p = 2)$indices, .correct.laser)
   })
 
   # test: all N-FINDR methods produce the same output
@@ -102,17 +106,13 @@ nfindr <- function (...) {
       expect_equal(nfindr (laser, method = i, p = 2)$indices, .correct.laser)
   })
   
-  ## test triangle data
-  triangle <- .testdata$x
-  triangle.correct <- .correct
-
   test_that ("correct endmembers triangle data, default method", {
-    expect_equal (nfindr(.testdata$x, p = 3)$indices, correct)
+    expect_equal (nfindr(triangle, p = 3)$indices, correct.triangle)
   })
   
   test_that ("All implementations return correct results for triangle data", {
     for (i in implementations)
-      expect_equal(nfindr (triangle, method = i, p = 3)$indices, triangle.correct)
+      expect_equal(nfindr (triangle, method = i, p = 3)$indices, correct.triangle)
   })
 
   # test: check the formula interface
@@ -122,6 +122,6 @@ nfindr <- function (...) {
   test_that ("hyperSpec object", {
     output <- nfindr (laser, 2)
     expect_equal (output$data, laser)  
-    expect_equal (output$indices, correct)
+    expect_equal (output$indices, correct.triangle)
   })
 }
