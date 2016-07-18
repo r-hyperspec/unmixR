@@ -34,8 +34,6 @@ Collate:
     'dimensionalityReduction.R'
     'endmembers.R'
     'estSNR.R'
-    'estSNR2.R'
-    'estSNR3.R'
     'mvca.R'
     'unmixR-package.R'
     'nfindr.R'
