@@ -11,15 +11,19 @@
 ##'
 ##' @param p Number of endmembers.
 ##'
-##' @param ... Extra unused parameters passed in from
-##'   \code{\link{nfindr}}.
+##' @param ... Extra unused parameters passed in from 
+##' \code{\link{nfindr}}.
 ##'
-##' @return The indices of the endmembers in the original dataset.
+##' @param debuglevel If \code{>= 1L}, print all simplices with their 
+##' corresponding volume.
+##' 
+##' @return The indices of the endmembers in the original dataset or 
+##' a data.frame holding indices and corresponding volume if \code{volume = TRUE}.
 ##'
 ##' @export
 ##' @importFrom utils combn
 
-nfindrBrute <- function(data, p, ...) {
+nfindrBrute <- function(data, p, ..., debuglevel = .options ("debuglevel")) {
   # generate all possible unique combinations of p indices
   combos <- combn(nrow(data), p, simplify=TRUE)
   n <- ncol(combos)
@@ -28,21 +32,45 @@ nfindrBrute <- function(data, p, ...) {
   volumes <- sapply(1:n, function(i) {
     idx <- combos[,i]
 
-    # simplex <- rbind(rep(1, p), data[idx,])
-    simplex <- rbind(rep(1, p), t(data[idx,])) # Bryan's fix
-    
-    abs(det(simplex))
+    ## calling simplex.volume takes approx 2.5x as long, so leave it this way
+    simplex <- cbind (rep(1, p), data [idx,])
+    abs (det (simplex))
   })
 
-  if (.options ("debuglevel") >= 1L) {
-  	DF <- as.data.frame(cbind(t(combos), volumes))
-  	cat("Endmember combinations & their volumes:\n")
-  	print(DF[order(DF$volumes),], row.names = FALSE)
-    }
-
-  # return the indices that formed the largest simplex
-  col <- which.max(volumes)
-
-  indices <- sort(combos[, col])
+  if (debuglevel >= 1L) {
+    volumes <- volumes / factorial (p - 1)
+    
+    DF <- as.data.frame(cbind(t (combos), volumes))
+  	DF <- DF [order(DF$volumes),]
+  
+  	message("Endmember combinations & their volumes:\n")
+  }
+  
+  if (debuglevel >= 1L) 
+  if (debuglevel == 1L)
+    message (tail (DF), row.names = FALSE)
+  else if (debuglevel > 1L)
+    message (DF, row.names = FALSE)
+  
+  ## return the indices that formed the largest simplex
+  col <- which.max (volumes)
+  
+  indices <- combos [, col]
   indices
+}
+
+
+.test (nfindrBrute) <- function (){
+  context ("nfindrBrute")
+  expect_true (require (hyperSpec))
+  
+  test_that("correct output for triangle", {
+    expect_equal(nfindr (.testdata$x, "Brute", p = 3)$indices, .correct)
+    expect_equal(nfindr (.testdata$x, "Brute", p = 3, debuglevel = 1)$indices, .correct)
+  })
+
+  test_that("correct output for laser data", {
+    expect_equal(nfindr (laser, "Brute", p = 2)$indices, .correct.laser)
+  })
+  
 }

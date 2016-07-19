@@ -64,46 +64,64 @@
 ##' @rdname nfindr
 ##' @export
 ##' @include unmixR-package.R
-##' @importFrom svUnit checkException checkTrue checkEquals
 
 nfindr <- function (...) {
   UseMethod("nfindr")
 }
 
 .test(nfindr) <- function() {
-  data <- as.matrix(laser)
-  p <- 2
-  indices <- c(1, 2)
-
+  context ("N-FINDR")
+  
+  ## test triangle data
+  triangle <- .testdata$x
+  correct.triangle <- .correct
+  
+  expect_true(require (hyperSpec))
+  
   # test: nfindr produces error for invalid values of p
 
-  svUnit::checkException(nfindr(data, p="---"))
-  svUnit::checkException(nfindr(data, p=0))
-
-  # test: nfindr produces error for invalid method
-
-  svUnit::checkException(nfindr(data, p, method="invalid"))
-
-  # test: nfindr default produces the correct answer
-
-  output <- nfindr(data, p)$indices
-  svUnit::checkTrue(output == c(4, 79))
-
-  # test: all N-FINDR methods produce the same output
-
-  methods <- c("99", "LDU", "SeqLDU", "Brute")
-
-  outputs <- sapply(1:4, function(i) {
-    nfindr(data, p, methods[i])$indices
+  test_that ("Exceptions", {
+    # invalid p
+    expect_error (nfindr(triangle, p="---"))
+    expect_error (nfindr(triangle, p = 0))  
+    
+    # test: nfindr produces error for invalid method
+    expect_error (nfindr(triangle, p, method="invalid"))
   })
 
-  svUnit::checkTrue(all(outputs[,1] == outputs))
+  ## test that at least the implementations provided by unmixR are available
+  implementations <- get.implementations("nfindr")
+  test_that ("Implementations available", {
+    expect_true (all (c ("99", "Brute", "LDU", "SeqLDU") %in% implementations))
+  })
+
+  # test: nfindr default produces the correct answer
+  test_that ("correct endmembers by default method for laser", {
+    expect_equal (nfindr(laser, p = 2)$indices, .correct.laser)
+  })
+
+  # test: all N-FINDR methods produce the same output
+  test_that ("All implementations return correct results for laser data", {
+    for (i in implementations)
+      expect_equal(nfindr (laser, method = i, p = 2)$indices, .correct.laser)
+  })
+  
+  test_that ("correct endmembers triangle data, default method", {
+    expect_equal (nfindr(triangle, p = 3)$indices, correct.triangle)
+  })
+  
+  test_that ("All implementations return correct results for triangle data", {
+    for (i in implementations)
+      expect_equal(nfindr (triangle, method = i, p = 3)$indices, correct.triangle)
+  })
 
   # test: check the formula interface
-
-  output.formula <- nfindr(~ 0 + ., as.data.frame(data), p)$indices
-  svUnit::checkEquals(output.formula, output)
-
+  # -> nfindr.formula has its own test
+  
   # test: check other (hyperSpec) objects
-#  nfindr (laser, p = 2)
+  test_that ("hyperSpec object", {
+    output <- nfindr (laser, 2)
+    expect_equal (output$data, laser)  
+    expect_equal (output$indices, correct.triangle)
+  })
 }

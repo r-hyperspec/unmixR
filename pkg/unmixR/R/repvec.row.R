@@ -8,13 +8,13 @@
 ##' @return A matrix with \code{n} rows where each row is \code{v}
 ##' 
 ##' @include unmixR-package.R
-
-## @rdname repvec.row
+##' @rdname repvec
 
 .repvec.row <- function(v, n) t(as.matrix(v))[rep(1, n), ]
 
 .test(.repvec.row) <- function() {
-  # test: verify functionality
+  
+  context ("row-wise repeat vector")
   
   v <- c(1, 2, 3)
   n <- 3
@@ -25,7 +25,7 @@
     c(1,2,3)
   ), ncol=3, byrow=TRUE)
   
-  result <- .repvec.row(v, n)
-  
-  checkEquals(result, expected)
+  test_that ("repeat rows", {
+    expect_equal(.repvec.row (v, n), expected)
+  })
 }

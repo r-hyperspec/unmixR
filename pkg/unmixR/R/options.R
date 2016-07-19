@@ -1,4 +1,4 @@
-##' unmixR Package Options
+##' unmixR's package options
 ##'
 ##' \pkg{unmixR} uses \pkg{settings} for option management.
 ##'
@@ -8,7 +8,13 @@
 ##'   \item{debuglevel}{Indicates how much debuging output is to be produced.
 ##' A value of 1 reports on the overall progress of identifying the endmembers.
 ##' Values > 1 give additional details about the internal processing.}
+##'  \item{implementation.search}{(default: \code{"package:unmixR"}) 
+##'  Environments which to search for unmixing algorithm implementations.}
 ##' }
+##'
+##' @details 
+##' \code{implementation.search}: register packages providing additional implementations by appending \code{"package:packagename"}. 
+##' Implementations. The global environment can be added as \code{".GlobalEnv"}.
 ##'
 ##' @param ... either \code{key = value} pairs to set options or the names of
 ##'   the options to retrieve. If no parameters are passed, a list of all
@@ -31,14 +37,19 @@ unmixR.options <- function (...) {
 }
 
 .options <- settings::options_manager (
-  debuglevel = 0L
+  debuglevel = 0L,
+  implementation.search = "package:unmixR"
   )
 
 .test (unmixR.options) <- function (){
 
+  context ("options")
+  
   ## check list of defined options against (manually kept) list of documented
   ## options.
-  svUnit::checkEquals (c("debuglevel"), names (.options ()))
-
+  test_that("manual check of option list",{
+    expect_equal(sort (names (.options ())),
+                 c("debuglevel", "implementation.search"))
+  })
 }
 

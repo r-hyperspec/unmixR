@@ -5,7 +5,7 @@
 ##' @importFrom stats prcomp
 
 nfindr.default <- function(data, p,
-                           method="LDU", indices=sample(nrow(data), p), ...,
+                           method="99", indices=sample(nrow(data), p), ...,
                            drop=FALSE) {
 
   ## get the selected nfindr method
@@ -13,8 +13,8 @@ nfindr.default <- function(data, p,
 
   # check if the method passed in was found
   if (is.null (nfindrFunc)) {
-    stop ('Invalid option for method parameter, try: "99", "LDU", "SeqLDU", "Brute"')
-    ## TODO: automatic list of available options 
+    stop ('Invalid option for method parameter (', method ,') try: ', 
+          paste (get.implementations ("nfindr"), collapse = ", "))
   }
 
   ## check for p being with the valid range, >= 2

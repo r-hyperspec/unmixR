@@ -1,4 +1,5 @@
 library ("unmixR")
+context ("VCA")
 
 testData <- unmixR:::.testdata$x
 correct  <- unmixR:::.correct

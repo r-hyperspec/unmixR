@@ -23,10 +23,9 @@ Depends:
     MASS,
     nnls
 Suggests:
-    testthat,
     knitr
 Imports:
-    svUnit,
+    testthat,
     settings
 VignetteBuilder: knitr
 Collate:
@@ -34,6 +33,7 @@ Collate:
     'dimensionalityReduction.R'
     'endmembers.R'
     'estSNR.R'
+    'getimplementations.R'
     'mvca.R'
     'unmixR-package.R'
     'nfindr.R'

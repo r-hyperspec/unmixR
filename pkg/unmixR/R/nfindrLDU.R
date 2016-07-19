@@ -25,35 +25,39 @@
 ##' @export
 ##'
 
-nfindrLDU <- function(data, p, indices, ...) {
-  simplex <- .simplex(data, p, indices)
-  nspectra <- nrow(data)
-  pm1 <- 1:(p-1) # create a range from 1 to p minus 1
+nfindrLDU <- function (data, p, indices, ..., debuglevel = unmixR.options("debuglevel")) {
+  
+  if (debuglevel >= 2L) print (indices)
+  
+  simplex <- .simplex (data, p, indices)
+  nspectra <- nrow (data)
+  pm1 <- sequence (p - 1) # create a range from 1 to p minus 1
 
   # local function
   update <- function(simplex, p) {
-    g <- matrix(0, nrow=p, ncol=p-1)
+    g <- matrix (0, nrow = p, ncol = p - 1)
     V <- pm1
 
-    for (i in 1:p) {
+    for (i in sequence (p)) { 
       dup <- simplex
+      
       # swap the i-th and p-th columns of the simplex
-      dup [, c(p, i)] <- dup [, c(i, p)]
+      dup [, c (p, i)] <- dup [, c (i, p)]
 
       # get the partitioned components of the simplex matrix
-      A <- dup[pm1,pm1]
-      b <- dup[pm1,p]
-      c <- dup[p,pm1]
-      d <- dup[p,p]
+      A <- dup [pm1, pm1]
+      b <- dup [pm1, p]
+      c <- dup [p,   pm1]
+      d <- dup [p,   p]
 
-      g[i,] <- crossprod(c, solve(A))
-      V[i] <- as.numeric(abs(d - crossprod(g[i,], b)))
+      g [i,] <- crossprod(c, solve(A))
+      V [i] <- as.numeric(abs (d - crossprod (g [i,], b)))
     }
 
     list(simplex=simplex, V=V, g=g)
   } # end of local function
 
-  vars <- update(simplex, p)
+  vars <- update (simplex, p)
   simplex <- vars$simplex
   g <- vars$g
   V <- vars$V
@@ -72,20 +76,21 @@ nfindrLDU <- function(data, p, indices, ...) {
 
     replace <- FALSE
 
-    for (j in 1:nspectra) {
-      y <- c(1, data[j,])
-      bj <- y[1:(p-1)]
-      dj <- y[p]
+    for (j in sequence (nspectra)) {
+      y <- c (1, data [j,])
+      bj <- y [ sequence (p - 1)]
+      dj <- y [p]
 
-      for (i in 1:p) {
-        Vtest <- as.numeric(abs(dj - crossprod(g[i,], bj)))
+      for (i in sequence (p)) {
+        Vtest <- as.numeric (abs (dj - crossprod (g [i,], bj)))
 
         if (Vtest > V[i] && !(j %in% indices)) {
           replace <- TRUE
-          simplex[,i] <- y
-          indices[i] <- j
-
-          vars <- update(simplex, p)
+          simplex [,i] <- y
+          indices [i] <- j
+          if (debuglevel >= 2L) print (indices)
+          
+          vars <- update (simplex, p)
           simplex <- vars$simplex
           g <- vars$g
           V <- vars$V
@@ -97,7 +102,18 @@ nfindrLDU <- function(data, p, indices, ...) {
     
   } # end of while
 
-  indices <- sort(indices)
+  indices <- sort (indices)
 
   indices
+}
+
+.test (nfindrLDU) <- function (){
+  context ("nfindrLDU")
+
+  ## nfindrLDU fails when simplex is on straight line
+  test_that ("nfindrLDU with simplex corners being straight line", {
+  expect_equal (nfindrLDU (data = .testdata$x [, 1 : 2], p = 3, indices = 1 : 3),
+                .correct)    
+  })  
+
 }
