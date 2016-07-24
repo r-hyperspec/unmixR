@@ -8,7 +8,7 @@
 ##' If the SNR is below this value, the data is first reduced to \code{p-1} and
 ##' then later restored to dimension \code{p}.
 ##'
-##' @param data Data matrix.
+##' @param data Data matrix. Samples in rows frequencies in columns.
 ##'
 ##' @param p Number of endmembers.
 ##'
@@ -31,7 +31,7 @@ dimensionalityReduction <- function(data, p, SNR = estSNR(data, p)){
 
     R <- t(as.matrix(data))    
     SNRth <- 15 + 10 * log10(p)
-    N <- nrow(R) # after transposition, this is the number of pixels
+    N <- nrow(R) # after transposition, this is the number of frequencies
     
     # Reduce depending upon SNR
     
@@ -40,7 +40,7 @@ dimensionalityReduction <- function(data, p, SNR = estSNR(data, p)){
         # obtain projection matrix
         Ud <- svd(tcrossprod(R) / N, nu =  d, nv = 0)$u
         X <- crossprod(Ud, R)
-        u <- rowMeans(X) # after transposition, the means of each pixel
+        u <- rowMeans(X) # after transposition, the means of each dimension
         # project data on subspace ("projective projection")
         Y <- t(t(X) / as.vector(crossprod(X, u)))
 
