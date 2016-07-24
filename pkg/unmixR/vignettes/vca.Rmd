@@ -20,30 +20,31 @@ The algorithm uses two dimensionality reduction techniques. The choice of one of
     dim(d)
     endNum <- 3
     snrThreshhold <- 15 + 10 * log10(endNum)
-    SVDreduced <- dimensionalityReduction(d, endNum, snrThreshhold + 1)
-    PCAreduced <- dimensionalityReduction(d, endNum, snrThreshhold - 1)
+    sameReduced <- dimensionalityReduction(d, endNum, snrThreshhold + 1)
+    lowerReduced <- dimensionalityReduction(d, endNum, snrThreshhold - 1)
 ```
 
 ## Plotting the data
 
 ```{r}
     library(scatterplot3d, quietly = TRUE)
-    colnames(SVDreduced) <- c("x", "y", "z")
-    colnames(PCAreduced) <- c("x", "y", "z")
-    scatterplot3d(SVDreduced, main = "SVD reduced data")
+    colnames(sameReduced) <- c("x", "y", "z")
+    colnames(lowerReduced) <- c("x", "y", "z")
+    scatterplot3d(sameReduced, main = "given dimensionality reduced data")
 ```
 
 ```{r}
-    scatterplot3d(PCAreduced, main = "PCA reduced data")
+    scatterplot3d(lowerReduced, main = "lower dimensionality reduced data")
 ```
 
+Using the second approach the algorithm projects the data onto the subspace of even lower dimansionality and then sets certain value the "missing" dimension. That is why points colored in red have the same z value, because the data was reduced to the dimensionality of 2 (x and y) and then z value was set to a certain number.
 ```{r}
-    my3dplot <- scatterplot3d(PCAreduced, color = "red", zlim = c(-1, 3), main = "SVD and PCA transformed data")
-    my3dplot$points3d(SVDreduced, type = "h", col = "blue")
-    legend(x = "bottomright", pch = 1, col = c("blue", "red"), legend = c("SVD", "PCA"))
+    my3dplot <- scatterplot3d(lowerReduced, color = "red", zlim = c(-1, 3), main = "transformed data")
+    my3dplot$points3d(sameReduced, type = "h", col = "blue")
+    legend(x = "bottomright", pch = 1, col = c("blue", "red"), legend = c("same", "lower"))
 ```
 
-Since the noise in this example is very low the algorithm will use the first approach. Using PCA the algorithm projects the data onto the subspace of even lower dimansionality and then sets certain value the "missing" dimension. That is why points colored in red have the same z value, because the data was reduced to the dimensionality of 2 (x and y) and then z value was set to a certain number.
+Since the noise in this example is very low the algorithm will use the first approach.
 
 ## VCA iterations
 The VCA algorithm works in the following way.\
@@ -140,3 +141,7 @@ Finally all endmembers are found
     curplot = 4
     plotVectors(collection[[curplot]]$m, collection[[curplot]]$v)
 ```
+
+##References
+
+[1] Nascimento, J.M.P. and Bioucas Dias, J.M. "Vertex component analysis: a fast algorithm to unmix hyperspectral data," Geoscience and Remote Sensing, vol. 43, no. 4, pp. 898-910, April 2005, doi: 10.1109/TGRS.2005.844293
