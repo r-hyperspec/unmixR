@@ -1,0 +1,142 @@
+---
+title: "vca"
+author: "Anton Belov"
+date: "July 1, 2016"
+output: html_document
+---
+
+```{r}
+    library(plot3D)
+    d <- unmixR:::.testdata$x
+    str(d)
+    scatter3D(d[, 1], d[, 2], d[, 3])
+```
+
+## Dimensionality reduction
+The algorithm uses two dimensionality reduction techniques. The choice of one of them depends on the sound to noise ratio of data. The theshhold value is equal to $15 + 10\lg p$ The dimensionality reduction function not only reduces dimensionality of data but also transforms it to amplify noise.
+
+```{r}
+    library(unmixR, quietly = TRUE)
+    dim(d)
+    endNum <- 3
+    snrThreshhold <- 15 + 10 * log10(endNum)
+    SVDreduced <- dimensionalityReduction(d, endNum, snrThreshhold + 1)
+    PCAreduced <- dimensionalityReduction(d, endNum, snrThreshhold - 1)
+```
+
+## Plotting the data
+
+```{r}
+    library(scatterplot3d, quietly = TRUE)
+    colnames(SVDreduced) <- c("x", "y", "z")
+    colnames(PCAreduced) <- c("x", "y", "z")
+    scatterplot3d(SVDreduced, main = "SVD reduced data")
+```
+
+```{r}
+    scatterplot3d(PCAreduced, main = "PCA reduced data")
+```
+
+```{r}
+    my3dplot <- scatterplot3d(PCAreduced, color = "red", zlim = c(-1, 3), main = "SVD and PCA transformed data")
+    my3dplot$points3d(SVDreduced, type = "h", col = "blue")
+    legend(x = "bottomright", pch = 1, col = c("blue", "red"), legend = c("SVD", "PCA"))
+```
+
+Since the noise in this example is very low the algorithm will use the first approach. Using PCA the algorithm projects the data onto the subspace of even lower dimansionality and then sets certain value the "missing" dimension. That is why points colored in red have the same z value, because the data was reduced to the dimensionality of 2 (x and y) and then z value was set to a certain number.
+
+## VCA iterations
+The VCA algorithm works in the following way.\
+1. reduce the data to the dimensionality equal to p where p is the number of endmembers\
+2. initialize A - p x p matrix that stores endmembers. The first column is set to some synthrtic endmember value.\
+3. for i from 1 to p\
+3.1 calculate a vector orthogonal to columns of A\
+3.2 project the data onto this vector\
+3.3 find which vector has the maximal absolute value of projection\
+3.4 let k be the index of such vector in the dataset set k-th column of A to k-th column of data\
+4.return A\
+
+The following implementation is given in [1]
+
+```{r}
+    plotVectors <- function(matrix, vector){
+        resMatrix <- matrix(rep(0, nrow(matrix)), ncol = 1)
+        for (i in 1:ncol(matrix)) {
+            resMatrix = cbind(resMatrix, matrix[,i], rep(0, nrow(matrix)))
+        }
+        resMatrix <- t(resMatrix)
+        colnames(resMatrix) <- c("x", "y", "z")
+        
+        resVector <- cbind(vector, rep(0, length(vector)))
+        resVector <- t(resVector)
+        #resMatrix <- rbind(resMatrix, resVector)
+        
+        sc3 <- scatterplot3d(resMatrix, type = "h", xlim = c(-1, 1), ylim = c(-1, 1), zlim = c(-1, 1), main = "VCA endmembers")
+        sc3$points3d(dimensionalityReduction(d, 3))
+        sc3$points3d(resMatrix, col = "red", type = "p")
+        sc3$points3d(resMatrix, col = "red", type = "l")
+        sc3$points3d(resVector, type = "h")
+        sc3$points3d(resVector, col = "blue", type = "p")
+        sc3$points3d(resVector, col = "blue", type = "l")
+        legend(x = "topright", pch = 1, col = c("red", "blue"), legend = c("current endmembers", "projection vector"))
+    }
+```
+
+```{r}
+    p <- 3
+    Y <- dimensionalityReduction(d, p)
+    Y <- t(Y)
+    set.seed(123)
+    indices <- array(0, p)
+    A <- matrix(0, nrow = p, ncol = p)
+    A[p, 1] <- 1
+
+    collection <- list()
+    for(i in 1:p){
+        #getting vector f orthonormal to the space spanned by A
+        w <- stats::rnorm(p, sd = 1)
+        f <- (diag(p) - A %*% ginv(A)) %*% w
+        f <- f / sqrt(sum(f^2))
+        
+        iterData <- list(m = A, v = f)
+        collection <- append(collection, list(iterData))
+        
+        #projecting data onto f
+        v <- crossprod(f, Y)
+        #getting index of the maximal projection
+        k <- which.max(abs(v))
+        #ith column of A is set to estimated endmember
+        A[, i] <- Y[, k]
+        indices[i] <- k
+        
+        if(i == p){
+            blankVector <- f*0
+            iterData <- list(m = A, v = blankVector)
+            collection <- append(collection, list(iterData))
+        }
+    }
+```
+
+Initially matrix A is initialized with one "fake" endmember with coordinates {0,0,...,1} and vector f is orthogonal to this endmember.
+```{r}
+    curplot = 1
+    plotVectors(collection[[curplot]]$m, collection[[curplot]]$v)
+```
+
+Then the first real endmember is found and the vector f is now orthogonal to this endmember
+```{r}
+    curplot = 2
+    plotVectors(collection[[curplot]]$m, collection[[curplot]]$v)
+```
+
+Then the second endmember is found and the vector f is now orthogonal to the space spanned by two endmembers
+```{r}
+    curplot = 3
+    plotVectors(collection[[curplot]]$m, collection[[curplot]]$v)
+```
+
+Finally all endmembers are found
+```{r}
+    curplot = 4
+    plotVectors(collection[[curplot]]$m, collection[[curplot]]$v)
+```
