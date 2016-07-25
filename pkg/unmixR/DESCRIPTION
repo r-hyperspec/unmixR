@@ -1,7 +1,7 @@
 Package: unmixR
 Type: Package
 Title: Hyperspectral Unmixing Methods
-Version: 0.2.224
+Version: 0.2.233
 Date: 2016-07-25
 Authors@R: c(person("Anton", "Belov", role = "aut"),
 	person("Conor", "McManus", role = "aut"),
@@ -23,7 +23,9 @@ Depends:
     MASS,
     nnls
 Suggests:
-    knitr
+    knitr,
+    plot3D,
+    scatterplot3d
 Imports:
     testthat,
     settings

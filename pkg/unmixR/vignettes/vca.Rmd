@@ -1,9 +1,13 @@
----
-title: "vca"
-author: "Anton Belov"
-date: "July 1, 2016"
-output: html_document
----
+<!--
+%\VignetteEngine{knitr::knitr}
+%\VignetteIndexEntry{VCA with `unmixR`}
+%\VignetteKeywords{hyperspectral unmixing, vertex component analysis, VCA}
+ -->
+
+VCA with unmixR
+========================================================
+
+Anton Belov, July 1, 2016
 
 ```{r}
     library(plot3D)
@@ -66,11 +70,11 @@ The following implementation is given in [1]
         }
         resMatrix <- t(resMatrix)
         colnames(resMatrix) <- c("x", "y", "z")
-        
+
         resVector <- cbind(vector, rep(0, length(vector)))
         resVector <- t(resVector)
         #resMatrix <- rbind(resMatrix, resVector)
-        
+
         sc3 <- scatterplot3d(resMatrix, type = "h", xlim = c(-1, 1), ylim = c(-1, 1), zlim = c(-1, 1), main = "VCA endmembers")
         sc3$points3d(dimensionalityReduction(d, 3))
         sc3$points3d(resMatrix, col = "red", type = "p")
@@ -97,10 +101,10 @@ The following implementation is given in [1]
         w <- stats::rnorm(p, sd = 1)
         f <- (diag(p) - A %*% ginv(A)) %*% w
         f <- f / sqrt(sum(f^2))
-        
+
         iterData <- list(m = A, v = f)
         collection <- append(collection, list(iterData))
-        
+
         #projecting data onto f
         v <- crossprod(f, Y)
         #getting index of the maximal projection
@@ -108,7 +112,7 @@ The following implementation is given in [1]
         #ith column of A is set to estimated endmember
         A[, i] <- Y[, k]
         indices[i] <- k
-        
+
         if(i == p){
             blankVector <- f*0
             iterData <- list(m = A, v = blankVector)
