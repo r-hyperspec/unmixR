@@ -1,11 +1,13 @@
-##' Repeat a Vector Column-Wise
+##' Repeat a Vector Row or Column-Wise
 ##' 
-##' Takes in a vector and repeats it column-wise to make a matrix with
-##' \code{n} columns
+##' Takes in a vector and repeats it either row-wise or column-wise to make a
+##' matrix with either \code{n} rows or \code{n} columns.
 ##' 
-##' @param v The vector that should be repeated
-##' @param n The number of columns in the resulting matrix
-##' @return A matrix with \code{n} columns where each column is \code{v}
+##' @param v The vector that should be repeated.
+##'
+##' @param n The number of rows or columns in the resulting matrix.
+##'
+##' @return A matrix with \code{n} rows/columns where each row/column is \code{v}.
 ##' 
 ##' @include unmixR-package.R
 ##' @rdname repvec

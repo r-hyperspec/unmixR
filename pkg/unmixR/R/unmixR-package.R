@@ -22,7 +22,6 @@
 ##' @import hyperSpec
 ##' @import nnls
 ##' @import MASS
-##' @importFrom svUnit test<-
 
 # This code needs to be here due to the order in which
 # things are sourced, apparently.  It made more sense to

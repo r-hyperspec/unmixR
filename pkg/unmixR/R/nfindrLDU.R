@@ -12,6 +12,9 @@
 ##'
 ##' @param indices Indices used in the simplex estimation.
 ##'
+##' @param debuglevel If \code{>= 1L}, print simplices with their 
+##' corresponding volume.
+##' 
 ##' @param ... Extra unused parameters passed in from
 ##'   \code{\link{nfindr}}.
 ##'
