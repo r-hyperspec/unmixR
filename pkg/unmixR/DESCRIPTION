@@ -29,6 +29,7 @@ Suggests:
 Imports:
     testthat,
     settings
+    limSolve
 VignetteBuilder: knitr
 Collate:
     'demo_data.R'
@@ -38,6 +39,7 @@ Collate:
     'getimplementations.R'
     'mvca.R'
     'unmixR-package.R'
+    'ice.R'
     'nfindr.R'
     'nfindr.default.R'
     'nfindr.formula.R'
