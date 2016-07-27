@@ -1,16 +1,14 @@
 <!--
 %\VignetteEngine{knitr::knitr}
 %\VignetteIndexEntry{Report of unittests for `unmixR`}
-%\VignetteDepends{svUnit}
--->
-`unmixR` unit test report
+ -->
+unmixR unit test report
 ========================================================
 
-This vignette runs the unit tests (obviously at build time)
+This vignette runs the unit tests at build time.
 
 ```{r}
 require ("unmixR")
+require ("testthat")
 unmixR.unittest ()
 ```
-
-

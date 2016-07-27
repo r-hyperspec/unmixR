@@ -14,14 +14,14 @@
 ##' @param ... Extra unused parameters passed in from 
 ##' \code{\link{nfindr}}.
 ##'
-##' @param debuglevel If \code{>= 1L}, print all simplices with their 
+##' @param debuglevel If \code{>= 1L}, print top simplices with their 
 ##' corresponding volume.
 ##' 
 ##' @return The indices of the endmembers in the original dataset or 
 ##' a data.frame holding indices and corresponding volume if \code{volume = TRUE}.
 ##'
 ##' @export
-##' @importFrom utils combn
+##' @importFrom utils combn tail
 
 nfindrBrute <- function(data, p, ..., debuglevel = .options ("debuglevel")) {
   # generate all possible unique combinations of p indices
@@ -43,7 +43,7 @@ nfindrBrute <- function(data, p, ..., debuglevel = .options ("debuglevel")) {
     DF <- as.data.frame(cbind(t (combos), volumes))
   	DF <- DF [order(DF$volumes),]
   
-  	message("Endmember combinations & their volumes:\n")
+  	message("Top endmember combinations & their volumes:\n")
   }
   
   if (debuglevel >= 1L) 
