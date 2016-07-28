@@ -62,6 +62,10 @@ vca.default <- function(data, p, method = c("05lean", "mvca", "05"), seed = NULL
   test_that("correct results for all available methods: triangle data", {
     for (i in implementations) {
       expect_equal (vca (.testdata$x, p = 3, method = i)$indices, .correct)
+      
+      indices <- vca (.testdata$x, p = 2, method = i)$indices
+      expect_true (all (indices %in% .correct))
+      expect_false (any (duplicated (indices)))
     }
   })
 
