@@ -1,8 +1,8 @@
 Package: unmixR
 Type: Package
 Title: Hyperspectral Unmixing Methods
-Version: 0.2.215
-Date: 2016-07-12
+Version: 0.2.243
+Date: 2016-07-26
 Authors@R: c(person("Anton", "Belov", role = "aut"),
 	person("Conor", "McManus", role = "aut"),
 	person("Claudia", "Beleites", role = c("aut", "cre"),
@@ -23,10 +23,15 @@ Depends:
     MASS,
     nnls
 Suggests:
-    knitr
+    knitr,
+    plot3D,
+    scatterplot3d,
+    ggplot2
 Imports:
     testthat,
-    settings
+    settings,
+    limSolve,
+    matrixcalc
 VignetteBuilder: knitr
 Collate:
     'demo_data.R'
@@ -34,6 +39,7 @@ Collate:
     'endmembers.R'
     'estSNR.R'
     'getimplementations.R'
+    'ice.R'
     'mvca.R'
     'unmixR-package.R'
     'nfindr.R'

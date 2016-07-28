@@ -1,0 +1,201 @@
+<!--
+%\VignetteEngine{knitr::knitr}
+%\VignetteIndexEntry{ICE with `unmixR`}
+%\VignetteKeywords{hyperspectral unmixing, iterative constrained endmembers, ICE}
+ -->
+
+
+ICE with unmixR
+========================================================
+
+Anton Belov, July 25, 2016
+
+## Algorithm description
+
+Iterative constrained endmembers is an iterative cyclic descent algorithm which converges to an optimal solution for the endmembers. Unlike many other algorithms it does not require pure pixels to be present in the scene. The algorithm makes three steps:\
+1. Estimate abundances\
+2. Estimate endmembers\
+3. check for convergence
+
+## Abundances estimation
+
+Te abundances are calculated via quadratic programing. There are two possible situations. First one is that the assumption is correct. In this case vertices inside the simplex are convex combinations of simplex vertices.
+$$\sum_{i=1}^{n}a_{i}x_{i}=r$$
+Where $x_{i}$ is a vertex of a simplex.
+
+A convex combination has following properties
+$$\sum_{i=1}^{n}a_{i}=1$$
+$$0\leqslant a_{i}\leqslant 1$$
+A convex combination is also a barycentric one and the coordinates of a point are its barycentric coordinates. To find the coordinates it is enough to solve the following system.
+$$\begin{pmatrix}
+x_{1} & x_{2} & . & x_{n}\\
+y_{1} & y_{2} & . & y_{n}\\
+. & . & . & .\\
+1 & 1 & . & 1
+\end{pmatrix}a = \begin{pmatrix}
+x_{r}\\
+y_{r}\\
+.\\
+1
+\end{pmatrix}$$
+Where a is a vector of abundances. The last line constrains a sum of coordinates and also makes the combination unique.
+
+But if there are no pure pixels for each of the endmembers then it is possible that a point r will be outside of the simplex. The barycentric coordinates sum to one but they are not necessarily non-negative. Here are some examples.
+
+#### Point inside a simplex
+```{r}
+#vertices of a simplex
+a <- c(1, 1)
+b <- c(5, 5)
+c <- c(6, 2)
+m <- cbind(a, b, c)
+plot(x = m[1,], y = m[2,])
+polygon(x = m[1,], y = m[2,])
+#point inside a simplex
+p <- c(5, 3)
+points(x = p[1], y = p[2])
+```
+
+Let's calculate the abundances.
+```{r}
+m <- rbind(m, rep(1, ncol(m)))
+p <- c(p, 1)
+solve(m, p)
+```
+Least squares with non-negativity constraint.
+```{r}
+nnls::nnls(m, p)$x
+```
+Ordinary least squares with no constraints. Since the point is inside the simplex they are not required.
+```{r}
+limSolve::lsei(A = m, B = p, verbose = FALSE)$X
+```
+
+All methods find the same solution. But what will happen if the point is not inside the simplex?
+
+#### point outside a simplex
+```{r}
+m <- cbind(a, b, c)
+plot(x = m[1,], y = m[2,])
+polygon(x = m[1,], y = m[2,])
+p <- c(1, 3)
+points(x = p[1], y = p[2])
+```
+
+True barycentric coordinates can be found solving the system of linear equasions.
+```{r}
+m1 <- rbind(m, rep(1, ncol(m)))
+p1 <- c(p, 1)
+solve(m1, p1)
+```
+Least squres with non-negativity constraint.
+```{r}
+nnls::nnls(m1, p1)$x
+```
+Now we have to add both constraints to the least squares method. Note that the matrix m is used not m1.
+Lsei stands for least squares with equality and inequality constraints. It solves $\left \| Ax - b \right \|^{2}$ problem with $Ex=f$ and $Gx\geq h$ constraints.
+
+The abundances sum to one means$$\begin{pmatrix}
+1 & 1 & ... & 1
+\end{pmatrix}\begin{pmatrix}
+a_{1}\\
+a_{2}\\
+...\\
+a_{n}
+\end{pmatrix}=1$$
+The abundances are non-negative means
+$$\begin{pmatrix}
+1 & 0 & . & 0\\
+0 & 1 & . & 0\\
+. & . & . & .\\
+0 & 0 & 0 & 1
+\end{pmatrix}\begin{pmatrix}
+a_{1}\\
+a_{2}\\
+...\\
+a_{n}
+\end{pmatrix}\geqslant \begin{pmatrix}
+0\\
+0\\
+...\\
+0
+\end{pmatrix}$$
+```{r}
+E = rep(1, ncol(m))
+G = diag(ncol(m))
+H = rep(0, ncol(m))
+limSolve::lsei(A = m, B = p, E = E, F = 1, G = G, H = H, verbose = FALSE)$X
+```
+
+The resulting point is the closest point to p from the simplex. In our case it is (2, 2).
+```{r}
+c(sum(m[1,]*nnls::nnls(m1, p1)$x),
+sum(m[2,]*nnls::nnls(m1, p1)$x))
+```
+
+In this case the method solve is not able to find correct answer but two other methods are. Let's consider another point outside a simplex.
+
+```{r}
+m <- cbind(a, b, c)
+plot(x = m[1,], y = m[2,])
+polygon(x = m[1,], y = m[2,])
+p <- c(6, 5)
+points(x = p[1], y = p[2])
+```
+
+```{r}
+m1 <- rbind(m, rep(1, ncol(m)))
+p1 <- c(p, 1)
+solve(m1, p1)
+```
+
+```{r}
+nnls::nnls(m1, p1)$x
+```
+
+```{r}
+E = rep(1, ncol(m))
+G = diag(ncol(m))
+H = rep(0, ncol(m))
+abundances <- limSolve::lsei(A = m, B = p, E = E, F = 1, G = G, H = H, verbose = FALSE)$X
+abundances
+```
+
+The resulting point is the closest point to p from the simplex. In our case it is (5.1, 4.7).
+```{r}
+m %*% abundances
+```
+Only the last method gives the correct answer.
+
+## Endmembers estimation
+
+We assume that pixels are linear combinations of endmembers.
+$$Y = MA$$
+$$A^{T}M^{T} = Y^{T}$$
+However the matrix A is not square one end not invertible. To calculate M we will use left inverse matrix $$(A^{T})_{left}^{-1} = (AA^{T})^{-1} A$$
+$$AA^{T}M^{T} = AY^{T}$$
+$$(AA^{T})^{-1}AA^{T}M^{T} = (AA^{T})^{-1}AY^{T}$$
+$$M^{T} = (AA^{T})^{-1}AY^{T}$$
+To make the model more resistant to nise in data a regularization paremeter is used. Futher information about regularization peremeter can be fount in [1].
+$$M^{T} =(AA^{T} + \lambda (I - \frac{11^{T}}{m}))^{-1}AY^{T}$$
+
+## Laser dataset example
+
+```{r}
+    library(hyperSpec, quietly = TRUE)
+    library(ggplot2)
+    library(unmixR)
+    d <- as.matrix(laser)
+    Ud <- svd(crossprod(d), nu = 2)$u
+    reducedData <- d %*% Ud
+    base::colnames(reducedData) <- c("x", "y")
+    qplot(data =  as.data.frame(reducedData), x = x, y = y, geom = "point", main = "laser data reduced to dimensionality of 2")
+```
+```{r}
+    set.seed(1234)
+    res <- ice(laser, 3, mu = 0.00001, t = 0.999)
+    endm <- res$endmembers
+    reducedEndmembers <- endm %*% Ud
+    base::colnames(reducedEndmembers) <- c("x", "y")
+    ggplot() + geom_point(data =  as.data.frame(reducedData), mapping = aes(x = x, y = y)) + geom_polygon(data = as.data.frame(reducedEndmembers), mapping = aes(x = x, y = y), alpha = 0.05, color = "red") + ggtitle("Ice simplex")
+```
