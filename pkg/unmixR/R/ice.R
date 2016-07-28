@@ -1,16 +1,25 @@
 ##' Iterated Constrained endmembers
 ##'
-##' Details?
+##' This method iteratively computes endmembers and abundances using quadratic
+##' programming until it converges to a solution.
 ##'
-##' @param data something
+##' @param data Data matrix. Samples in rows frequencies in columns.
 ##'
-##' @param p something
+##' @param p Number of endmembers.
 ##'
-##' @param mu something
+##' @param mu Regularization parameter from 0 to 1 that penaltizes the model 
+##' for large simplex volume. The smaller the value the bigger the simplex
 ##'
-##' @param t something
+##' @param t Tolerance ratio from 0 to 1 that affects number of iterations.
+##' The higher the value the more iterations.
 ##'
-##' @return something
+##' @return Structure with endmembers and abundances such that \eqn{abundances * endmembers = data_}
+##' where data_ is an approximation of data. Endmembers are a matrix with samples in rows frequencies in columns.
+##'
+##' @references M. Berman, H. Kiiveri, R. Lagerstrom, A. Ernst, R. Dunne, and
+##' J. F. Huntington, “Ice: A statistical approach to identifying endmembers
+##' in hyperspectral images: Learning from Earth’s shapes and colors,”
+##' IEEE Trans. Geosci. Remote Sens., vol. 42, no. 10, pp. 2085–2095, Oct. 2004.
 ##'
 ##' @export
 ##'
@@ -18,7 +27,7 @@
 ##' @importFrom limSolve lsei
 ##' @importFrom matrixcalc matrix.trace frobenius.norm
 ##'
-ice <- function(data, p, mu = 0.01, t = 0.9){
+ice <- function(data, p, mu = 0.01, t = 0.99){
 
     data <- t(as.matrix(data))
     #selecting several points as initial endmembers
