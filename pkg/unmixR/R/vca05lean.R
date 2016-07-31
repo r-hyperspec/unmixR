@@ -6,7 +6,7 @@
 ##' has only these essential components included.
 ##' Intended to be called from \code{\link{vca}}.
 ##' 
-##' @param data Data matrix.
+##' @param data Data matrix. Samples in rows frequencies in columns.
 ##'
 ##' @param p Number of endmembers.
 ##'

@@ -192,7 +192,8 @@ $$M^{T} =(AA^{T} + \lambda (I - \frac{11^{T}}{m}))^{-1}AY^{T}$$
     qplot(data =  as.data.frame(reducedData), x = x, y = y, geom = "point", main = "laser data reduced to dimensionality of 2")
 ```
 ```{r}
-    res <- ice(laser, 3, mu = 0.001, t = 0.99)
+    set.seed(1234)
+    res <- ice(laser, 3, mu = 0.00001, t = 0.999)
     endm <- res$endmembers
     reducedEndmembers <- endm %*% Ud
     base::colnames(reducedEndmembers) <- c("x", "y")
