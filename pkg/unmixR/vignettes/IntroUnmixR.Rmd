@@ -14,8 +14,6 @@ Bryan A. Hanson, July 29, 2016
 #suppressPackageStartupMessages(library("unmixR"))
 ```
 
-DRAFT: some areas need expanding, needs references
-
 This vignette provides a general background on hyperspectral unmixing.  The `unmixR` package provides several other vignettes that detail each of the main algorithms available in the package.  You can access them as follows:
 
 ```{r vigs, eval = FALSE}
@@ -33,11 +31,12 @@ Hyperspectral data are spectroscopic data collected in a spatial or temporal con
 
 Hyperspectral data sets are encountered in many disciplines.  Here are some examples of hyperspectral data sets.
 
-* Biomedical imaging: a series of Raman spectra are collected as a microscopic piece of tissue is scanned in an $x,y$ plane.  Such studies are of interest for real time imaging of surgical tissue samples.  Other types of spectroscopy can be employed, for instance mass spectrometry.
+* Biomedical imaging: a series of Raman spectra are collected as a microscopic piece of tissue is scanned in an $x,y$ plane.  Such studies are of interest for real time imaging of surgical tissue samples.  Other types of spectroscopy can be employed, for instance mass spectrometry.<sup id="a1">[1](#fn1)</sup>&nbsp;&nbsp;<sup id="a2">[2](#fn2)</sup>
 
-* Airborne imaging: A satellite, plane or drone flies a pattern over land and collects spectra in the visible, UV or NIR range.  Such studies have been used to map mineral formations and to study the quality of forest canopies.
 
-* Art history:  A painting is scanned to examine the underlying pigments and perhaps reveal the presence of additional hidden images.
+* Airborne imaging: A satellite, plane or drone flies a pattern over land and collects spectra in the visible, UV or NIR range.  Such studies have been used to map mineral formations and to study the quality of forest canopies.<sup id="a3">[3](#fn3)</sup>&nbsp;&nbsp;<sup id="a4">[4](#fn4)</sup>
+
+* Art history:  A painting is scanned to examine the underlying pigments and perhaps reveal the presence of additional hidden images.<sup id="a5">[5](#fn5)</sup>
 
 ## What is Meant by Unmixing?
 
@@ -53,7 +52,7 @@ Terminology:  Since so many applications involve collecting data over a $x,y$ gr
 
 ## An Example
 
-Much of the hyperspectral unmixing literature comes from the field of remote sensing where airborne platforms are employed to collect the data.  The mineral-rich landscape example above is not an abstraction.  A frequently used example is the AVIRIS study of the cuprite region in the state of Nevada, USA.  This region is devoid of most vegetation and rich in geological formations.  MORE ON AVIRIS.
+Much of the hyperspectral unmixing literature comes from the field of remote sensing where airborne platforms are employed to collect the data.  The mineral-rich landscape example above is not an abstraction.  A frequently used example is the AVIRIS study of the cuprite region in the state of Nevada, USA.  This region is devoid of most vegetation and rich in geological formations.<sup id="a6">[6](#fn6)</sup>
 
 The following results are based on unmixing a small portion of the cuprite data set.  The first figure shows two of the endmembers (careful work and comparison to ground-based geological studies suggest that there are at least 19 distinct mineral entities present).  Using the appropriate domain knowledge these endmembers can be identified.
 
@@ -128,5 +127,19 @@ With this background in mind, you should be ready to read the vignettes on indiv
 ## Project History
 
 The development of `unmixR` was initiated by Claudia Beleites.  Most of the code was written by Conor McManus (2013) and Anton Belov (2016).  Conor and Anton were participants in the Google Summer of Code program.  Additional code was written by Claudia and Bryan A. Hanson.  Claudia, Bryan and Simon Fuller were the mentors in the GSOC program.
+
+## Notes
+
+<b id="fn1">1</b> Bergner et. al. "Hyperspectral unmixing of Raman micro-images for assessment of morphological and chemical parameters in non-dried brain tumor specimens" Anal. Bioanalytical Chemistry vol. 405 no. 27 pp. 8719-8728 (2013).[&crarr;](#a1)
+
+<b id="fn2">2</b> Hedegaard et. al. "Spectral unmixing and clustering algorithms for assessment of single cells by Raman microscopic imaging" Theoretical Chemistry Accounts vol. 130 no. 4-6 pp. 1249-1260 (2011).[&crarr;](#a2)
+
+<b id="fn3">3</b> Green et. al. "Imaging spectroscopy and the Airborne Visible Infrared Imaging Spectrometer (AVIRIS)" Remote Sensing Environment vol. 65 no. 3 pp. 227-248 (1998).[&crarr;](#a3)
+
+<b id="fn4">4</b> Jetz et. al. "Monitoring plant functional diversity from space" Nature Plants vol. 2 no. 3 pp. ? (2016).[&crarr;](#a4)
+
+<b id="fn5">5</b> Dooley et. al "Mapping of egg yolk and animal skin glue paint binders in Early Renaissance paintings using near infrared reflectance imaging spectroscopy" Analyst vol. 138 no. 17 pp. 4838-4848 (2013).[&crarr;](#a5)
+
+<b id="fn6">6</b> Green1998 op. cit. [&crarr;](#a6)
 
 ![GSOC Logo](GSoC2016Logo.png)
