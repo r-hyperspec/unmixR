@@ -13,8 +13,8 @@
 ##' @param t Tolerance ratio from 0 to 1 that affects number of iterations.
 ##' The higher the value the more iterations.
 ##'
-##' @return Structure with endmembers and abundances such that \eqn{abundances * endmembers = data_}
-##' where data_ is an approximation of data. Endmembers are a matrix with samples in rows frequencies in columns.
+##' @return Structure with endmembers and abundances such that \eqn{abundances * endmembers = data\_}
+##' where data\_ is an approximation of data. Endmembers are a matrix with samples in rows frequencies in columns.
 ##'
 ##' @references M. Berman, H. Kiiveri, R. Lagerstrom, A. Ernst, R. Dunne, and
 ##' J. F. Huntington, “Ice: A statistical approach to identifying endmembers

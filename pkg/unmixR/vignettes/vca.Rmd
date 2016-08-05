@@ -1,6 +1,6 @@
 <!--
 %\VignetteEngine{knitr::knitr}
-%\VignetteIndexEntry{VCA with `unmixR`}
+%\VignetteIndexEntry{VCA with unmixR}
 %\VignetteKeywords{hyperspectral unmixing, vertex component analysis, VCA}
  -->
 
