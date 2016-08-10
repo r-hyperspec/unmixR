@@ -13,13 +13,19 @@
 ##' @param t Tolerance ratio from 0 to 1 that affects number of iterations.
 ##' The higher the value the more iterations.
 ##'
-##' @return Structure with endmembers and abundances such that \eqn{abundances * endmembers = data_}
-##' where data_ is an approximation of data. Endmembers are a matrix with samples in rows frequencies in columns.
+##' @return Structure with endmembers and abundances such that \eqn{abundances * endmembers = data\_}
+##' where data\_ is an approximation of data. Endmembers are a matrix with samples in rows frequencies in columns.
 ##'
 ##' @references M. Berman, H. Kiiveri, R. Lagerstrom, A. Ernst, R. Dunne, and
 ##' J. F. Huntington, “Ice: A statistical approach to identifying endmembers
 ##' in hyperspectral images: Learning from Earth’s shapes and colors,”
 ##' IEEE Trans. Geosci. Remote Sens., vol. 42, no. 10, pp. 2085–2095, Oct. 2004.
+##' 
+##' E. M. Sigurdsson, A. Plaza and J. A. Benediktsson, "GPU Implementation of 
+##' Iterative-Constrained Endmember Extraction from Remotely Sensed Hyperspectral
+##' Images," in IEEE Journal of Selected Topics in Applied Earth Observations and
+##' Remote Sensing, vol. 8, no. 6, pp. 2939-2949, June 2015.
+##' doi: 10.1109/JSTARS.2015.2441699
 ##'
 ##' @export
 ##'

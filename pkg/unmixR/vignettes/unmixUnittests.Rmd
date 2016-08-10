@@ -1,6 +1,6 @@
 <!--
 %\VignetteEngine{knitr::knitr}
-%\VignetteIndexEntry{Report of unittests for `unmixR`}
+%\VignetteIndexEntry{Report of unittests for unmixR}
  -->
 unmixR unit test report
 ========================================================

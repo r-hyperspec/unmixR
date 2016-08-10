@@ -1,6 +1,6 @@
 <!--
 %\VignetteEngine{knitr::knitr}
-%\VignetteIndexEntry{ICE with `unmixR`}
+%\VignetteIndexEntry{ICE with unmixR}
 %\VignetteKeywords{hyperspectral unmixing, iterative constrained endmembers, ICE}
  -->
 
