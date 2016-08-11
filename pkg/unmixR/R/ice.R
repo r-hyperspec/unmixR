@@ -33,7 +33,7 @@
 ##' @importFrom limSolve lsei
 ##' @importFrom matrixcalc matrix.trace frobenius.norm
 ##'
-ice <- function(data, p, mu = 0.01, t = 0.99){
+ice <- function(data, p, mu = 0.00001, t = 0.9999){
 
     data <- t(as.matrix(data))
     #selecting several points as initial endmembers

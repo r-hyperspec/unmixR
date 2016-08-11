@@ -43,7 +43,7 @@ Where a is a vector of abundances. The last line constrains a sum of coordinates
 But if there are no pure pixels for each of the endmembers then it is possible that a point r will be outside of the simplex. The barycentric coordinates sum to one but they are not necessarily non-negative. Here are some examples.
 
 #### Point inside a simplex
-```{r, cache=TRUE}
+```{r}
 #vertices of a simplex
 a <- c(1, 1)
 b <- c(5, 5)
@@ -57,24 +57,24 @@ points(x = p[1], y = p[2])
 ```
 
 Let's calculate the abundances.
-```{r, cache=TRUE}
+```{r}
 m <- rbind(m, rep(1, ncol(m)))
 p <- c(p, 1)
 solve(m, p)
 ```
 Least squares with non-negativity constraint.
-```{r, cache=TRUE}
+```{r}
 nnls::nnls(m, p)$x
 ```
 Ordinary least squares with no constraints. Since the point is inside the simplex they are not required.
-```{r, cache=TRUE}
+```{r}
 limSolve::lsei(A = m, B = p, verbose = FALSE)$X
 ```
 
 All methods find the same solution. But what will happen if the point is not inside the simplex?
 
 #### point outside a simplex
-```{r, cache=TRUE}
+```{r}
 m <- cbind(a, b, c)
 plot(x = m[1,], y = m[2,])
 polygon(x = m[1,], y = m[2,])
@@ -83,13 +83,13 @@ points(x = p[1], y = p[2])
 ```
 
 True barycentric coordinates can be found solving the system of linear equasions.
-```{r, cache=TRUE}
+```{r}
 m1 <- rbind(m, rep(1, ncol(m)))
 p1 <- c(p, 1)
 solve(m1, p1)
 ```
 Least squres with non-negativity constraint.
-```{r, cache=TRUE}
+```{r}
 nnls::nnls(m1, p1)$x
 ```
 Now we have to add both constraints to the least squares method. Note that the matrix m is used not m1.
@@ -120,7 +120,7 @@ a_{n}
 ...\\
 0
 \end{pmatrix}$$
-```{r, cache=TRUE}
+```{r}
 E = rep(1, ncol(m))
 G = diag(ncol(m))
 H = rep(0, ncol(m))
@@ -128,14 +128,14 @@ limSolve::lsei(A = m, B = p, E = E, F = 1, G = G, H = H, verbose = FALSE)$X
 ```
 
 The resulting point is the closest point to p from the simplex. In our case it is (2, 2).
-```{r, cache=TRUE}
+```{r}
 c(sum(m[1,]*nnls::nnls(m1, p1)$x),
 sum(m[2,]*nnls::nnls(m1, p1)$x))
 ```
 
 In this case the method solve is not able to find correct answer but two other methods are. Let's consider another point outside a simplex.
 
-```{r, cache=TRUE}
+```{r}
 m <- cbind(a, b, c)
 plot(x = m[1,], y = m[2,])
 polygon(x = m[1,], y = m[2,])
@@ -143,17 +143,17 @@ p <- c(6, 5)
 points(x = p[1], y = p[2])
 ```
 
-```{r, cache=TRUE}
+```{r}
 m1 <- rbind(m, rep(1, ncol(m)))
 p1 <- c(p, 1)
 solve(m1, p1)
 ```
 
-```{r, cache=TRUE}
+```{r}
 nnls::nnls(m1, p1)$x
 ```
 
-```{r, cache=TRUE}
+```{r}
 E = rep(1, ncol(m))
 G = diag(ncol(m))
 H = rep(0, ncol(m))
@@ -162,7 +162,7 @@ abundances
 ```
 
 The resulting point is the closest point to p from the simplex. In our case it is (5.1, 4.7).
-```{r, cache=TRUE}
+```{r}
 m %*% abundances
 ```
 Only the last method gives the correct answer.
@@ -181,7 +181,7 @@ $$M^{T} =(AA^{T} + \lambda (I - \frac{11^{T}}{m}))^{-1}AY^{T}$$
 
 ## Laser dataset example
 
-```{r, cache=TRUE}
+```{r}
     library(hyperSpec, quietly = TRUE)
     library(ggplot2)
     library(unmixR)
@@ -191,9 +191,9 @@ $$M^{T} =(AA^{T} + \lambda (I - \frac{11^{T}}{m}))^{-1}AY^{T}$$
     base::colnames(reducedData) <- c("x", "y")
     qplot(data =  as.data.frame(reducedData), x = x, y = y, geom = "point", main = "laser data reduced to dimensionality of 2")
 ```
-```{r, cache=TRUE}
+```{r}
     set.seed(1234)
-    res <- ice(laser, 3, mu = 0.00001, t = 0.999)
+    res <- ice(laser, 3)
     endm <- res$endmembers
     reducedEndmembers <- endm %*% Ud
     base::colnames(reducedEndmembers) <- c("x", "y")
@@ -207,7 +207,7 @@ $$M^{T} =(AA^{T} + \lambda (I - \frac{11^{T}}{m}))^{-1}AY^{T}$$
 
 This parameter penaltizes the model for the simplex size. The regularizatoin technique makes the model less affected by noise in data. The higher the value the bigger the penalty so when it is equal to 1 the simplex shrinks to a single point.
 
-```{r, cache=TRUE}
+```{r}
     m <- 10^(-1:-5)
     m <- c(m, 0)
     simplices <- as.data.frame(matrix(ncol = 4))
@@ -224,15 +224,42 @@ This parameter penaltizes the model for the simplex size. The regularizatoin tec
 
 The dependence of the simplex size on the regulqrization parameter can be seen on the following picture. Since the value is usually very small we consider values equal to powers of 10.
 
-```{r, cache=TRUE}
-    ggplot() + geom_point(data = as.data.frame(reducedData), mapping = aes(x = x, y = y)) + geom_polygon(data = head(simplices, -3), mapping = aes(x = x, y = y, colour = muValue, group = muValue), alpha = 0.05) + scale_color_gradientn(colours = rainbow(length(m)), trans = "log10") + ggtitle("ICE simplices")
+```{r}
+    ggplot() + geom_point(data = as.data.frame(reducedData), mapping = aes(x = x, y = y)) + geom_polygon(data = head(simplices, -3), mapping = aes(x = x, y = y, colour = muValue, group = muValue), alpha = 0.05) + scale_color_gradientn(colours = rainbow(length(m)), trans = "log10") + ggtitle("Dependence on mu")
 ```
 
 As it was already stated a very small value is enough to prevent the simplex from being unreasonably large. Here the grey triangle corresponds to a simplex computed without the penalty (mu = 0).
 
-```{r, cache=TRUE}
-    ggplot() + geom_point(data = as.data.frame(reducedData), mapping = aes(x = x, y = y)) + geom_polygon(data = simplices, mapping = aes(x = x, y = y, colour = muValue, group = muValue), alpha = 0.05) + scale_color_gradientn(colours = rainbow(length(m)), trans = "log10") + ggtitle("ICE simplices")
+```{r}
+    ggplot() + geom_point(data = as.data.frame(reducedData), mapping = aes(x = x, y = y)) + geom_polygon(data = simplices, mapping = aes(x = x, y = y, colour = muValue, group = muValue), alpha = 0.05) + scale_color_gradientn(colours = rainbow(length(m)), trans = "log10") + ggtitle("Dependence on mu")
 ```
 
 ###Tolerance ratio
 
+The tolerance ratio determines the number of iterations. The algorithm asymptotically approaches the solution and higher values of the parameter mean that the result will be closer to the optimal one and wikk require more iterations.
+
+```{r}
+    t <- c(0.9, 0.99, 0.999, 0.9999, 0.99999)
+    simplices <- as.data.frame(matrix(ncol = 4))
+    names(simplices) <- c("x", "y", "tauValue")
+    simplices <- simplices[-1,]
+    for (i in t) {
+        res <- ice(laser, 3, t = i)$endmembers
+        reducedEndmembers <- as.data.frame(res %*% Ud)
+        reducedEndmembers <- cbind(reducedEndmembers, rep(i, nrow(reducedEndmembers)))
+        names(reducedEndmembers) <- c("x", "y", "tauValue")
+        simplices <- rbind(simplices, reducedEndmembers)
+    }
+```
+
+The value of tau is usually extremely close to 1 and the following plot shows it very well. Four simplices correslonding to lower values differ very much. Simplices which correspond to 0.9999 and 0.99999 differ very little. That means that the algorithm finds the optimal solution having the value of tau not less than 0.999.
+
+```{r}
+    ggplot() + geom_point(data = as.data.frame(reducedData), mapping = aes(x = x, y = y)) + geom_polygon(data = simplices, mapping = aes(x = x, y = y, colour = tauValue, group = tauValue), alpha = 0.05) + scale_color_gradientn(colours = rainbow(3), values = t) + ggtitle("Dependence on tau")
+```
+
+As the number of iterations grows so does the calculation time.
+
+```{r}
+    rbenchmark::benchmark(ice(laser, 3, t = 0.9), ice(laser, 3, t = 0.99), ice(laser, 3, t = 0.999), ice(laser, 3, t = 0.9999), ice(laser, 3, t = 0.99999))
+```
