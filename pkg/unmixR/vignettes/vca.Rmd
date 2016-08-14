@@ -64,6 +64,13 @@ The VCA algorithm works in the following way.\
 The following implementation is given in [1]
 
 ```{r}
+    extrapolateVector <- function(vector){
+        L <- sqrt(sum(vector^2))
+        slopes <- vector / L
+        D <- 100
+        res <- cbind(vector + D * slopes, vector - D * slopes, vector)
+    }
+
     plotVectors <- function(matrix, vector){
         resMatrix <- matrix(rep(0, nrow(matrix)), ncol = 1)
         for (i in 1:ncol(matrix)) {
@@ -72,7 +79,7 @@ The following implementation is given in [1]
         resMatrix <- t(resMatrix)
         colnames(resMatrix) <- c("x", "y", "z")
 
-        resVector <- cbind(vector, rep(0, length(vector)))
+        resVector <- extrapolateVector(vector)#cbind(vector, rep(0, length(vector)))
         resVector <- t(resVector)
         #resMatrix <- rbind(resMatrix, resVector)
 
