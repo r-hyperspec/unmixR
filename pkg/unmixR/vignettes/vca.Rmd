@@ -78,7 +78,7 @@ The following implementation is given in [1]
         res <- cbind(vector + D * slopes, vector - D * slopes)
     }
 
-    plotVectors <- function(matrix, vector, testdata){
+    plotVectors <- function(matrix, vector, newEndmember, testdata){
 
         resMatrix <- matrix(rep(0, nrow(matrix)), ncol = 1)
         for (i in 1:ncol(matrix)) {
@@ -92,6 +92,17 @@ The following implementation is given in [1]
         refVector <- extrapolateVector(vector)
         refVector <- t(refVector)
 
+        newEndmember <- t(newEndmember)
+        crossp <- sum(newEndmember %*% vector)
+        if(crossp != 0){
+            proj <- vector / sum(vector^2) *  crossp/ sum(vector^2)
+        }else {
+            proj <- vector * crossp
+        }
+        
+        newEndmember <- rbind(newEndmember, t(proj))
+        colnames(newEndmember) <- c("x", "y", "z")
+        
         # show the reduced data points
         red <- dimensionalityReduction(testdata, 3)
         colnames(red) <- c("x", "y", "z")
@@ -106,13 +117,18 @@ The following implementation is given in [1]
         sc3$points3d(resMatrix, col = "red", type = "p", cex = 1.5)
         sc3$points3d(resMatrix, col = "red", type = "l")
 
+        # show new endmember
+        sc3$points3d(newEndmember, col = "brown", type = "p", cex = 1.5)
+        sc3$points3d(newEndmember, col = "brown", type = "l")
+        
         legend(x = "topright",
-          pch = c(20, 1, NA, NA),
-          col = c("black", "red", "blue", "red"),
-          lty = c(NA, NA, 1, 1),
+          pch = c(20, 1, NA, NA, NA),
+          col = c("black", "red", "blue", "red", "brown"),
+          lty = c(NA, NA, 1, 1, 1),
           legend = c("reduced data", "current endmembers",
           expression(paste("reference vector ", italic(f))),
-          expression(paste("projection onto ", italic(f)))))
+          expression(paste("vectors used to construct ", italic(f))),
+          "largest projection"))
     }
 ```
 
@@ -155,24 +171,24 @@ Initially matrix A is initialized with one "fake" endmember with coordinates {0,
 
 ```{r}
     curplot = 1
-    plotVectors(collection[[curplot]]$m, collection[[curplot]]$v, d)
+    plotVectors(collection[[curplot]]$m, collection[[curplot]]$v, collection[[curplot + 1]]$m[,curplot], d)
 ```
 
 Then the first real endmember is found and the vector $f$ is now orthogonal to this endmember.
 
 ```{r}
     curplot = 2
-    plotVectors(collection[[curplot]]$m, collection[[curplot]]$v, d)
+    plotVectors(collection[[curplot]]$m, collection[[curplot]]$v, collection[[curplot + 1]]$m[,curplot],d)
 ```
 
 Then the second endmember is found and the vector $f$ is now orthogonal to the space spanned by two endmembers
 ```{r}
     curplot = 3
-    plotVectors(collection[[curplot]]$m, collection[[curplot]]$v, d)
+    plotVectors(collection[[curplot]]$m, collection[[curplot]]$v, collection[[curplot + 1]]$m[,curplot],d)
 ```
 
 Finally all endmembers are found
 ```{r}
     curplot = 4
-    plotVectors(collection[[curplot]]$m, collection[[curplot]]$v, d)
+    plotVectors(collection[[curplot]]$m, collection[[curplot]]$v, collection[[curplot]]$v, d)
 ```
