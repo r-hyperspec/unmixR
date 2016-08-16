@@ -17,9 +17,9 @@
 ##' where data\_ is an approximation of data. Endmembers are a matrix with samples in rows frequencies in columns.
 ##'
 ##' @references M. Berman, H. Kiiveri, R. Lagerstrom, A. Ernst, R. Dunne, and
-##' J. F. Huntington, “Ice: A statistical approach to identifying endmembers
-##' in hyperspectral images: Learning from Earth’s shapes and colors,”
-##' IEEE Trans. Geosci. Remote Sens., vol. 42, no. 10, pp. 2085–2095, Oct. 2004.
+##' J. F. Huntington, "Ice: A statistical approach to identifying endmembers
+##' in hyperspectral images: Learning from Earth's shapes and colors,"
+##' IEEE Trans. Geosci. Remote Sens., vol. 42, no. 10, pp. 2085-2095, Oct. 2004.
 ##' 
 ##' E. M. Sigurdsson, A. Plaza and J. A. Benediktsson, "GPU Implementation of 
 ##' Iterative-Constrained Endmember Extraction from Remotely Sensed Hyperspectral
@@ -33,7 +33,7 @@
 ##' @importFrom limSolve lsei
 ##' @importFrom matrixcalc matrix.trace frobenius.norm
 ##'
-ice <- function(data, p, mu = 0.01, t = 0.99){
+ice <- function(data, p, mu = 0.00001, t = 0.9999){
 
     data <- t(as.matrix(data))
     #selecting several points as initial endmembers

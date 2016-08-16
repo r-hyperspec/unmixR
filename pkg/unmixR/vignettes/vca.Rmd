@@ -5,7 +5,7 @@
  -->
 
 VCA with unmixR
-========================================================
+===============
 
 Anton Belov, July 1, 2016
 
@@ -16,8 +16,9 @@ Anton Belov, July 1, 2016
     scatter3D(d[, 1], d[, 2], d[, 3])
 ```
 
-## Dimensionality reduction
-The algorithm uses two dimensionality reduction techniques. The choice of one of them depends on the sound to noise ratio of data. The theshhold value is equal to $15 + 10\lg p$ The dimensionality reduction function not only reduces dimensionality of data but also transforms it to amplify noise.
+## Dimensionality Reduction
+
+The algorithm uses two dimensionality reduction techniques. The choice depends on the signal to noise ratio of data. The threshold value is equal to $15 + 10 \log p$ The dimensionality reduction function not only reduces dimensionality of data but also transforms it to amplify noise.
 
 ```{r}
     library(unmixR, quietly = TRUE)
@@ -28,7 +29,7 @@ The algorithm uses two dimensionality reduction techniques. The choice of one of
     lowerReduced <- dimensionalityReduction(d, endNum, snrThreshhold - 1)
 ```
 
-## Plotting the data
+## Plotting the Data
 
 ```{r}
     library(scatterplot3d, quietly = TRUE)
@@ -41,30 +42,44 @@ The algorithm uses two dimensionality reduction techniques. The choice of one of
     scatterplot3d(lowerReduced, main = "lower dimensionality reduced data")
 ```
 
-Using the second approach the algorithm projects the data onto the subspace of even lower dimansionality and then sets certain value the "missing" dimension. That is why points colored in red have the same z value, because the data was reduced to the dimensionality of 2 (x and y) and then z value was set to a certain number.
+Using the second approach, the algorithm projects the data onto a subspace of even lower dimensionality and then sets the "missing" dimension values to a certain value. That is why points colored in red have the same z value, because the data was reduced to the dimensionality of 2 (x and y) and then the z value was set to a certain number.
+
 ```{r}
-    my3dplot <- scatterplot3d(lowerReduced, color = "red", zlim = c(-1, 3), main = "transformed data")
+    my3dplot <- scatterplot3d(lowerReduced, color = "red",
+      zlim = c(-1, 3), main = "transformed data")
     my3dplot$points3d(sameReduced, type = "h", col = "blue")
-    legend(x = "bottomright", pch = 1, col = c("blue", "red"), legend = c("same", "lower"))
+    legend(x = "bottomright", pch = 1, col = c("blue", "red"),
+      legend = c("same", "lower"))
 ```
 
 Since the noise in this example is very low the algorithm will use the first approach.
 
 ## VCA iterations
-The VCA algorithm works in the following way.\
-1. reduce the data to the dimensionality equal to p where p is the number of endmembers\
-2. initialize A - p x p matrix that stores endmembers. The first column is set to some synthrtic endmember value.\
-3. for i from 1 to p\
-3.1 calculate a vector orthogonal to columns of A\
-3.2 project the data onto this vector\
-3.3 find which vector has the maximal absolute value of projection\
-3.4 let k be the index of such vector in the dataset set k-th column of A to k-th column of data\
-4.return A\
+
+The VCA algorithm works in the following way.
+
+1. Reduce the data to the dimensionality equal to p where p is the number of endmembers.
+2. Initialize A - p x p matrix that stores endmembers. The first column is set to some synthetic endmember value.
+3. For i from 1 to p:
+   + 3a. Calculate a vector orthogonal to columns of A.
+   + 3b. Project the data onto this vector.
+   + 3c. Find which vector has the maximal absolute value of projection.
+   + 3d. Let k be the index of such vector in the dataset set k-th column of A to k-th column of data.
+4. Return A.
 
 The following implementation is given in [1]
 
 ```{r}
-    plotVectors <- function(matrix, vector){
+    extrapolateVector <- function(vector){
+        L <- sqrt(sum(vector^2))
+        slopes <- vector / L
+        D <- 100
+#        res <- cbind(vector + D * slopes, vector - D * slopes, vector)
+        res <- cbind(vector + D * slopes, vector - D * slopes)
+    }
+
+    plotVectors <- function(matrix, vector, testdata){
+
         resMatrix <- matrix(rep(0, nrow(matrix)), ncol = 1)
         for (i in 1:ncol(matrix)) {
             resMatrix = cbind(resMatrix, matrix[,i], rep(0, nrow(matrix)))
@@ -72,18 +87,32 @@ The following implementation is given in [1]
         resMatrix <- t(resMatrix)
         colnames(resMatrix) <- c("x", "y", "z")
 
-        resVector <- cbind(vector, rep(0, length(vector)))
-        resVector <- t(resVector)
-        #resMatrix <- rbind(resMatrix, resVector)
+        print(resMatrix)
 
-        sc3 <- scatterplot3d(resMatrix, type = "h", xlim = c(-1, 1), ylim = c(-1, 1), zlim = c(-1, 1), main = "VCA endmembers")
-        sc3$points3d(dimensionalityReduction(d, 3))
-        sc3$points3d(resMatrix, col = "red", type = "p")
+        refVector <- extrapolateVector(vector)
+        refVector <- t(refVector)
+
+        # show the reduced data points
+        red <- dimensionalityReduction(testdata, 3)
+        colnames(red) <- c("x", "y", "z")
+        sc3 <- scatterplot3d(red,
+          type = "p", xlim = c(-1, 1), pch = 20,
+          ylim = c(-1, 1), zlim = c(-1, 1), main = "The VCA Process",)
+
+        # show the reference vector f
+        sc3$points3d(refVector, col = "blue", type = "l")
+
+        # show the projection onto f
+        sc3$points3d(resMatrix, col = "red", type = "p", cex = 1.5)
         sc3$points3d(resMatrix, col = "red", type = "l")
-        sc3$points3d(resVector, type = "h")
-        sc3$points3d(resVector, col = "blue", type = "p")
-        sc3$points3d(resVector, col = "blue", type = "l")
-        legend(x = "topright", pch = 1, col = c("red", "blue"), legend = c("current endmembers", "projection vector"))
+
+        legend(x = "topright",
+          pch = c(20, 1, NA, NA),
+          col = c("black", "red", "blue", "red"),
+          lty = c(NA, NA, 1, 1),
+          legend = c("reduced data", "current endmembers",
+          expression(paste("reference vector ", italic(f))),
+          expression(paste("projection onto ", italic(f)))))
     }
 ```
 
@@ -98,7 +127,7 @@ The following implementation is given in [1]
 
     collection <- list()
     for(i in 1:p){
-        #getting vector f orthonormal to the space spanned by A
+        # getting vector f orthonormal to the space spanned by A
         w <- stats::rnorm(p, sd = 1)
         f <- (diag(p) - A %*% ginv(A)) %*% w
         f <- f / sqrt(sum(f^2))
@@ -106,11 +135,11 @@ The following implementation is given in [1]
         iterData <- list(m = A, v = f)
         collection <- append(collection, list(iterData))
 
-        #projecting data onto f
+        # projecting data onto f
         v <- crossprod(f, Y)
-        #getting index of the maximal projection
+        # getting index of the maximal projection
         k <- which.max(abs(v))
-        #ith column of A is set to estimated endmember
+        # ith column of A is set to estimated endmember
         A[, i] <- Y[, k]
         indices[i] <- k
 
@@ -122,26 +151,28 @@ The following implementation is given in [1]
     }
 ```
 
-Initially matrix A is initialized with one "fake" endmember with coordinates {0,0,...,1} and vector f is orthogonal to this endmember.
+Initially matrix A is initialized with one "fake" endmember with coordinates {0,0,...,1} and vector $f$ is orthogonal to this endmember.
+
 ```{r}
     curplot = 1
-    plotVectors(collection[[curplot]]$m, collection[[curplot]]$v)
+    plotVectors(collection[[curplot]]$m, collection[[curplot]]$v, d)
 ```
 
-Then the first real endmember is found and the vector f is now orthogonal to this endmember
+Then the first real endmember is found and the vector $f$ is now orthogonal to this endmember.
+
 ```{r}
     curplot = 2
-    plotVectors(collection[[curplot]]$m, collection[[curplot]]$v)
+    plotVectors(collection[[curplot]]$m, collection[[curplot]]$v, d)
 ```
 
-Then the second endmember is found and the vector f is now orthogonal to the space spanned by two endmembers
+Then the second endmember is found and the vector $f$ is now orthogonal to the space spanned by two endmembers
 ```{r}
     curplot = 3
-    plotVectors(collection[[curplot]]$m, collection[[curplot]]$v)
+    plotVectors(collection[[curplot]]$m, collection[[curplot]]$v, d)
 ```
 
 Finally all endmembers are found
 ```{r}
     curplot = 4
-    plotVectors(collection[[curplot]]$m, collection[[curplot]]$v)
+    plotVectors(collection[[curplot]]$m, collection[[curplot]]$v, d)
 ```
