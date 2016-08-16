@@ -26,7 +26,7 @@ vca05 <- function(data, p, SNR = estSNR(data, p)) {
     Y <- dimensionalityReduction(data, p, SNR)
     Y <- t(Y)
     indices <- array(0, p)
-    # the matrix A stores the projection of the estimated endmember siganatures
+    # the matrix A stores the projection of the estimated endmember signatures
     A <- matrix(0, nrow = p, ncol = p)
     A[p, 1] <- 1
     for(i in 1:p){
