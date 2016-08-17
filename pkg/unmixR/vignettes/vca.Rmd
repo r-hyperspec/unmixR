@@ -102,10 +102,10 @@ The VCA algorithm works as follows:
         }else {
             proj <- vector * crossp
         }
-        
+
         newEndmember <- rbind(newEndmember, t(proj))
         colnames(newEndmember) <- c("x", "y", "z")
-        
+
         # show the reduced data points
         red <- dimensionalityReduction(testdata, 3)
         colnames(red) <- c("x", "y", "z")
@@ -123,7 +123,7 @@ The VCA algorithm works as follows:
         # show new endmember
         sc3$points3d(newEndmember, col = "brown", type = "p", cex = 1.5)
         sc3$points3d(newEndmember, col = "brown", type = "l")
-        
+
         legend(x = "topright",
           pch = c(20, 1, NA, NA, NA),
           col = c("black", "red", "blue", "red", "brown"),
@@ -200,4 +200,4 @@ Finally all endmembers have been identified.
     plotVectors(collection[[curplot]]$m, collection[[curplot]]$v, collection[[curplot]]$v, d)
 ```
 
-If this process were extended to more than three dimensions, each reference vector $f$ would actually be a hyperplane.  Thus the process would be to choose a point, construct an orthogonal hyperplane, and determine which data point has the most extreme projection onto this hyperplane.  That point is chosen as an endmember and the process is repeated until all the desired endmembers have been identified.
+If this process were extended to $p$-dimensions, each reference vector $f$ would be a line in the $p$-dimensional space.  Thus the process would be to choose a point, construct an orthogonal vector $f$, and determine which data point has the most extreme projection onto this vector.  That point is chosen as an endmember and the process is repeated until all the desired endmembers have been identified.
