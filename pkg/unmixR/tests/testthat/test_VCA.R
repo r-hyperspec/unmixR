@@ -31,15 +31,3 @@ test_that("vcaLopez2012 works on test data, p = 3", {
     expect_true(all(indices %in% correct))
     expect_false(any(duplicated(indices)))
 })
-
-test_that("vca05lean works on test data, p = 2", {
-    indices <- vca05lean(testData, 2)
-    expect_true(all(indices %in% correct))
-    expect_false(any(duplicated(indices)))
-})
-
-test_that("vca05lean works on test data, p = 3", {
-    indices <- vca05lean(testData, 3)
-    expect_true(all(indices %in% correct))
-    expect_false(any(duplicated(indices)))
-})

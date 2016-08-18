@@ -3,7 +3,7 @@
 ##' @include vca.R
 ##' @export
 
-vca.default <- function(data, p, method = c("05lean", "Lopez2012", "05"), seed = NULL, ...) {
+vca.default <- function(data, p, method = c("Lopez2012", "05"), seed = NULL, ...) {
 
   # check if the method passed in is valid
   method <- match.arg (method)
@@ -51,7 +51,7 @@ vca.default <- function(data, p, method = c("05lean", "Lopez2012", "05"), seed =
   # this fails at the moment (correctly!) because we need to rename mvca again!
   implementations <- get.implementations("vca")
   test_that ("Implementations available", {
-    expect_true (all (c ("05", "05lean", "Lopez2012") %in% implementations))
+    expect_true (all (c ("05", "Lopez2012") %in% implementations))
   })
   
 
