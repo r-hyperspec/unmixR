@@ -23,7 +23,7 @@
 ##' @importFrom stats prcomp
 
 
-mvca <- function(data, p, SNR = estSNR(data, p)) {
+vcaLopez2012 <- function(data, p, SNR = estSNR(data, p)) {
     force(SNR)
     
     Y <- dimensionalityReduction(data, p, SNR)

@@ -5,7 +5,7 @@
 ##' @include vca.default.R
 ##' @importFrom stats terms model.matrix
 
-vca.formula <- function(formula, frame, p, method = "05lean", seed=NULL, ...) {
+vca.formula <- function(formula, frame, p, method = "05", seed=NULL, ...) {
 
   mt <- terms(formula, data = frame)
 

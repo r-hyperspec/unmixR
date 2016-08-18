@@ -41,7 +41,6 @@ Collate:
     'estSNR.R'
     'getimplementations.R'
     'ice.R'
-    'mvca.R'
     'unmixR-package.R'
     'nfindr.R'
     'nfindr.default.R'
@@ -61,4 +60,5 @@ Collate:
     'vca.formula.R'
     'vca05.R'
     'vca05lean.R'
+    'vcaLopez2012.R'
 RoxygenNote: 5.0.1

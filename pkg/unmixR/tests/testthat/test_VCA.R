@@ -20,14 +20,14 @@ test_that("vca05 works on test data, p = 3", {
     expect_false(any(duplicated(indices)))
 })
 
-test_that("mvca works on test data, p = 2", {
-    indices <- mvca(testData, 2)
+test_that("vcaLopez2012 works on test data, p = 2", {
+    indices <- vcaLopez2012(testData, 2)
     expect_true(all(indices %in% correct))
     expect_false(any(duplicated(indices)))
 })
 
-test_that("mvca works on test data, p = 3", {
-    indices <- mvca(testData, 3)
+test_that("vcaLopez2012 works on test data, p = 3", {
+    indices <- vcaLopez2012(testData, 3)
     expect_true(all(indices %in% correct))
     expect_false(any(duplicated(indices)))
 })
