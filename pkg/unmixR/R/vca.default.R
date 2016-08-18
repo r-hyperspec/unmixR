@@ -3,7 +3,7 @@
 ##' @include vca.R
 ##' @export
 
-vca.default <- function(data, p, method = c("Lopez2012", "05"), seed = NULL, SNR = estSNR(data, p), ...) {
+vca.default <- function(data, p, method = c("Lopez2012", "05"), seed = NULL, SNR = estSNR(data, p), ..., EMonly = FALSE) {
 
   # check if the method passed in is valid
   method <- match.arg (method)
@@ -22,18 +22,21 @@ vca.default <- function(data, p, method = c("Lopez2012", "05"), seed = NULL, SNR
   }
   
   force(SNR)
-  data <- dimensionalityReduction(data, p, SNR)
+  reducedData <- dimensionalityReduction(data, p, SNR)
   
   vcaFunc <- get(paste("vca", method, sep=""), mode = "function")
   
   seed <- .Random.seed
   
-  val <- vcaFunc(data, p, SNR, ...)
+  val <- vcaFunc(reducedData, p, SNR, ...)
 
   if (.options ("debuglevel") >= 1L){
-      res <- list(data = data, indices = as.integer(val), seed = seed)
+      res <- list(data = if (!EMonly) data else data[as.integer(val),],
+                  indices = if (!EMonly) as.integer(val) else 1:p,
+                  seed = seed)
   }else{
-      res <- list(data = data, indices = as.integer(val))
+      res <- list(data = if (!EMonly) data else data[as.integer(val),],
+                  indices = if (!EMonly) as.integer(val) else 1:p)
   }
   class(res) = "vca"
   return(res)

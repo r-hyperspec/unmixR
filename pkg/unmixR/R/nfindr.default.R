@@ -6,7 +6,7 @@
 
 nfindr.default <- function(data, p,
                            method="99", indices=sample(nrow(data), p), ...,
-                           drop=FALSE) {
+                           EMonly=FALSE) {
 
   ## get the selected nfindr method
   nfindrFunc <- get0 (paste0 ("nfindr", method), mode = "function")
@@ -41,8 +41,8 @@ nfindr.default <- function(data, p,
   # sort the indices to normalise the order between runs
   indices <- sort (indices) 
 
-  res <- list(data = if (!drop) orig else orig[indices,],
-              indices = if (!drop) indices else 1:p)
+  res <- list(data = if (!EMonly) orig else orig[indices,],
+              indices = if (!EMonly) indices else 1:p)
   class(res) <- "nfindr"
   return(res)
 }

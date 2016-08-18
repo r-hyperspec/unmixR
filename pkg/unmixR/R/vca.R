@@ -24,6 +24,9 @@
 ##' @param seed Both vca05 and mvca need to generate a random vector. Set
 ##'   the random number generator seed with this argument.
 ##'
+##' @param EMonly Boolean that indicates whether the \code{data} parameter
+##'   should be stored in the resulting structure.
+##'
 ##' @param ... Additional parameters for the methods (currently unused).
 ##' 
 ##' @return A list which contains:
