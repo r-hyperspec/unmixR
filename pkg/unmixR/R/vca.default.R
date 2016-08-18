@@ -82,6 +82,7 @@ vca.default <- function(data, p, method = c("Lopez2012", "05"), seed = NULL, SNR
   # test: if hyperSpec is available, test on hyperSpec object
   # tests also the correct application of as.matrix.
   test_that("check conversion of classes", {
-    expect_equal (vca (laser, p = 2)$indices, .correct.laser)
+      expect_equal (vca (~ spc, laser, p = 2, seed = 12345)$indices, 
+                    vca (~ spc, laser$., p = 2, seed = 12345)$indices)
   })
 }
