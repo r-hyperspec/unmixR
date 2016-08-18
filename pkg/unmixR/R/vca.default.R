@@ -25,9 +25,16 @@ vca.default <- function(data, p, method = c("Lopez2012", "05"), seed = NULL, SNR
   data <- dimensionalityReduction(data, p, SNR)
   
   vcaFunc <- get(paste("vca", method, sep=""), mode = "function")
+  
+  seed <- .Random.seed
+  
   val <- vcaFunc(data, p, SNR, ...)
 
-  res <- list(data = data, indices = as.integer(val))
+  f (.options ("debuglevel") >= 1L){
+      res <- list(data = data, indices = as.integer(val), seed = seed)
+  }else{
+      res <- list(data = data, indices = as.integer(val))
+  }
   class(res) = "vca"
   return(res)
 
