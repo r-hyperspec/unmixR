@@ -3,14 +3,14 @@
 ##' @include vca.R
 ##' @export
 
-vca.default <- function(data, p, method = c("Lopez2012", "05"), seed = NULL, ...) {
+vca.default <- function(data, p, method = c("Lopez2012", "05"), seed = NULL, SNR = estSNR(data, p), ...) {
 
   # check if the method passed in is valid
   method <- match.arg (method)
 
   # transform the input into a matrix
   data <- as.matrix (data)
-
+  
   # check for p being with the valid range, >= 2
   if (!is.numeric (p) || p < 2 || p > ncol (data)) {
     stop("p must be a positive integer >= 2 and <= ncol (data)")
@@ -20,9 +20,12 @@ vca.default <- function(data, p, method = c("Lopez2012", "05"), seed = NULL, ...
   if (!is.null(seed)) {
     set.seed(seed)
   }
-
+  
+  force(SNR)
+  data <- dimensionalityReduction(data, p, SNR)
+  
   vcaFunc <- get(paste("vca", method, sep=""), mode = "function")
-  val <- vcaFunc(data, p, ...)
+  val <- vcaFunc(data, p, SNR, ...)
 
   res <- list(data = data, indices = as.integer(val))
   class(res) = "vca"

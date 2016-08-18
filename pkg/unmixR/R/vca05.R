@@ -22,9 +22,7 @@
 ##' @importFrom stats runif
 
 vca05 <- function(data, p, SNR = estSNR(data, p)) {
-    force(SNR)
-    Y <- dimensionalityReduction(data, p, SNR)
-    Y <- t(Y)
+    Y <- t(data)
     indices <- array(0, p)
     # the matrix A stores the projection of the estimated endmember signatures
     A <- matrix(0, nrow = p, ncol = p)
