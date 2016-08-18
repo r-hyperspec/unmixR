@@ -51,8 +51,6 @@ Collate:
     'nfindrSeqLDU.R'
     'options.R'
     'predict.R'
-    'repvec.col.R'
-    'repvec.row.R'
     'simplex.R'
     'unittests.R'
     'vca.R'
