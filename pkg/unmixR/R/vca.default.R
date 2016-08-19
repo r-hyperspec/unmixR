@@ -3,7 +3,7 @@
 ##' @include vca.R
 ##' @export
 
-vca.default <- function(data, p, method = c("Lopez2012", "05"), seed = NULL, SNR = estSNR(data, p), ..., EMonly = FALSE) {
+vca.default <- function(data, p, method = c("05", "Lopez2012"), seed = NULL, SNR = estSNR(data, p), ..., EMonly = FALSE) {
 
   # check if the method passed in is valid
   method <- match.arg (method)
