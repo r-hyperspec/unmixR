@@ -23,7 +23,7 @@
 ##'   }
 ##'   Default: 05.
 ##'
-##' @param seed Both vca05 and mvca need to generate a random vector. Set
+##' @param seed vca05 generates a random vector. Set
 ##'   the random number generator seed with this argument.
 ##'
 ##' @param EMonly Boolean that indicates whether the \code{data} parameter
