@@ -54,22 +54,25 @@ Using the second approach, the algorithm projects the data onto a subspace of ev
 
 Since the noise in this example is very low the algorithm will use the first approach.
 
-## VCA iterations
+## The VCA Process, Illustrated
 
-The VCA algorithm works in the following way.
+The VCA algorithm works as follows:
 
-1. Reduce the data to the dimensionality equal to p where p is the number of endmembers.
-2. Initialize A - p x p matrix that stores endmembers. The first column is set to some synthetic endmember value.
-3. For i from 1 to p:
-   + 3a. Calculate a vector orthogonal to columns of A.
-   + 3b. Project the data onto this vector.
-   + 3c. Find which vector has the maximal absolute value of projection.
-   + 3d. Let k be the index of such vector in the dataset set k-th column of A to k-th column of data.
-4. Return A.
+1. The data is reduced to a dimensionality equal to $p$ where $p$ is the desired (estimated) number of endmembers.  As mentioned above, the details of the reduction depend upon the signal-to-noise ratio of the raw data.
+2. Initialize $A$, a $p \times p$ matrix that will store the endmembers. The first column is set to a constant, which represents an initial "fake" endmember to get the process started.
+3. For $i$ from 1 to $p$:
+   + Calculate a reference vector orthogonal to the subspace spanned by columns of $A$.  This vector will pass through (0,0,...,0).
+   + Project all the data points onto this reference vector.
+   + Find which data point's projection  onto the reference vector is furthest from the origin.  This is equivalent to the data point which has the maximum absolute projection onto the reference vector.
+   + Let $k$ be the index of that data point in the dataset.  Set the $i$-th column of $A$ to $k$-th column of data.  This is one of the endmembers.
+4. Return $A$.
 
-The following implementation is given in [1]
 
-```{r}
+
+```{r, echo = FALSE}
+
+# The following implementation is given in [1] ???
+
     extrapolateVector <- function(vector){
         L <- sqrt(sum(vector^2))
         slopes <- vector / L
@@ -78,7 +81,7 @@ The following implementation is given in [1]
         res <- cbind(vector + D * slopes, vector - D * slopes)
     }
 
-    plotVectors <- function(matrix, vector, testdata){
+    plotVectors <- function(matrix, vector, newEndmember, testdata){
 
         resMatrix <- matrix(rep(0, nrow(matrix)), ncol = 1)
         for (i in 1:ncol(matrix)) {
@@ -87,10 +90,21 @@ The following implementation is given in [1]
         resMatrix <- t(resMatrix)
         colnames(resMatrix) <- c("x", "y", "z")
 
-        print(resMatrix)
+#        print(resMatrix)
 
         refVector <- extrapolateVector(vector)
         refVector <- t(refVector)
+
+        newEndmember <- t(newEndmember)
+        crossp <- sum(newEndmember %*% vector)
+        if(crossp != 0){
+            proj <- vector / sum(vector^2) *  crossp/ sum(vector^2)
+        }else {
+            proj <- vector * crossp
+        }
+
+        newEndmember <- rbind(newEndmember, t(proj))
+        colnames(newEndmember) <- c("x", "y", "z")
 
         # show the reduced data points
         red <- dimensionalityReduction(testdata, 3)
@@ -106,17 +120,22 @@ The following implementation is given in [1]
         sc3$points3d(resMatrix, col = "red", type = "p", cex = 1.5)
         sc3$points3d(resMatrix, col = "red", type = "l")
 
+        # show new endmember
+        sc3$points3d(newEndmember, col = "brown", type = "p", cex = 1.5)
+        sc3$points3d(newEndmember, col = "brown", type = "l")
+
         legend(x = "topright",
-          pch = c(20, 1, NA, NA),
-          col = c("black", "red", "blue", "red"),
-          lty = c(NA, NA, 1, 1),
+          pch = c(20, 1, NA, NA, NA),
+          col = c("black", "red", "blue", "red", "brown"),
+          lty = c(NA, NA, 1, 1, 1),
           legend = c("reduced data", "current endmembers",
           expression(paste("reference vector ", italic(f))),
-          expression(paste("projection onto ", italic(f)))))
+          expression(paste("vectors used to construct ", italic(f))),
+          "largest projection"))
     }
 ```
 
-```{r}
+```{r, echo = FALSE}
     p <- 3
     Y <- dimensionalityReduction(d, p)
     Y <- t(Y)
@@ -151,28 +170,34 @@ The following implementation is given in [1]
     }
 ```
 
-Initially matrix A is initialized with one "fake" endmember with coordinates {0,0,...,1} and vector $f$ is orthogonal to this endmember.
+The following plots illustrate the process for a 3-dimensional data set consisting of a number of points which lie on a plane and form a triangle.  
 
-```{r}
+The system is initialized with a "fake" endmember with coordinates $(0,0,1)$ and a reference vector $f$ which is orthogonal to this endmember (point) is computed.  Then, each data point is projected onto this reference vector.  The data point whose projection intersection with $f$ is farthest from the origin is selected as the first (real) endmember (and the fake endmember is discarded).  The next plot shows these steps.  The first endmember is at the lower-left.
+
+```{r, echo = FALSE}
     curplot = 1
-    plotVectors(collection[[curplot]]$m, collection[[curplot]]$v, d)
+    plotVectors(collection[[curplot]]$m, collection[[curplot]]$v, collection[[curplot + 1]]$m[,curplot], d)
 ```
 
-Then the first real endmember is found and the vector $f$ is now orthogonal to this endmember.
+The first real endmember is then used to construct a new reference vector $f$ and once again the data points are projected onto $f$ and the projection intersection with $f$ which is farthest from the origin is selected as the next endmember.  In the following plot, the 2nd endmember selected is the top-most data point.
 
-```{r}
+```{r, echo = FALSE}
     curplot = 2
-    plotVectors(collection[[curplot]]$m, collection[[curplot]]$v, d)
+    plotVectors(collection[[curplot]]$m, collection[[curplot]]$v, collection[[curplot + 1]]$m[,curplot],d)
 ```
 
-Then the second endmember is found and the vector $f$ is now orthogonal to the space spanned by two endmembers
-```{r}
+With two endmembers identified, we continue the process starting from the most recently identified endmember.  In this next plot, the 3rd endmember is the right-most data point.  It's projection onto the reference vector $f$ is very short and not visible as the data point nearly falls on $f$.  In this plot and the next, we are carrying along the vectors which were used to construct the reference vectors $f$ at each step.
+
+```{r, echo = FALSE}
     curplot = 3
-    plotVectors(collection[[curplot]]$m, collection[[curplot]]$v, d)
+    plotVectors(collection[[curplot]]$m, collection[[curplot]]$v, collection[[curplot + 1]]$m[,curplot],d)
 ```
 
-Finally all endmembers are found
-```{r}
+Finally all endmembers have been identified.
+
+```{r, echo = FALSE}
     curplot = 4
-    plotVectors(collection[[curplot]]$m, collection[[curplot]]$v, d)
+    plotVectors(collection[[curplot]]$m, collection[[curplot]]$v, collection[[curplot]]$v, d)
 ```
+
+If this process were extended to $p$-dimensions, each reference vector $f$ would be a line in the $p$-dimensional space.  Thus the process would be to choose a point, construct an orthogonal vector $f$, and determine which data point has the most extreme projection onto this vector.  That point is chosen as an endmember and the process is repeated until all the desired endmembers have been identified.

@@ -13,16 +13,21 @@
 ##'
 ##' @param p Number of endmembers.
 ##'
+##' @param SNR The Signal-to-Noise ratio of the data. By default it will be
+##'   estimated using \code{\link{estSNR}}.
+##'
 ##' @param method The VCA algorithm to use. Options:
 ##'   \itemize{
 ##'     \item 05 (\code{\link{vca05}})
-##'     \item mvca (\code{\link{mvca}})
-##'     \item 05lean (\code{\link{vca05lean}})
+##'     \item Lopez2012 (\code{\link{vcaLopez2012}})
 ##'   }
-##'   Default: 05lean, as it is the most efficient.
+##'   Default: 05.
 ##'
 ##' @param seed Both vca05 and mvca need to generate a random vector. Set
 ##'   the random number generator seed with this argument.
+##'
+##' @param EMonly Boolean that indicates whether the \code{data} parameter
+##'   should be stored in the resulting structure.
 ##'
 ##' @param ... Additional parameters for the methods (currently unused).
 ##' 
@@ -42,7 +47,7 @@
 ##'
 ##' @examples
 ##' data(demo_data)
-##' demo <- vca(demo_data, 2, method = "mvca")
+##' demo <- vca(demo_data, 2, method = "05")
 ##' em <- endmembers(demo)
 ##' em <- rbind(demo_data[c(7,9),], em)
 ##' em[3:4,] <- em[3:4,] + 0.5 # a small offset for the found em's

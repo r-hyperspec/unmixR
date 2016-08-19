@@ -1,8 +1,8 @@
 Package: unmixR
 Type: Package
 Title: Hyperspectral Unmixing Methods
-Version: 0.2.327
-Date: 2016-08-15
+Version: 0.2.335
+Date: 2016-08-19
 Authors@R: c(person("Anton", "Belov", role = "aut"),
 	person("Conor", "McManus", role = "aut"),
 	person("Claudia", "Beleites", role = c("aut", "cre"),
@@ -41,7 +41,6 @@ Collate:
     'estSNR.R'
     'getimplementations.R'
     'ice.R'
-    'mvca.R'
     'unmixR-package.R'
     'nfindr.R'
     'nfindr.default.R'
@@ -52,13 +51,11 @@ Collate:
     'nfindrSeqLDU.R'
     'options.R'
     'predict.R'
-    'repvec.col.R'
-    'repvec.row.R'
     'simplex.R'
     'unittests.R'
     'vca.R'
     'vca.default.R'
     'vca.formula.R'
     'vca05.R'
-    'vca05lean.R'
+    'vcaLopez2012.R'
 RoxygenNote: 5.0.1

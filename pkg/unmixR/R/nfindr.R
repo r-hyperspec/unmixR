@@ -30,7 +30,7 @@
 ##'
 ##' @param ... Additional parameters for the methods (currently unused).
 ##'
-##' @param drop Boolean that indicates whether the \code{data} parameter
+##' @param EMonly Boolean that indicates whether the \code{data} parameter
 ##'   should be stored in the resulting structure. This should only be set to
 ##'   \code{TRUE} when \code{data} was passed in already reduced.
 ##' 
