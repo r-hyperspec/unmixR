@@ -10,6 +10,8 @@
 ##'
 ##' @param SNR The Signal-to-Noise ratio of the data. By default it will be
 ##'   estimated using \code{\link{estSNR}}.
+##'   
+##' @note for \code{debuglevel}s 1 and 2 debug information is printed (1) and plotted (2).
 ##'
 ##' @return The indices of the endmembers in the original dataset.
 ##' 
@@ -18,7 +20,6 @@
 ##' Hyperspectral Endmember Extraction: Modified Vertex Component Analysis,"
 ##' Geoscience & Remote Sensing Letters, IEEE, vol. 9 no. 3 pp. 502-506, May 2012
 ##' doi: 10.1109/LGRS.2011.2172771
-##'
 ##' @export
 ##' @importFrom stats prcomp
 
@@ -67,20 +68,29 @@ vcaLopez2012 <- function(data, p, SNR = estSNR(data, p)) {
         #estimated endmember is stored in E
         E[, i + 1] <- Y[, index]
 
-	    if (.options ("debuglevel") >= 1L){
-	    	  cat("Iteration", i, "\n")
-	    	  cat("\tcurrent endmembers:", sort(indices[1:i]), "\n")
-	    	  # To monitor the process, capture the volume
-	    	  # of the current simplex using the same process
-	    	  # as in nfindr.default, except the data set
-	    	  # grows with each iteration
+        if (.options ("debuglevel") >= 1L){
+          cat("Iteration", i, "\n")
+          cat("\tcurrent endmembers:", sort(indices[1:i]), "\n")
+          
+          ## To monitor the process, capture the volume
+          ## of the current simplex using the same process
+          ## as in nfindr.default, except the data set
+          ## grows with each iteration
           inds <- indices[1:i] # limit to non-zero indices
           red_data <- stats::prcomp(data)[["x"]][, sequence(length(inds)-1), drop=FALSE]
           simplex <- .simplex(red_data, length(inds), inds)
-	    	  vol <- abs(det(simplex))
-	    	  cat("\tvolume:", vol, "\n")
-		}
+          vol <- abs(det(simplex))
+          cat("\tvolume:", vol,  "\n")
+          cat ("\tmax:", which.max (v), "\t min:", which.min (v), "\n")
+        }
 
+        if (.options ("debuglevel") >= 2L){
+          plot (t (v))
+          title (main = paste ("Iteration:", i))
+          tmp <- c (indices [i], which.max (v), which.min (v))
+          tmp <- tmp [! is.na (tmp)]
+          points (tmp, v [tmp],  col = 2 : 4, pch = c (19, 20, 20))
+        }
     }
     indices <- sort(indices)
     indices
