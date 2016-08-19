@@ -76,16 +76,24 @@ vca.default <- function(data, p, method = c("05", "Lopez2012"), seed = NULL, SNR
       expect_equal (vca (.testdata$x, p = 3, method = i)$indices, .correct)
       
       indices <- vca (.testdata$x, p = 2, method = i)$indices
-      expect_true (all (indices %in% .correct))
-      expect_false (any (duplicated (indices)))
+      expect_true (all (indices %in% .correct), info = i)
+      expect_false (any (duplicated (indices)), info = i)
     }
   })
 
-  # test_that("correct results for all available methods: laser data", {
-  #   for (i in implementations) {
-  #     expect_equal (vca (laser$spc, p = 2, method = i)$indices, .correct.laser)
-  #   }
-  # })
+  test_that ("no duplicates with Lopez2012 for test data", {
+    indices <- replicate (10, vca (.testdata$x, p = 2, method = "Lopez2012")$indices)
+    expect_true (all (indices %in% .correct))            
+    expect_true (all (indices [1, ] != indices [2, ]), info = "Lopez2012 duplicate indices: testdata, p = 2")
+  }
+  )
+  
+  test_that("correct results for all available methods: laser data", {
+    skip ("temporarily disabled")
+    for (i in implementations) {
+      expect_equal (vca (laser$spc, p = 2, method = i)$indices, .correct.laser)
+    }
+  })
   
   ## all 3 components should be recovered, vca output is sorted.
   test_that("vca output is sorted", {
