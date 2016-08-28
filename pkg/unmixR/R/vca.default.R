@@ -82,6 +82,8 @@ vca.default <- function(data, p, method = c("05", "Lopez2012"), seed = NULL, SNR
   })
 
   test_that ("no duplicates with Lopez2012 for test data", {
+    skip ("known issue: #36")
+    
     indices <- replicate (10, vca (.testdata$x, p = 2, method = "Lopez2012")$indices)
     expect_true (all (indices %in% .correct))            
     expect_true (all (indices [1, ] != indices [2, ]), info = "Lopez2012 duplicate indices: testdata, p = 2")
