@@ -2,7 +2,7 @@
 %\VignetteEngine{knitr::knitr}
 %\VignetteIndexEntry{VCA with unmixR}
 %\VignetteKeywords{hyperspectral unmixing, vertex component analysis, VCA}
-%\VignetteDepends{plot3D, scatterplot3D}
+%\VignetteDepends{plot3D, scatterplot3d}
  -->
 
 VCA with unmixR
@@ -14,7 +14,7 @@ Anton Belov, July 1, 2016
     library(plot3D)
     d <- unmixR:::.testdata$x
     str(d)
-    scatter3D(d[, 1], d[, 2], d[, 3], pch = 20, col = matlab.dark.palette(), phi = 50, theta = 110) 
+    scatter3D(d[, 1], d[, 2], d[, 3], pch = 20, col = matlab.dark.palette(), phi = 50, theta = 110)
 ```
 
 ## Dimensionality Reduction

@@ -22,6 +22,7 @@
 ##' doi: 10.1109/LGRS.2011.2172771
 ##' @export
 ##' @importFrom stats prcomp
+##' @importFrom graphics title points
 
 
 vcaLopez2012 <- function(data, p, SNR = estSNR(data, p)) {

@@ -2,7 +2,7 @@
 ##'
 ##' Run the unit tests for the package and output with the given testthat reporter.
 ##' 
-##' @param reporter name of a testthat reporter. Defaults to \code{\link[testthat]{SummaryReporter}}.
+##  COMMENTED OUT @param reporter name of a testthat reporter. Defaults to \code{\link[testthat]{SummaryReporter}}.
 ##' 
 ##' @return Invisibly returns a data frame with the test results
 ##'
