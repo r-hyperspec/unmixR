@@ -14,4 +14,4 @@ install_git ("https://gitlab.com/chemometrics/unmixR.git", subdir = "pkg/unmixR"
 
 Development of `unmixR` has been supported by Google Summer of Code 2013 (Conor McManus) and 2016 (Anton Belov).  Thank you Google!
 
-![GSOC 2016 logo](https://gitlab.com/chemometrics/unmixR/blob/master/GSoC2016Logo.png)
+![GSOC 2016 logo](https://gitlab.com/chemometrics/unmixR/raw/master/GSoC2016Logo.png)
