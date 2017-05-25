@@ -1,0 +1,67 @@
+\begin{thebibliography}{5}
+\newcommand{\enquote}[1]{``#1''}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\providecommand{\urlprefix}{URL }
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi:\discretionary{}{}{}#1}\else
+  \providecommand{\doi}{doi:\discretionary{}{}{}\begingroup
+  \urlstyle{rm}\Url}\fi
+\providecommand{\eprint}[2][]{\url{#2}}
+
+\bibitem[{Bergner \emph{et~al.}({2013})Bergner, Medyukhina, Geiger, Kirsch,
+  Schackert, Krafft, and Popp}]{Bergner2013}
+Bergner N, Medyukhina A, Geiger KD, Kirsch M, Schackert G, Krafft C, Popp J
+  ({2013}).
+\newblock \enquote{{Hyperspectral Unmixing of Raman Micro-images for Assessment
+  of Morphological and Chemical Parameters in Non-dried Brain Tumor
+  Specimens}.}
+\newblock \emph{{Analytical and Bioanalytical Chemistry}},
+  \textbf{{405}}({27}), {8719--8728}.
+\newblock ISSN {1618-2642}.
+\newblock \doi{{10.1007/s00216-013-7257-7}}.
+
+\bibitem[{Dooley \emph{et~al.}({2013})Dooley, Lomax, Zeibel, Miliani,
+  Ricciardi, Hoenigswald, Loew, and Delaney}]{Dooley2013}
+Dooley KA, Lomax S, Zeibel JG, Miliani C, Ricciardi P, Hoenigswald A, Loew M,
+  Delaney JK ({2013}).
+\newblock \enquote{{Mapping of Egg Yolk and Animal Skin Glue Paint Binders in
+  Early Renaissance Paintings Using Near Infrared Reflectance Imaging
+  Spectroscopy}.}
+\newblock \emph{{Analyst}}, \textbf{{138}}({17}), {4838--4848}.
+\newblock ISSN {0003-2654}.
+\newblock \doi{{10.1039/c3an00926b}}.
+
+\bibitem[{Green \emph{et~al.}({1998})Green, Eastwood, Sarture, Chrien,
+  Aronsson, Chippendale, Faust, Pavri, Chovit, Solis, Olah, and
+  Williams}]{Green1998}
+Green R, Eastwood M, Sarture C, Chrien T, Aronsson M, Chippendale B, Faust J,
+  Pavri B, Chovit C, Solis M, Olah M, Williams O ({1998}).
+\newblock \enquote{{Imaging Spectroscopy and the Airborne Visible Infrared
+  Imaging Spectrometer (AVIRIS)}.}
+\newblock \emph{{Remote Sensing of Environment}}, \textbf{{65}}({3}),
+  {227--248}.
+\newblock ISSN {0034-4257}.
+\newblock \doi{{10.1016/S0034-4257(98)00064-9}}.
+
+\bibitem[{Hedegaard \emph{et~al.}(2011)Hedegaard, Matth{\"a}us, Hassing,
+  Krafft, Diem, and Popp}]{Hedegaard2011}
+Hedegaard M, Matth{\"a}us C, Hassing S, Krafft C, Diem M, Popp J (2011).
+\newblock \enquote{Spectral Unmixing and Clustering Algorithms for Assessment
+  of Single Cells by Raman Microscopic Imaging.}
+\newblock \emph{Theoretical Chemistry Accounts}, \textbf{130}(4-6), 1249--1260.
+\newblock
+  \urlprefix\url{http://link.springer.com/article/10.1007/s00214-011-0957-1}.
+
+\bibitem[{Jetz \emph{et~al.}({2016})Jetz, Cavender-Bares, Pavlick, Schimel,
+  Davis, Asner, Guralnick, Kattge, Latimer, Moorcroft, Schaepman, Schildhauer,
+  Schneider, Schrodt, Stahl, and Ustin}]{Jetz2016}
+Jetz W, Cavender-Bares J, Pavlick R, Schimel D, Davis FW, Asner GP, Guralnick
+  R, Kattge J, Latimer AM, Moorcroft P, Schaepman ME, Schildhauer MP, Schneider
+  FD, Schrodt F, Stahl U, Ustin SL ({2016}).
+\newblock \enquote{{Monitoring Plant Functional Diversity from Space}.}
+\newblock \emph{{Nature Plants}}, \textbf{{2}}({3}).
+\newblock ISSN {2055-026X}.
+\newblock \doi{{10.1038/NPLANTS.2016.24}}.
+
+\end{thebibliography}
