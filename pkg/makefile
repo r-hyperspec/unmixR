@@ -23,7 +23,7 @@ PKG_DATE := $(shell grep -i '^date' $(PKG_NAME)/DESCRIPTION | cut -d ':' -f2 | c
 
 R_FILES := $(wildcard $(PKG_NAME)/R/*.R)
 Rd_FILES := $(wildcard $(PKG_NAME)/man/*.Rd)
-INST_FILES := $(wildcard $(PKG_NAME)/inst/**/*)
+Vig_DIR := $(wildcard $(PKG_NAME)/vignettes/)
 NEWS_FILE := $(PKG_NAME)/NEWS
 DESC_FILE := $(PKG_NAME)/DESCRIPTION
 NAME_FILE := $(PKG_NAME)/NAMESPACE
@@ -85,6 +85,16 @@ install: $(TGZ)
 clean:
 	rm -f $(TGZs)
 	rm -f -r $(PKG_NAME).Rcheck
+	rm -f $(Vig_DIR)*.aux
+	rm -f $(Vig_DIR)*.sty
+	rm -f $(Vig_DIR)*.log
+	rm -f $(Vig_DIR)*.tex
+	rm -f $(Vig_DIR)*.out
+	rm -f $(Vig_DIR)*.synctex.gz
+	rm -f $(Vig_DIR)*.pdf
+	rm -rf $(Vig_DIR)figure
+	rm -f $(Vig_DIR)*.md
+	rm -f $(Vig_DIR)*.html
 
 ### Edit the relevant files to increment version number & date
 # note: important not to quote $(NEW_VERSION)

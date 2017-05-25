@@ -1,0 +1,103 @@
+%\VignetteIndexEntry{Introduction to Hyperspectral Unmixing using unmixR}
+%\VignetteKeywords{hyperspectral unmixing, vertex component analysis, VCA, NFINDR, N-FINDR, iterative constrained endmembers, ICE, spectroscopy}
+%\VignetteEngine{knitr::knitr}
+
+\documentclass[article]{jss}
+
+%% declarations for jss.cls %%%%%%%%%%%%%%%%
+
+%% almost as usual
+\author{Anton Belov\\Affiliation \And 
+        Conor McManus\\Affiliation  \AND
+        Claudia Beleites\\ Chemometrix GmbH  \And 
+        Bryan A. Hanson\\DePauw University  \And 
+        Simon Fuller\\Affiliation}
+
+\title{Hyperspectral Unmixing Using the \proglang{R}\\Package \pkg{unmixR}}
+
+%% for pretty printing and a nice hypersummary also set:
+\Plainauthor{Anton Belov, Conor McManus, Claudia Beleites, Bryan A. Hanson, Simon Fuller} %% comma-separated
+\Plaintitle{Hyperspectral Unmixing Using the R Package unmixR} %% without formatting
+\Shorttitle{\pkg{unmixR}: Hyperspectral Unmixing} %% a short title (if necessary)
+
+%% an abstract and keywords
+\Abstract{
+Functions implementing the N-FINDR, Iterated Constrained Endmembers (ICE) and Vertex Component Analysis (VCA) algorithms which can recover pure component spectra and their respective concentrations from a hyperspectral data set.
+}
+
+\Keywords{hyperspectral unmixing, vertex component analysis, VCA, NFINDR, N-FINDR, iterative constrained endmembers, ICE, spectroscopy, \proglang{R}}
+
+\Plainkeywords{hyperspectral unmixing, vertex component analysis, VCA, NFINDR, N-FINDR, iterative constrained endmembers, ICE, spectroscopy, R} %% without formatting
+
+%% publication information
+%% NOTE: Typically, this can be left commented and will be filled out by the technical editor
+%% \Volume{50}
+%% \Issue{9}
+%% \Month{June}
+%% \Year{2012}
+%% \Submitdate{2012-06-04}
+%% \Acceptdate{2012-06-04}
+
+%% The address of (at least) one author should be given
+%% in the following format:
+\Address{
+  Claudia Beleites\\
+  Chemometrische Beratung\\
+  E-mail: \email{claudia.beleites@chemometrix.eu}\\
+  URL: \url{http://www.chemometrix.eu/index.html}
+}
+
+%% It is also possible to add a telephone and fax number
+%% before the e-mail in the following format:
+%% Telephone: +43/512/507-7103
+%% Fax: +43/512/507-2851
+
+%% end of declarations for jss.cls %%%%%%%%%%%%%%%%
+
+% declarations by BH, CB
+
+\graphicspath{{./graphics/}}
+
+\begin{document}
+
+%% Note that you should use the \pkg{}, \proglang{} and \code{} commands.
+
+% run a few things in the background for use later
+<< SetUp, echo = FALSE, eval = TRUE, results = "hide" >>=
+# R options & configuration:
+
+rm(list = ls())
+options(width =  50, show.signif.stars = FALSE)
+desc <- packageDescription("unmixR")
+vers <- paste("version ", desc$Version, sep = "")
+
+suppressMessages(library("unmixR"))
+suppressMessages(library("knitr")) # needed to access opts_chunk below
+
+
+# Stuff specifically for knitr:
+
+opts_chunk$set(out.width = "0.8\\textwidth", fig.align = "center", fig.width = 7, fig.height = 7, cache = FALSE)
+
+@
+\newpage
+
+Notes for developers (to be removed later):
+\begin{enumerate}
+  \item This vignette is a work in progress and is based on unmixR \Sexpr{vers}.
+  \item The JSS header and footer can be removed via documentclass[nojss]{jss}
+\end{enumerate}
+
+\section[Hyperspectral Unmixing]{Hyperspectral unmixing}
+
+\section[Vertex component analysis]{Vertex component analysis}
+
+\section[N-FINDR]{N-FINDR}
+
+\section[Iterated constrained endmembers]{Iterated constrained endmembers}
+
+\section[Acknowledgements]{Acknowledgements}
+
+We are grateful for support from the Google Summer of Code program to Conor McManus (2013) and Anton Belov (2016).
+
+\end{document}
