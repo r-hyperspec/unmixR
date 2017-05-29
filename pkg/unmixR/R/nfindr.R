@@ -127,7 +127,7 @@ nfindr <- function (...) {
   # test: check other (hyperSpec) objects
   test_that ("hyperSpec object", {
     output <- nfindr (laser, 2)
-    expect_equal (output$data, laser)  
+    expect_equal (output$data, laser@data$spc)
     expect_equal (output$indices, .correct.laser)
   })
 }

@@ -1,4 +1,4 @@
-library(testthat)
-library(unmixR)
+library("testthat")
+library("unmixR")
 
 test_check("unmixR")

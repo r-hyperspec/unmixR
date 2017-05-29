@@ -22,12 +22,11 @@ nfindr.default <- function(data, p,
     stop("p must be a positive integer >= 2")
   }
 
-
-  # keep original data
-  orig <- data
-
-  # transform the input into a matrix
+  # ensure we are dealing with a matrix
   data <- as.matrix (data)
+
+  # keep original data for possible return
+  orig <- data
 
   # reduce the dimensionality of the data using PCA
   # do nothing if the data was passed in already reduced
@@ -36,6 +35,7 @@ nfindr.default <- function(data, p,
   }
 
   # call the function to get the indices of the endmembers
+  # at this point data has dimensions n samples x (p-1) abstract wavelengths
   indices <- nfindrFunc(data, p, indices, ...)
   
   # sort the indices to normalise the order between runs

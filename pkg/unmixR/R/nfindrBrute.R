@@ -14,16 +14,12 @@
 ##' @param ... Extra unused parameters passed in from 
 ##' \code{\link{nfindr}}.
 ##'
-##' @param debuglevel If \code{>= 1L}, print top simplices with their 
-##' corresponding volume.
-##' 
-##' @return The indices of the endmembers in the original dataset or 
-##' a data.frame holding indices and corresponding volume if \code{volume = TRUE}.
+##' @return The indices of the endmembers in the original dataset.
 ##'
 ##' @export
 ##' @importFrom utils combn tail
 
-nfindrBrute <- function(data, p, ..., debuglevel = .options ("debuglevel")) {
+nfindrBrute <- function(data, p, ...) {
   # generate all possible unique combinations of p indices
   combos <- combn(nrow(data), p, simplify=TRUE)
   n <- ncol(combos)
@@ -32,25 +28,28 @@ nfindrBrute <- function(data, p, ..., debuglevel = .options ("debuglevel")) {
   volumes <- sapply(1:n, function(i) {
     idx <- combos[,i]
 
-    ## calling simplex.volume takes approx 2.5x as long, so leave it this way
+    # calling simplex.volume takes approx 2.5x as long, so leave it this way
+    # BH removed simplex.volume from pkg as it is no longer used 29 May 2017
     simplex <- cbind (rep(1, p), data [idx,])
     abs (det (simplex))
   })
 
-  if (debuglevel >= 1L) {
-    volumes <- volumes / factorial (p - 1)
-    
-    DF <- as.data.frame(cbind(t (combos), volumes))
-  	DF <- DF [order(DF$volumes),]
-  
-  	message("Top endmember combinations & their volumes:\n")
+  if (.options ("debuglevel") >= 1L) {
+    volumes <- volumes / factorial (p - 1)   
+    DF <- data.frame(ind = t(combos), volume = volumes)
+  	DF <- DF [order(DF$volume),]
+
+  	if (.options ("debuglevel") == 1L) {
+  		message("\nTop endmember combinations & their volumes:\n")
+    	print (tail (DF), row.names = FALSE)
+  	}
+  	
+   	if (.options ("debuglevel") > 1L) {
+  		message("\nAll endmember combinations & their volumes:\n")
+    	print (DF, row.names = FALSE)
+  	}
+ 	
   }
-  
-  if (debuglevel >= 1L) 
-  if (debuglevel == 1L)
-    message (tail (DF), row.names = FALSE)
-  else if (debuglevel > 1L)
-    message (DF, row.names = FALSE)
   
   ## return the indices that formed the largest simplex
   col <- which.max (volumes)
@@ -66,7 +65,6 @@ nfindrBrute <- function(data, p, ..., debuglevel = .options ("debuglevel")) {
   
   test_that("correct output for triangle", {
     expect_equal(nfindr (.testdata$x, "Brute", p = 3)$indices, .correct)
-    expect_equal(nfindr (.testdata$x, "Brute", p = 3, debuglevel = 1)$indices, .correct)
   })
 
   test_that("correct output for laser data", {

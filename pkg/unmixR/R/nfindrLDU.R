@@ -12,8 +12,6 @@
 ##'
 ##' @param indices Indices used in the simplex estimation.
 ##'
-##' @param debuglevel If \code{>= 1L}, print simplices with their 
-##' corresponding volume.
 ##' 
 ##' @param ... Extra unused parameters passed in from
 ##'   \code{\link{nfindr}}.
@@ -28,9 +26,9 @@
 ##' @export
 ##'
 
-nfindrLDU <- function (data, p, indices, ..., debuglevel = unmixR.options("debuglevel")) {
+nfindrLDU <- function (data, p, indices, ...) {
   
-  if (debuglevel >= 2L) print (indices)
+  if (.options ("debuglevel") >= 2L) print (indices)
   
   simplex <- .simplex (data, p, indices)
   nspectra <- nrow (data)
@@ -91,7 +89,7 @@ nfindrLDU <- function (data, p, indices, ..., debuglevel = unmixR.options("debug
           replace <- TRUE
           simplex [,i] <- y
           indices [i] <- j
-          if (debuglevel >= 2L) print (indices)
+          if (.options ("debuglevel") >= 2L) print (indices)
           
           vars <- update (simplex, p)
           simplex <- vars$simplex

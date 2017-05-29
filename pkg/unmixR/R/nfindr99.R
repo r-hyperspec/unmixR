@@ -33,10 +33,10 @@ nfindr99 <- function(data, p, indices, iters=3*p) {
   volume.prev <- -1
   volume.now <- volume
 
-  # if (.options ("debuglevel") >= 1L) {
-    # cat("Initial guess at endmembers:", indices, "\n")
-    # cat("\tinitial volume:", volume, "\n")
-    # }
+  if (.options ("debuglevel") >= 1L) {
+    cat("Initial guess at endmembers:", indices, "\n")
+    cat("\tinitial volume:", volume, "\n")
+    }
 
   # keep replacing endmembers until there is never an increase in volume
   # or the max iterations are reached (indicates pure endmembers not found)
@@ -53,7 +53,7 @@ nfindr99 <- function(data, p, indices, iters=3*p) {
       for (i in 1:nspectra) {
         # store current sample as it may need to be placed back into the
         # simplex after the following replacement
-        sample <- simplex[2:p,k]
+        sample <- simplex[2:p,k] # first row of 1's ignored see Winter1999 Eqn (3)
 
         # replace the k-th endmember with the i-th reduced spectrum
         # and recalculate the volume

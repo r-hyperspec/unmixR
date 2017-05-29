@@ -95,6 +95,8 @@ clean:
 	rm -rf $(Vig_DIR)figure
 	rm -f $(Vig_DIR)*.md
 	rm -f $(Vig_DIR)*.html
+	rm -f $(Vig_DIR)*.bbl
+	rm -f $(Vig_DIR)*.blg
 
 ### Edit the relevant files to increment version number & date
 # note: important not to quote $(NEW_VERSION)
