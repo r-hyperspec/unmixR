@@ -85,8 +85,10 @@ options(width =  50, show.signif.stars = FALSE)
 desc <- packageDescription("unmixR")
 vers <- paste("version ", desc$Version, sep = "")
 
-suppressMessages(library("unmixR"))
 suppressMessages(library("knitr")) # needed to access opts_chunk below
+suppressMessages(library("unmixR"))
+suppressMessages(library("hyperSpec"))
+suppressMessages(library("microbenchmark"))
 
 
 # Stuff specifically for knitr:
@@ -219,7 +221,7 @@ The N-FINDR method finds the smallest $p$-dimensional simplex that encloses the 
 
 \pkg{unmixR} includes several variants of this approach.  For testing purposes, the "Brute" method computes all possible simplices.  This will naturally be quite slow for all but trivial data sets.  Method "99" implements Winter's original algorithm (\cite{Winter1999} which iterates several times from different starting points.  This approach is necessary in the event that there are no pure pixels in the data set, as local maxima may be found rather than the global maximum.  Even so, the algorithm is not guaranteed to conduct an exhaustive search of all possible combinations of endmembers, and there is some sensitivity to the randomly chosen initial pixels (\cite{Plaza2005, Dowler2013}).
 
-Dowler (\cite{Dowler2013}) describes two endmember extraction algorithms that are computationally more efficient.  Both address improvements in how the determinant of the simplex (i.e. the volume) is computed. \pkg{unmixR} provides implementations of Dowler's LDU-N-NFINDR algorithm as method "LDU" and his LDU-\emph{sequential} N-FINDR algorithm as method "seqLDU".
+Dowler (\cite{Dowler2013}) describes two endmember extraction algorithms that are computationally more efficient.  Both address improvements in how the determinant of the simplex (i.e. the volume) is computed. \pkg{unmixR} provides implementations of Dowler's LDU-N-NFINDR algorithm as method "LDU" and his LDU-\emph{sequential} N-FINDR algorithm as method "SeqLDU".
 
 
 \subsection[Vertex component analysis]{Vertex component analysis}
@@ -247,6 +249,17 @@ The next figure is an abundance map of these endmembers.  Clearly if you were a 
 \section[Performance]{Performance}
 
 Demonstrate bench-marking here.
+
+<< bench, cache = TRUE >>=
+library("microbenchmark")
+res <- microbenchmark(
+	Brute = nfindr(laser, p = 3, method = "Brute"),
+	Winter = nfindr(laser, p = 3, method = "99"),
+	LDU = nfindr(laser, p = 3, method = "LDU"),
+	SeqLDU = nfindr(laser, p = 3, method = "SeqLDU")
+	)
+autoplot(res)
+@
 
 \section*{Acknowledgements}
 
