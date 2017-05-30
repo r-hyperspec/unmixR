@@ -250,7 +250,10 @@ The next figure is an abundance map of these endmembers.  Clearly if you were a 
 
 Demonstrate bench-marking here.
 
-<< bench, cache = TRUE >>=
+<< bench, cache = TRUE, eval = FALSE >>=
+
+# This will be too slow for CRAN -- do as a separate task
+
 library("microbenchmark")
 res <- microbenchmark(
 	Brute = nfindr(laser, p = 3, method = "Brute"),
