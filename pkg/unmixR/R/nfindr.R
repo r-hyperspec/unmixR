@@ -6,9 +6,10 @@
 ##' of pixels.
 ##'
 ##' @param data Data to unmix. It will be converted to a matrix using
-##'   as.matrix. The matrix should contain a spectrum per row. This data will
-##'   be dimensionally reduced using PCA. If you want to reduce the data using
-##'   some other method then reduce it first and set drop to \code{TRUE}.
+##'   as.matrix. The matrix should contain one spectrum per row. This data will
+##'   be dimensionally reduced using PCA without scaling. If you want to reduce the data using
+##'   some other method then reduce it first to \code{p - 1} and the PCA step
+##'   will automatically be skipped.
 ##'
 ##' @param formula Formula object.
 ##'
@@ -30,18 +31,15 @@
 ##'
 ##' @param ... Additional parameters for the methods (currently unused).
 ##'
-##' @param EMonly Boolean that indicates whether the \code{data} parameter
-##'   should be stored in the resulting structure. This should only be set to
-##'   \code{TRUE} when \code{data} was passed in already reduced.
+##' @param EMonly Boolean that indicates whether the original \code{data}
+##'   should be returned in the resulting structure.  If \code{TRUE} the data
+##'   element of the returned list will hold only the endmembers.
 ##' 
-##' @return A list which contains:
+##' @return A list of class \code{nfindr} which contains:
 ##'   \itemize{
-##'     \item \strong{data}: the original data or reduced data if drop is
-##'                          set to \code{TRUE}.
-##'     \item \strong{indices}: the indices of the spectra which increased
-##'                             the simplex volume the most. These are the
-##'                             indices of the endmembers. If drop is set to
-##'                             \code{TRUE} then indices will be 1 to p.
+##'     \item \strong{data}: Either the original data or just the endmembers if
+##'                          \code{EMonly = TRUE}.
+##'     \item \strong{indices}: The indices the endmembers in the suppled \code{data}.
 ##'   }
 ##'
 ##' @seealso \code{\link{endmembers}} to extract the spectra; \code{\link{predict}}

@@ -36,7 +36,7 @@ vca.default <- function(data, p, method = c("05", "Lopez2012"), seed = NULL, SNR
                   seed = seed)
   }else{
       res <- list(data = if (!EMonly) data else data[as.integer(val),],
-                  indices = if (!EMonly) as.integer(val) else 1:p)
+                  indices = as.integer(val))
   }
   class(res) = "vca"
   return(res)

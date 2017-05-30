@@ -26,18 +26,19 @@
 ##' @param seed vca05 generates a random vector. Set
 ##'   the random number generator seed with this argument.
 ##'
-##' @param EMonly Boolean that indicates whether the \code{data} parameter
-##'   should be stored in the resulting structure.
+##' @param EMonly Boolean that indicates whether the original \code{data}
+##'   should be returned in the resulting structure.  If \code{TRUE} the data
+##'   element of the returned list will hold only the endmembers.
 ##'
 ##' @param ... Additional parameters for the methods (currently unused).
 ##' 
-##' @return A list which contains:
+##' @return A list of class \code{vca} which contains:
 ##'   \itemize{
-##'     \item \strong{data}: the original data.
-##'     \item \strong{indices}: the indices of the calculated endmembers.
+##'     \item \strong{data}: Either the original data or just the endmembers if
+##'                          \code{EMonly = TRUE}.
+##'     \item \strong{indices}: The indices the endmembers in the suppled \code{data}.
 ##'   }
 ##' 
-##'
 ##' @seealso \code{\link{endmembers}} to extract the spectra; \code{\link{predict}}
 ##' to determine abundances of endmembers in each sample.
 ##'

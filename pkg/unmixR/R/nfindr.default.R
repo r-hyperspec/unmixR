@@ -5,8 +5,8 @@
 ##' @importFrom stats prcomp
 
 nfindr.default <- function(data, p,
-                           method="99", indices=sample(nrow(data), p), ...,
-                           EMonly=FALSE) {
+                           method = "99", indices = sample(nrow(data), p), ...,
+                           EMonly = FALSE) {
 
   ## get the selected nfindr method
   nfindrFunc <- get0 (paste0 ("nfindr", method), mode = "function")
@@ -17,7 +17,7 @@ nfindr.default <- function(data, p,
           paste (get.implementations ("nfindr"), collapse = ", "))
   }
 
-  ## check for p being with the valid range, >= 2
+  # check for p being with the valid range, >= 2
   if (!is.numeric(p) || p < 2) {
     stop("p must be a positive integer >= 2")
   }
@@ -39,10 +39,10 @@ nfindr.default <- function(data, p,
   indices <- nfindrFunc(data, p, indices, ...)
   
   # sort the indices to normalise the order between runs
-  indices <- sort (indices) 
+  indices <- sort (indices) # redundant: these are also sorted in the individual implementations
 
   res <- list(data = if (!EMonly) orig else orig[indices,],
-              indices = if (!EMonly) indices else 1:p)
+              indices = indices)
   class(res) <- "nfindr"
   return(res)
 }

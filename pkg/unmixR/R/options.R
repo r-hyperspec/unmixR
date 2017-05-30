@@ -1,20 +1,20 @@
-##' unmixR's package options
+##' unmixR package options
 ##'
 ##' \pkg{unmixR} uses \pkg{settings} for option management.
 ##'
-##' The following package-specific options are defined:
+##' The following options are defined for \pkg{unmixR}:
 ##'
 ##' \describe{
-##'   \item{debuglevel}{Indicates how much debuging output is to be produced.
-##' A value of 1 reports on the overall progress of identifying the endmembers.
-##' Values > 1 give additional details about the internal processing.}
+##'   \item{debuglevel}{Indicates how much debuging output is to be produced.  Default: 0.
+##'   A value of 1 reports on the overall progress of identifying the endmembers.
+##'   Values > 1 give additional details about the internal processing.}
+##'
 ##'  \item{implementation.search}{(default: \code{"package:unmixR"}) 
-##'  Environments which to search for unmixing algorithm implementations.}
+##'  Environments in which to search for unmixing algorithm implementations.
+##'  Provides a means of integrating implementations from other packages with a 
+##'  compatible return value. The global environment can be added as \code{".GlobalEnv"}}
 ##' }
 ##'
-##' @details 
-##' \code{implementation.search}: register packages providing additional implementations by appending \code{"package:packagename"}. 
-##' Implementations. The global environment can be added as \code{".GlobalEnv"}.
 ##'
 ##' @param ... either \code{key = value} pairs to set options or the names of
 ##'   the options to retrieve. If no parameters are passed, a list of all

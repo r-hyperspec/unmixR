@@ -5,7 +5,7 @@
 ##' with the largest volume. This should indicate the endmembers based on the
 ##' theory of N-FINDR. It should only be used for testing purposes as it
 ##' is extremely slow for non-trivial datasets.
-##' Intended to be called from \code{\link{nfindr}}.
+##' Intended to be called from \code{\link{nfindr}} (see there for examples).
 ##'
 ##' @param data Data matrix to unmix.
 ##'
@@ -14,7 +14,7 @@
 ##' @param ... Extra unused parameters passed in from 
 ##' \code{\link{nfindr}}.
 ##'
-##' @return The indices of the endmembers in the original dataset.
+##' @return The sorted indices of the endmembers in the original dataset.
 ##'
 ##' @export
 ##' @importFrom utils combn tail
@@ -27,9 +27,6 @@ nfindrBrute <- function(data, p, ...) {
   # generate the volumes of all the simplexes using the indices
   volumes <- sapply(1:n, function(i) {
     idx <- combos[,i]
-
-    # calling simplex.volume takes approx 2.5x as long, so leave it this way
-    # BH removed simplex.volume from pkg as it is no longer used 29 May 2017
     simplex <- cbind (rep(1, p), data [idx,])
     abs (det (simplex))
   })

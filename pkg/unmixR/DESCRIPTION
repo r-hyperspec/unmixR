@@ -1,12 +1,12 @@
 Package: unmixR
 Type: Package
 Title: Hyperspectral Unmixing Methods
-Version: 0.2.363
-Date: 2017-05-29
+Version: 0.2.367
+Date: 2017-05-30
 Authors@R: c(person("Anton", "Belov", role = "aut"),
 	person("Conor", "McManus", role = "aut"),
 	person("Claudia", "Beleites", role = c("aut", "cre"),
-		email ="chemometrie@beleites.de"),
+		email ="Claudia.Beleites@chemometrix.eu"),
 	person("Bryan A.", "Hanson", role = "aut"),
 	person("Simon", "Fuller", role = "aut"))
 Description: Functions implementing the N-FINDR, Iterated Constrained

@@ -138,13 +138,13 @@ In applications which involve collecting data over a $x,y$ grid, the complete da
 \subsection[Algebraic description of the data]{Algebraic description of the data}
 In the following discussion, lower-case bold letters represent vectors (matrices with a single row or column), e.g. $\mathbf{x}$.  The corresponding upper-case letter, $\mathbf{X}$,  is a matrix.  Since hyperspectral data sets are typically stored with samples in rows and wavelengths in columns, $\mathbf{x}$ would be a particular row of $\mathbf{X}$.
 
-For hyperspectral data measured at $p$ wavelengths, and assuming $m$ endmembers are present, the data in a hyperspectral study can be represented in several ways.  A single sample observation is a spectrum at location (pixel) or time point.  It can be represented as
+For hyperspectral data measured at $p$ wavelengths, and assuming $m$ endmembers are present, the data in a hyperspectral study can be represented in several ways.  A single sample observation is a spectrum at location (pixel) or time point.  It can be represented as linear mixing model
 
 \begin{equation}
 \mathbf{x}^{(1 \ \times \ p)} = \mathbf{a}^{(1 \ \times \ m)} \times \mathbf{E}^{(m \ \times \ p)} + \epsilon
 \end{equation}
 
-Where $\mathbf{x}$ is the spectrum composed of $p$ wavelengths or channels, $\mathbf{a}$ gives the fraction of each endmember present at that particular pixel, and $\mathbf{E}$ is a matrix of the endmembers, the pure component spectra. $\epsilon$ is a normally distributed noise term.  $\mathbf{E}$ can be thought of as a library of reference spectra which is unknown before the unmixing process. In other words, a given spectrum is the sum of the product of each abundance times the corresponding reference spectrum, plus noise.
+where $\mathbf{x}$ is the spectrum composed of $p$ wavelengths or channels, $\mathbf{a}$ gives the fraction of each endmember present at that particular pixel, and $\mathbf{E}$ is a matrix of the endmembers, the pure component spectra. $\epsilon$ is a noise term which is assumed to be a normally distributed.  $\mathbf{E}$ can be thought of as a library of reference spectra which is unknown before the unmixing process. In other words, a given spectrum is the sum of the product of each abundance times the corresponding reference spectrum, plus noise.
 
 If we scale this up to a real data set containing $n$ samples, the equation above becomes
 
@@ -178,7 +178,7 @@ The system is subject to several constraints.  The abundances must be positive, 
 \sum_{i=1}^{m} a_i = 1
 \end{equation}
 
-where $i$ is one of the $m$ endmembers of the system.  This way of describing the system is referred to as the "linear mixing model" or the "convex geometry model."
+where $i$ is one of the $m$ endmembers of the system.
 
 \subsection[Data reduction]{Data reduction}
 
@@ -209,17 +209,18 @@ If one has spectra composed of $p$ wavelengths, the data exists as a point cloud
 
 \section[Algorithms]{Algorithms}
 
-A number of unmixing algorithms have been described in the literature.  The chief difference between them is the method of finding the relevant simplex, which in turn identifies the endmembers.  In \pkg{unmixR}, there are variations of the N-FINDR, vertex component analysis (VCA) and iterated constrained endmembers (ICE) algorithms.  Once the endmembers are identified, the actual unmixing can be done to generate an abundance map.  These steps are discussed in the next sections.
+A number of algorithms to extract endmembers have been described in the literature.  The chief difference between them is the method of finding the relevant simplex, which in turn identifies the endmembers.  In \pkg{unmixR}, there are variations of the N-FINDR, vertex component analysis (VCA) and iterated constrained endmembers (ICE) algorithms.  Once the endmembers are identified, the actual unmixing can be done to generate an abundance map.  These steps are discussed in the next sections.
 
 \subsection[N-FINDR]{N-FINDR}
 
-The N-FINDR method finds the smallest simplex that encloses the dimensionally reduced data by an inflation process (\cite{Winter1999}).  In this process $p$ samples are chosen at random, and the volume of the simplex is computed (via the absolute value of the determinant).  Then a new sample is selected to replace one of the already chosen ones, and the volume is re-computed.   If the volume increases, the new sample is retained, otherwise the original sample is retained.  The process is repeated until the simplex is inflated to a maximum volume, which will be the smallest simplex that encloses the data set.  At this point, the vertices of the simplex are the purest pixels in the scene.
+The N-FINDR method finds the smallest $p$-dimensional simplex that encloses the reduced data using an iterative inflation process (\cite{Winter1999}).  The method assumes that pure pixels are present in the scene, an assumption that doesn't always hold.  In this process $p$ pixels are chosen at random, and the volume of the simplex is computed (via the absolute value of the determinant).  Then a new pixek is selected to replace one of the already chosen ones, and the volume is re-computed.   If the volume increases, the new pixel is retained, otherwise the original pixel is retained.  These steps are repeated using an interative approach until the simplex is inflated to a maximum volume, which will be the smallest simplex that encloses the data set.  At this point, the vertices of the simplex are the purest pixels in the scene.  
 
 \textbf{Could include a simple figure here showing steps in growing the simplex.}
 
-\pkg{unmixR} includes several variants of this approach.  For testing purposes, the "Brute" method computes all possible simplices.  This will naturally be quite slow for all but trivial data sets.  Method "99" implements Winter's original algorithm (\cite{Winter1999} which iterates several times from different starting points.  This approach is necessary in the event that there are no pure pixels in the data set.
+\pkg{unmixR} includes several variants of this approach.  For testing purposes, the "Brute" method computes all possible simplices.  This will naturally be quite slow for all but trivial data sets.  Method "99" implements Winter's original algorithm (\cite{Winter1999} which iterates several times from different starting points.  This approach is necessary in the event that there are no pure pixels in the data set, as local maxima may be found rather than the global maximum.  Even so, the algorithm is not guaranteed to conduct an exhaustive search of all possible combinations of endmembers, and there is some sensitivity to the randomly chosen initial pixels (\cite{Plaza2005, Dowler2013}).
 
-Discuss other variations in this algorithm (LDU, seqLDU).
+Dowler (\cite{Dowler2013}) describes two endmember extraction algorithms that are computationally more efficient.  Both address improvements in how the determinant of the simplex (i.e. the volume) is computed. \pkg{unmixR} provides implementations of Dowler's LDU-N-NFINDR algorithm as method "LDU" and his LDU-\emph{sequential} N-FINDR algorithm as method "seqLDU".
+
 
 \subsection[Vertex component analysis]{Vertex component analysis}
 

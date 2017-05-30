@@ -1,10 +1,10 @@
-##' LDU N-FINDR: 2013 Improved N-FINDR Algorithm Based on LU Decompositions
+##' LDU N-FINDR: Improved N-FINDR Algorithm Based on LDU Decompositions
 ##' 
-##' This approach calculates M LU decompositions, one with each column
+##' This approach calculates M LDU decompositions, one with each column
 ##' permuted to the last position, and reuses those decompositions on each
 ##' pixel until a permanent replacement requires the calculation of a new set
 ##' of decompositions.
-##' Intended to be called from \code{\link{nfindr}}.
+##' Intended to be called from \code{\link{nfindr}} (see there for examples).
 ##' 
 ##' @param data Data matrix to unmix.
 ##'
@@ -16,19 +16,17 @@
 ##' @param ... Extra unused parameters passed in from
 ##'   \code{\link{nfindr}}.
 ##'
-##' @return The indices of the endmembers in the original dataset.
+##' @return The sorted indices of the endmembers in the original dataset.
 ##'   
 ##' @references  Dowler, Shaun W., Takashima, Reymond, and Andrews, Mark
-##'   "Reducing the complexity of the N-FINDR algorithm for hyperspectral
-##'   image analysis.", IEEE Trans Image Process. 2013 22(7):2835-2848
+##'   "Reducing the Complexity of the N-FINDR Algorithm for Hyperspectral
+##'   Image Analysis.", IEEE Trans Image Process. 2013 22(7):2835-2848
 ##'   doi: 10.1109/TIP.2012.2219546
 ##'
 ##' @export
 ##'
 
 nfindrLDU <- function (data, p, indices, ...) {
-  
-  if (.options ("debuglevel") >= 2L) print (indices)
   
   simplex <- .simplex (data, p, indices)
   nspectra <- nrow (data)
@@ -89,7 +87,12 @@ nfindrLDU <- function (data, p, indices, ...) {
           replace <- TRUE
           simplex [,i] <- y
           indices [i] <- j
-          if (.options ("debuglevel") >= 2L) print (indices)
+          
+          if (.options ("debuglevel") >= 2L) {
+ 	  		cat("Iteration", iter, "\n")
+	  		cat("\tcurrent endmembers:", sort(indices), "\n")
+	  		cat("\tvolume:", Vtest, "\n")
+           }
           
           vars <- update (simplex, p)
           simplex <- vars$simplex

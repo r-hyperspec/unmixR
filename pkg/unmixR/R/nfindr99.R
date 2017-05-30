@@ -3,7 +3,7 @@
 ##' This technique is based on the fact that, in N spectral dimensions, the
 ##' N-volume contained by a simplex formed of the purest pixels is larger
 ##' than any other volume formed from any other combination of pixels.
-##' Intended to be called from \code{\link{nfindr}}.
+##' Intended to be called from \code{\link{nfindr}} (see there for examples).
 ##' 
 ##' @param data Data matrix to unmix.
 ##'
@@ -13,10 +13,10 @@
 ##'
 ##' @param iters Max number of iterations, defaults to 3*p.
 ##'
-##' @return The indices of the endmembers in the original dataset.
+##' @return The sorted indices of the endmembers in the original dataset.
 ##'
-##' @references Michael E. Winter "N-FINDR: an algorithm for fast autonomous
-##'   spectral end-member determination in hyperspectral data", Proc.
+##' @references Michael E. Winter "N-FINDR: an Algorithm for Fast Autonomous
+##'   Spectral End-Member Determination in Hyperspectral Data", Proc.
 ##'   SPIE 3753, Imaging Spectrometry V, 266 (October 27, 1999), 
 ##'   doi:10.1117/12.366289
 ##'

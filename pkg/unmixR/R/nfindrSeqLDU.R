@@ -3,7 +3,7 @@
 ##' While LDU N-FINDR examines a single pixel in each endmember position and
 ##' repeats over all pixels, this algorithm considers all pixels in a single
 ##' endmember position and then repeats over all endmember positions.
-##' Intended to be called from \code{\link{nfindr}}.
+##' Intended to be called from \code{\link{nfindr}} (see there for examples).
 ##' 
 ##' @param data Data matrix to unmix.
 ##'
@@ -14,11 +14,11 @@
 ##' @param ... Extra unused parameters passed in from
 ##'   \code{\link{nfindr}}.
 ##'
-##' @return The indices of the endmembers in the original dataset.
+##' @return The sorted indices of the endmembers in the original dataset.
 ##'   
 ##' @references  Dowler, Shaun W., Takashima, Reymond, and Andrews, Mark
-##'   "Reducing the complexity of the N-FINDR algorithm for hyperspectral
-##'   image analysis.", IEEE Trans Image Process. 2013 22(7):2835-2848
+##'   "Reducing the Complexity of the N-FINDR Algorithm for Hyperspectral
+##'   Image Analysis.", IEEE Trans Image Process. 2013 22(7):2835-2848
 ##'   doi: 10.1109/TIP.2012.2219546
 ##'
 ##' @export

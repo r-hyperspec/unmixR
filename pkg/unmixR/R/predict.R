@@ -1,7 +1,6 @@
 
-# BH revised version to avoid "no global binding" on CRAN check
-# Also made a significant fix (basically, it didn't work due to
-# transpositions at the wrong time)
+# Calling this .predict but then using Rdname predict and export avoids
+# conflicts with stats::predict and gives the proper options when doing ?predict
 
 .predict <- function(object, newdata, ...) {
 
@@ -21,35 +20,14 @@
   	return(raw/rowSums(raw))
 }
 
-# original version 
-
-# .predict <- function(object, newdata = object$data, ...) {
-
-  # if (! is.matrix (newdata))
-    # newdata <- as.matrix (newdata)
-
-  # endmembers <- endmembers (object)
-  
-  # if (! is.matrix (endmembers)) {
-    # endmembers <- as.matrix (endmembers)
-    # endmembers <- t (endmembers)
-	# }
-	
-  # t(apply(newdata, 1,
-  	# function(spectrum) {
-    # nnls(endmembers, spectrum)$x
-  	# }
-  	# ))
-# }
-
-
 ##' Predict Endmember Abundances
 ##'
 ##' Predicts the abundance percentages of each endmember at all sample points
 ##' using the Non-Negative Least Squares method.
 ##'
 ##' @param object The N-FINDR/VCA structure returned by the
-##'   \code{\link{nfindr}} or \code{\link{vca}} interface.
+##'   \code{\link{nfindr}} or \code{\link{vca}} interface (note: \code{\link{ice}}
+##'   intrinsically returns the abundances so this function isn't need for that method).
 ##'
 ##' @param newdata If the data stored in the object is not the data that
 ##'   should be checked for abundances, then this parameter allows for passing
@@ -61,7 +39,7 @@
 ##'   will be used.
 ##'
 ##' @return A matrix where the abundances for an endmember are returned
-##'   column-wise. Each value is in the range \code{[0 - 1]}.
+##'   column-wise. Each value is in the range \code{[0 \dots 1]}.
 ##'
 ##' @name predict
 ##' @rdname predict
@@ -70,9 +48,10 @@
 ##' @examples
 ##' data(demo_data)
 ##' demo <- nfindr(demo_data, p = 3)
-##' pred_wM <- predict(demo)
+##' pred_wM <- predict(demo) # wM = weights matrix
 ##'
-##' # The following is from demo_data
+##' # The following is from ?demo_data
+##' # Get the known wM (weights matrix)
 ##' set.seed(123)
 ##'
 ##' n <- 10 # no. of samples
