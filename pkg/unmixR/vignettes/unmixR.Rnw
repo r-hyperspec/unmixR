@@ -248,7 +248,7 @@ The next figure is an abundance map of these endmembers.  Clearly if you were a 
 
 \section[Performance]{Performance}
 
-Demonstrate bench-marking here.
+Demonstrate bench-marking here.  Note: temporarily, there is a separate vignette to do the benchmarking.
 
 << bench, cache = TRUE, eval = FALSE >>=
 

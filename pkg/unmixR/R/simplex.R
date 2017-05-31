@@ -17,10 +17,10 @@
 .simplex <- function(data, indices) {
 
   if (ncol (data) != length (indices) - 1L)
-    stop ("length(indices) != ncol(data)")
+    stop ("length(indices) -1 != ncol(data)")
   
   data <- data [indices, , drop = FALSE]
-  rbind (rep (1, ncol(data)), t (data)) # See Winter1999 Eqn (3) - needed for volume computation
+  rbind (rep (1, length(indices)), t (data)) # See Winter1999 Eqn (3) - needed for volume computation
 }
 
 .test(.simplex) <- function() {

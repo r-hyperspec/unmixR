@@ -1,0 +1,48 @@
+%\VignetteIndexEntry{unmixR Performance}
+%\VignetteKeywords{hyperspectral unmixing, vertex component analysis, VCA, NFINDR, N-FINDR, iterative constrained endmembers, ICE, spectroscopy}
+%\VignetteEngine{knitr::knitr}
+
+\documentclass[10 pt]{article}
+
+\usepackage{amssymb}
+\graphicspath{{./graphics/}}
+
+\title{unmixR Performance}
+
+\begin{document}
+
+% run a few things in the background for use later
+<< SetUp, echo = FALSE, eval = TRUE, results = "hide" >>=
+# R options & configuration:
+
+rm(list = ls())
+options(width =  50, show.signif.stars = FALSE)
+desc <- packageDescription("unmixR")
+vers <- paste("version ", desc$Version, sep = "")
+
+suppressMessages(library("knitr")) # needed to access opts_chunk below
+suppressMessages(library("unmixR"))
+suppressMessages(library("hyperSpec"))
+suppressMessages(library("microbenchmark"))
+
+
+# Stuff specifically for knitr:
+
+opts_chunk$set(out.width = "0.8\\textwidth", fig.align = "center", fig.width = 7, fig.height = 7, cache = FALSE)
+
+@
+
+Evaluation may be turned off to save time \ldots
+
+<< bench, cache = TRUE, echo = TRUE, eval = FALSE >>=
+res <- microbenchmark(
+	Brute = nfindr(laser, p = 3, method = "Brute"),
+	Winter = nfindr(laser, p = 3, method = "99"),
+	LDU = nfindr(laser, p = 3, method = "LDU"),
+	SeqLDU = nfindr(laser, p = 3, method = "SeqLDU",
+	times = 10L) # change to 100 for final run
+	)
+autoplot(res)
+@
+
+\end{document}
