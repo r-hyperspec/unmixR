@@ -114,8 +114,7 @@ nfindrLDU <- function (data, p, indices, ...) {
 .test (nfindrLDU) <- function (){
   context ("nfindrLDU")
 
-  ## nfindrLDU fails when simplex is on straight line
-  test_that ("nfindrLDU with simplex corners being straight line", {
+  test_that ("nfindrLDU fails when simplex is on a straight line", {
     
     skip ("LDU skipped: known issue #38")
     

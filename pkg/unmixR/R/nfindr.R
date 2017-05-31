@@ -67,6 +67,9 @@ nfindr <- function (...) {
   UseMethod("nfindr")
 }
 
+# Note: nfindr.formula has its own tests
+# There is also a test in nfinderLDU
+
 .test(nfindr) <- function() {
   context ("N-FINDR")
   
@@ -76,39 +79,36 @@ nfindr <- function (...) {
   
   expect_true(require (hyperSpec))
   
-  # test: nfindr produces error for invalid values of p
-
-  test_that ("Exceptions", {
+  test_that ("Exceptions for invalid values of p", {
     # invalid p
     expect_error (nfindr(triangle, p="---"))
     expect_error (nfindr(triangle, p = 0))  
-    
-    # test: nfindr produces error for invalid method
+  })
+
+  test_that ("Exceptions for invalid method", {
     expect_error (nfindr(triangle, p, method="invalid"))
   })
 
-  ## test that at least the implementations provided by unmixR are available
   implementations <- get.implementations("nfindr")
-  test_that ("Implementations available", {
+  
+  test_that ("All implementations available", {
     expect_true (all (c ("99", "Brute", "LDU", "SeqLDU") %in% implementations))
   })
 
-  # test: nfindr default produces the correct answer
-  test_that ("correct endmembers by default method for laser", {
+  test_that ("Correct endmembers by nfindr default method for laser", {
     expect_equal (nfindr(laser, p = 2)$indices, .correct.laser)
   })
 
-  # test: all N-FINDR methods produce the same output
-  test_that ("All implementations return correct results for laser data", {
+  test_that ("Correct endmembers by nfindr default method for triangle data", {
+    expect_equal (nfindr(triangle, p = 3)$indices, correct.triangle)
+  })
+  
+  test_that ("All implementations return correct (same) results for laser data", {
     for (i in implementations)
       expect_equal(nfindr (laser, method = i, p = 2)$indices, .correct.laser)
   })
   
-  test_that ("correct endmembers triangle data, default method", {
-    expect_equal (nfindr(triangle, p = 3)$indices, correct.triangle)
-  })
-  
-  test_that ("All implementations return correct results for triangle data", {
+  test_that ("All implementations return correct (same) results for triangle data", {
     for (i in implementations) {
       
       if (i == "LDU")
@@ -118,12 +118,8 @@ nfindr <- function (...) {
                    info = i)
     }
   })
-
-  # test: check the formula interface
-  # -> nfindr.formula has its own test
   
-  # test: check other (hyperSpec) objects
-  test_that ("hyperSpec object", {
+  test_that ("Return values for laser match the hyperSpec object", {
     output <- nfindr (laser, 2)
     expect_equal (output$data, laser@data$spc)
     expect_equal (output$indices, .correct.laser)

@@ -54,18 +54,3 @@ nfindrBrute <- function(data, p, ...) {
   indices <- combos [, col]
   indices
 }
-
-
-.test (nfindrBrute) <- function (){
-  context ("nfindrBrute")
-  expect_true (require (hyperSpec))
-  
-  test_that("correct output for triangle", {
-    expect_equal(nfindr (.testdata$x, "Brute", p = 3)$indices, .correct)
-  })
-
-  test_that("correct output for laser data", {
-    expect_equal(nfindr (laser, "Brute", p = 2)$indices, .correct.laser)
-  })
-  
-}
