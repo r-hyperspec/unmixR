@@ -1,8 +1,8 @@
 Package: unmixR
 Type: Package
 Title: Hyperspectral Unmixing Methods
-Version: 0.2.372
-Date: 2017-05-30
+Version: 0.2.376
+Date: 2017-05-31
 Authors@R: c(person("Anton", "Belov", role = "aut"),
 	person("Conor", "McManus", role = "aut"),
 	person("Claudia", "Beleites", role = c("aut", "cre"),
@@ -35,14 +35,14 @@ Imports:
     limSolve,
     matrixcalc
 VignetteBuilder: knitr
-Collate:
+Collate: 
     'demo_data.R'
     'dimensionalityReduction.R'
+    'unmixR-package.R'
     'endmembers.R'
     'estSNR.R'
     'getimplementations.R'
     'ice.R'
-    'unmixR-package.R'
     'nfindr.R'
     'nfindr.default.R'
     'nfindr.formula.R'

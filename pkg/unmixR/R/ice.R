@@ -69,5 +69,8 @@ ice <- function(data, p, mu = 0.00001, t = 0.9999){
             }
         }
     }
-    list(endmembers = t(curEnd), abundances = t(abund))
+    
+    ans <- list(endmembers = t(curEnd), abundances = t(abund))
+    class(ans) <- "ice"
+    return(ans)
 }
