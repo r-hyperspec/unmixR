@@ -1,5 +1,5 @@
 %\VignetteIndexEntry{Introduction to Hyperspectral Unmixing using unmixR}
-%\VignetteKeywords{hyperspectral unmixing, vertex component analysis, VCA, NFINDR, N-FINDR, iterative constrained endmembers, ICE, spectroscopy}
+%\VignetteKeywords{hyperspectral unmixing, vertex component analysis, VCA, NFINDR, N-FINDR, iterative constrained endmembers, ICE, spectroscopy, spectral mixing analysis}
 %\VignetteEngine{knitr::knitr}
 
 \documentclass[article, shortnames]{jss}
@@ -25,9 +25,9 @@
 Functions implementing the N-FINDR, Iterated Constrained Endmembers (ICE) and Vertex Component Analysis (VCA) algorithms which can recover pure component spectra and their respective concentrations from a hyperspectral data set.
 }
 
-\Keywords{hyperspectral unmixing, vertex component analysis, VCA, NFINDR, N-FINDR, iterative constrained endmembers, ICE, spectroscopy, \proglang{R}}
+\Keywords{hyperspectral unmixing, vertex component analysis, VCA, NFINDR, N-FINDR, iterative constrained endmembers, ICE, spectroscopy, \proglang{R}, spectral mixing analysis}
 
-\Plainkeywords{hyperspectral unmixing, vertex component analysis, VCA, NFINDR, N-FINDR, iterative constrained endmembers, ICE, spectroscopy, R} %% without formatting
+\Plainkeywords{hyperspectral unmixing, vertex component analysis, VCA, NFINDR, N-FINDR, iterative constrained endmembers, ICE, spectroscopy, R, spectral mixing analysis} %% without formatting
 
 %% publication information
 %% NOTE: Typically, this can be left commented and will be filled out by the technical editor
@@ -215,14 +215,13 @@ A number of algorithms to extract endmembers have been described in the literatu
 
 \subsection[N-FINDR]{N-FINDR}
 
-The N-FINDR method finds the smallest $p$-dimensional simplex that encloses the reduced data using an iterative inflation process (\cite{Winter1999}).  The method assumes that pure pixels are present in the scene, an assumption that doesn't always hold.  In this process $p$ pixels are chosen at random, and the volume of the simplex is computed (via the absolute value of the determinant).  Then a new pixek is selected to replace one of the already chosen ones, and the volume is re-computed.   If the volume increases, the new pixel is retained, otherwise the original pixel is retained.  These steps are repeated using an interative approach until the simplex is inflated to a maximum volume, which will be the smallest simplex that encloses the data set.  At this point, the vertices of the simplex are the purest pixels in the scene.  
+The N-FINDR method finds purest pixels in the scene, which are the vertices of a $p$-dimensional simplex that is often described as enclosing the data.  An iterative inflation algorithm is used (\cite{Winter1999}).  This approach assumes that pure pixels are present in the scene, an assumption that doesn't always hold, but is not critical in practice.  In this algorithm $p$ pixels are chosen at random as a starting point, and the volume of the simplex is computed (via the absolute value of the determinant).  Then each of the chosen pixels is replaced systematically by all of the pixels not currently chosen, checking the volume at each replacement.  If the volume increases, the new pixel is retained, otherwise the original pixel is retained.  This is the first pass.  This interim answer serves as a new starting point, and the process is repeated up to a specified number of iterations, or until the simplex volume cannot be inflated any further.  At this point, the vertices of the simplex are the purest pixels in the scene.
 
-\textbf{Could include a simple figure here showing steps in growing the simplex.}
+\textbf{Mention html vignette showing movies of the simplex identification process.}
 
-\pkg{unmixR} includes several variants of this approach.  For testing purposes, the "Brute" method computes all possible simplices.  This will naturally be quite slow for all but trivial data sets.  Method "99" implements Winter's original algorithm (\cite{Winter1999} which iterates several times from different starting points.  This approach is necessary in the event that there are no pure pixels in the data set, as local maxima may be found rather than the global maximum.  Even so, the algorithm is not guaranteed to conduct an exhaustive search of all possible combinations of endmembers, and there is some sensitivity to the randomly chosen initial pixels (\cite{Plaza2005, Dowler2013}).
+\pkg{unmixR} includes several variants of this approach.  For testing purposes, the "Brute" method computes all possible simplices.  This will naturally be quite slow for all but trivial data sets.  Method "99" implements Winter's original algorithm (\cite{Winter1999} described above.  The iterative approach is necessary in the event that there are no pure pixels in the data set, as local maxima may be found rather than the global maximum.  Even so, the algorithm is not guaranteed to conduct an exhaustive search of all possible combinations of endmembers, and there is some sensitivity to the randomly chosen initial pixels (\cite{Plaza2005, Dowler2013}).
 
-Dowler (\cite{Dowler2013}) describes two endmember extraction algorithms that are computationally more efficient.  Both address improvements in how the determinant of the simplex (i.e. the volume) is computed. \pkg{unmixR} provides implementations of Dowler's LDU-N-NFINDR algorithm as method "LDU" and his LDU-\emph{sequential} N-FINDR algorithm as method "SeqLDU".
-
+Dowler (\cite{Dowler2013}) describes two endmember extraction algorithms that are computationally more efficient.  Both address improvements in how the determinant of the simplex (i.e. the volume) is computed. \pkg{unmixR} provides implementations of Dowler's LDU-N-NFINDR algorithm as method "LDU" and his LDU-\emph{sequential} N-FINDR algorithm as method "SeqLDU".  In our benchmarking method "LDU" generally performs the best.
 
 \subsection[Vertex component analysis]{Vertex component analysis}
 
@@ -248,7 +247,7 @@ The next figure is an abundance map of these endmembers.  Clearly if you were a 
 
 \section[Performance]{Performance}
 
-Demonstrate bench-marking here.  Note: temporarily, there is a separate vignette to do the benchmarking.
+Demonstrate bench-marking here.  Note: temporarily, there is a separate vignette to do the benchmarking.  Benchmarking will be way too slow for CRAN checking.
 
 << bench, cache = TRUE, eval = FALSE >>=
 

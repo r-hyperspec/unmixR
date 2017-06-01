@@ -15,7 +15,7 @@
 ##'
 ##' @param frame Data frame containing the hyperspectral data.
 ##'
-##' @param p Number of endmembers.
+##' @param p Number of endmembers (will be coerced to integer).
 ##'
 ##' @param method The N-FINDR algorithm to use. Options:
 ##'   \itemize{
@@ -26,8 +26,10 @@
 ##'   }
 ##'   Default: LDU as it generally performs the best.
 ##'
-##' @param indices Locations of the rows in the dataset that will be used to
+##' @param indices Rows in the dataset that will be used to
 ##'   form the initial simplex. Default: Randomly selected indices.
+##'   Irrelevant if \code{method = "Brute"} is chosen since all
+##'   possibilities will be computed.
 ##'
 ##' @param ... Additional parameters for the methods (currently unused).
 ##'

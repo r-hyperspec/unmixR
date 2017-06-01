@@ -18,9 +18,11 @@ nfindr.default <- function(data, p,
   }
 
   # check for p being with the valid range, >= 2
-  if (!is.numeric(p) || p < 2) {
-    stop("p must be a positive integer >= 2")
-  }
+  p <- as.integer(p)
+  if (p < 2) stop("p must be a positive integer >= 2")
+
+  # check that p and length(indices) are the same
+  if (p != length(indices)) stop("length(indices) must equal p")
 
   # ensure we are dealing with a matrix
   data <- as.matrix (data)
