@@ -37,12 +37,12 @@ nfindrBrute <- function(data, p, ...) {
   	DF <- DF [order(DF$volume),]
 
   	if (.options ("debuglevel") == 1L) {
-  		message("\nTop endmember combinations & their volumes:\n")
+  		cat("\nTop endmember combinations & their volumes:\n")
     	print (tail (DF), row.names = FALSE)
   	}
   	
    	if (.options ("debuglevel") > 1L) {
-  		message("\nAll endmember combinations & their volumes:\n")
+  		cat("\nAll endmember combinations & their volumes:\n")
     	print (DF, row.names = FALSE)
   	}
  	
