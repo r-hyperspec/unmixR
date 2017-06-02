@@ -1,7 +1,7 @@
 Package: unmixR
 Type: Package
 Title: Hyperspectral Unmixing Methods
-Version: 0.2.381
+Version: 0.2.420
 Date: 2017-06-01
 Authors@R: c(person("Anton", "Belov", role = "aut"),
 	person("Conor", "McManus", role = "aut"),
@@ -28,7 +28,9 @@ Suggests:
     scatterplot3d,
     ggplot2,
     rbenchmark,
-    microbenchmark
+    microbenchmark,
+    animation,
+    rgl
 Imports:
     testthat,
     settings,

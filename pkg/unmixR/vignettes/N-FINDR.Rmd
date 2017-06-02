@@ -1,0 +1,226 @@
+---
+title: N-FINDR Background
+author: Bryan A. Hanson
+date: 2017-06-01
+---
+
+<!--
+%\VignetteEngine{knitr::knitr}
+%\VignetteIndexEntry{N-FINDR Algorithm}
+%\VignetteKeywords{hyperspectral unmixing, vertex component analysis, VCA, NFINDR, N-FINDR, iterative constrained endmembers, ICE, spectroscopy, R, spectral mixing analysis}
+ -->
+
+Background on the N-FINDR Unmixing Algorithm
+========================================================
+
+Bryan A. Hanson, June 2017
+
+```{r setup, echo = FALSE}
+#suppressPackageStartupMessages(library("hyperSpec"))
+suppressPackageStartupMessages(library("unmixR"))
+suppressPackageStartupMessages(library("rgl"))
+
+knit_hooks$set(webgl = hook_webgl)
+```
+
+This vignette is one of several provided with the `unmixR` package.  It is recommended that you read the introductory vignette before this one.  You can access all vignettes as follows:
+
+```{r vigs, eval = FALSE}
+library("unmixR")
+browseVignettes("unmixR")
+```
+
+The N-FINDR algorithm for endmember extraction is credited to Winter.<sup id="Winter1999">[1](#fnWinter1999)</sup>
+
+## N-FINDR on a Synthetic Data Set
+
+For this demonstration we will create a synthetic data set consisting of 50 pixels (samples, $n$) each measured at three wavelengths (channels, $p$).  With only three wavelengths, this data can be readily visualized.  The data can be described as follows ($m$ is the number of endmembers):
+
+$$ \mathbf{X}^{(n \ \times \ p)} = \mathbf{A}^{(n \ \times \ m)} \times \mathbf{E}^{(m \ \times \ p)} + \epsilon $$
+
+where $\mathbf{X}$ is a matrix of the raw data (dM1 in the code) and $\mathbf{A}$ (wM) is a matrix giving the abundances of each endmember in each sample.  $\mathbf{E}$ (eM) is a matrix of the endmembers, the pure component spectra (think of $\mathbf{E}$ as a library of reference spectra). $\epsilon$ is a Gaussian noise term.  
+
+### Create the Data Set
+
+```{r dM1}
+set.seed(123)
+n <- 50 # no. of samples
+p <- 3 # no. of frequencies
+nem <- 4 # no. of endmembers
+
+# define endmembers / pure spectra / endmember matrix
+em1 <- c(3, 0, 0)
+em2 <- c(0, 1, 0)
+em3 <- c(0, 0, 5)
+em4 <- c(0, 3, 6)
+
+eM <- matrix(c(em1, em2, em3, em4), byrow = TRUE, ncol = p)
+
+# set up a weights matrix
+wM <- matrix(runif(nem*n), nrow = n)
+
+# set certain samples (weights) to pure endmembers
+wM[7, c(1, 2, 3)] <- 0 # em1
+wM[11, c(2, 3, 4)] <- 0 # em2
+wM[31, c(1, 2, 4)] <- 0 # em3
+wM[43, c(1, 3, 4)] <- 0 # em4
+
+# normalize the weights matrix
+wM <- wM/rowSums(wM)
+
+# create the data matrix (weighted averages)
+dM1 <- wM %*% eM
+colnames(dM1) <- c("X", "Y", "Z")
+```
+### Inspect the Data
+
+Because of its low dimensionality, we can visualize this data directly in 3D (click and drag to rotate):
+
+```{r dM1webgl, webgl = TRUE, results = 'hide'}
+plot3d(dM1, col = "red", expand = 1.2)
+```
+
+### Extract the Endmembers
+
+Next, we'll extract the endmembers using a modified version of `nfinder99`, the original algorithm by M. E. Winter.  This modified version includes optional dimensional reduction (normally handled by a separate function) but most importantly, it records the sequence of endmembers as the algorithm iterates.  This allows us to follow the process directly.  Because this is a low dimension data set, it does not need to be reduced. You can see the modified function in the source for this vignette if desired.
+
+```{r hackedFunc, echo = FALSE}
+##' Michael E. Winter's 1999 N-FINDR Unmixing Algorithm
+##'
+##' A modified version which saves the endmembers and volumes
+##' at every iteration along with the (possibly) reduced data set.
+##'
+##' B. Hanson June 2017
+##'
+nfindr99allEM <- function(data, p, indices, iters=3*p) {
+
+  # From nfindr.default
+  # reduce the dimensionality of the data using PCA
+  # do nothing if the data was passed in already reduced
+  if (ncol(data) != p - 1) {
+    data <- stats::prcomp(data)[["x"]][, sequence(p-1), drop=FALSE]
+    cat("Reduced the data\n")
+  }
+
+  simplex <- .simplex(data, indices)
+  nspectra <- nrow(data)
+
+  EMs <- matrix(NA_integer_, ncol = length(indices), nrow = iters)
+  VOLs <- rep(NA_real_, iters)
+
+  # calculate the initial volume using the random endmembers
+  volume <- abs(det(simplex))
+  volume.prev <- -1
+  volume.now <- volume
+
+  EMs[1,] <- sort(indices)
+  VOLs[1] <- volume.now
+
+  # keep replacing endmembers until there is never an increase in volume
+  # or the max iterations are reached (indicates pure endmembers not found)
+  iter <- 1
+  while (volume.now > volume.prev && iter <= iters) {
+
+		VOLs[iter] <- volume.now
+
+    for (k in 1:p) {
+      for (i in 1:nspectra) {
+        # store current sample as it may need to be placed back into the
+        # simplex after the following replacement
+        sample <- simplex[2:p,k] # first row of 1's ignored see Winter1999 Eqn (3)
+
+        # replace the k-th endmember with the i-th reduced spectrum
+        # and recalculate the volume
+        simplex[2:p,k] <- data[i,]
+        testVolume <- abs(det(simplex))
+
+        # if the replacement increased the volume then keep the replacement
+        # and the note the spectrum's index
+        if (testVolume > volume) {
+          volume <- testVolume
+          indices[k] <- i
+        }
+        # otherwise revert the replacement
+        else {
+          simplex[2:p,k] <- sample
+        }
+      } # end of (i in 1:nspectra) loop
+    } # end of (k in 1:p) loop
+
+    iter <- iter+1
+    volume.prev <- volume.now
+    volume.now <- volume
+
+		EMs[iter, ] <- sort(indices)
+
+  } # end of 'while'
+
+  rownames(EMs) <- paste("iteration", 0:(nrow(EMs)-1), sep = "_")
+	colnames(EMs) <- paste("EM", 1:p, sep = "_")
+  return(list(data = data, EMs = EMs[1:(iter-1),], VOLs = VOLs))
+}
+
+# Also need this as it is not exported:
+
+.simplex <- function(data, indices) {
+
+  if (ncol (data) != length (indices) - 1L)
+    stop ("length(indices) -1 != ncol(data)")
+
+  data <- data [indices, , drop = FALSE]
+  rbind (rep (1, length(indices)), t (data)) # See Winter1999 Eqn (3) - needed for volume computation
+}
+```
+
+```{r extract_dM1}
+results1 <- nfindr99allEM(data = dM1, p = 4, indices = 1:4)
+data.frame(results1$EMs, volume = na.omit(results1$VOLs),
+  row.names = rownames(results1$EMs))
+```
+
+The first row of the data frame above is the initial row indices of the data set as specified in the function call.  The second data frame row is the row indices of the identified endmembers, which were found in one iteration.  Note that these endmembers are the pure pixels which we specified above when we created the data set.
+
+### Inspect the Simplex
+
+We are now in a position to visualize the simplex, which in this case is the largest tetrahedron which can be inscribed inside the data and whose vertices are the purest pixels found.  Clearly in this case the purest pixels are the most extreme, and all data points are inside the tetrahedron.
+
+```{r simplex_dM1, webgl = TRUE, results = 'hide'}
+plot3d(results1$data, col = "red", expand = 1.2)
+points3d(dM1[results1$EMs[2,],], color = "blue", size = 10)
+triangles3d(dM1[results1$EMs[2,1:3],], color = "blue", alpha = 0.15)
+triangles3d(dM1[results1$EMs[2,2:4],], color = "blue", alpha = 0.15)
+triangles3d(dM1[results1$EMs[2,c(1, 2, 4)],], color = "blue", alpha = 0.15)
+triangles3d(dM1[results1$EMs[2,c(1, 3, 4)],], color = "blue", alpha = 0.15)
+
+```
+
+## More Realistic Noisy Data
+
+Let's take the synthetic data set and add noise to make it more realistic:
+
+```{r dM2}
+dM2 <- dM1 + matrix(rnorm(n*p), nrow = n)
+```
+
+We'll repeat the same analysis as before without showing the details.  Here is the resulting simplex:
+
+```{r simplex_dM2, webgl = TRUE, echo = FALSE}
+results2 <- nfindr99allEM(data = dM2, p = 4, indices = 1:4)
+plot3d(results2$data, col = "red", expand = 1.2)
+points3d(dM2[results2$EMs[3,],], color = "blue", size = 10)
+triangles3d(dM2[results2$EMs[3,1:3],], color = "blue", alpha = 0.15)
+triangles3d(dM2[results2$EMs[3,2:4],], color = "blue", alpha = 0.15)
+triangles3d(dM2[results2$EMs[3,c(1, 2, 4)],], color = "blue", alpha = 0.15)
+triangles3d(dM2[results2$EMs[3,c(1, 3, 4)],], color = "blue", alpha = 0.15)
+```
+In this case it took two iterations to find the best answer:
+
+```{r results2EMs, echo = FALSE}
+data.frame(results2$EMs, volume = na.omit(results2$VOLs),
+  row.names = rownames(results2$EMs))
+```
+And it's clear that for realistic noisy data, the endmembers and corresponding simplex *do not* enclose all the data points.  However, any other combination of four data points has a lower volume and was rejected.
+
+## Notes
+
+<b id="fnWinter1999">1</b> M. E. Winter "N-FINDR: an Algorithm for Fast Autonomous Spectral End-Member Determination in Hyperspectral Data" in Society of Photo-Optical Instrumentation Engineers (SPIE) Conference Series, vol 3753, pgs 266-275, edited by M. R. Descour and S. S. Shen (1999).[&crarr;](#Winter1999)
