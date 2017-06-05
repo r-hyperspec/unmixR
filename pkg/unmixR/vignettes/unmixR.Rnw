@@ -1,5 +1,5 @@
 %\VignetteIndexEntry{Introduction to Hyperspectral Unmixing using unmixR}
-%\VignetteKeywords{hyperspectral unmixing, vertex component analysis, VCA, NFINDR, N-FINDR, iterative constrained endmembers, ICE, spectroscopy, spectral mixing analysis}
+%\VignetteKeywords{hyperspectral unmixing, vertex component analysis, VCA, NFINDR, N-FINDR, iterative constrained endmembers, ICE, spectroscopy, spectral mixture analysis, Raman, IR, NIR, NMR, MS}
 %\VignetteEngine{knitr::knitr}
 
 \documentclass[article, shortnames]{jss}
@@ -7,10 +7,10 @@
 %% declarations for jss.cls %%%%%%%%%%%%%%%%
 
 %% almost as usual
-\author{Anton Belov\\Affiliation \And 
+\author{Anton Belov\\Affiliation \And
         Conor McManus\\Affiliation  \AND
-        Claudia Beleites\\ Chemometrix GmbH  \And 
-        Bryan A. Hanson\\DePauw University  \And 
+        Claudia Beleites\\ Chemometrix GmbH  \And
+        Bryan A. Hanson\\DePauw University  \And
         Simon Fuller\\Affiliation}
 
 \title{Hyperspectral Unmixing Using the \proglang{R}\\Package \pkg{unmixR}}
@@ -25,9 +25,9 @@
 Functions implementing the N-FINDR, Iterated Constrained Endmembers (ICE) and Vertex Component Analysis (VCA) algorithms which can recover pure component spectra and their respective concentrations from a hyperspectral data set.
 }
 
-\Keywords{hyperspectral unmixing, vertex component analysis, VCA, NFINDR, N-FINDR, iterative constrained endmembers, ICE, spectroscopy, \proglang{R}, spectral mixing analysis}
+\Keywords{hyperspectral unmixing, vertex component analysis, VCA, NFINDR, N-FINDR, iterative constrained endmembers, ICE, spectroscopy, \proglang{R}, spectral mixture analysis, Raman, IR, NIR, NMR, MS}
 
-\Plainkeywords{hyperspectral unmixing, vertex component analysis, VCA, NFINDR, N-FINDR, iterative constrained endmembers, ICE, spectroscopy, R, spectral mixing analysis} %% without formatting
+\Plainkeywords{hyperspectral unmixing, vertex component analysis, VCA, NFINDR, N-FINDR, iterative constrained endmembers, ICE, spectroscopy, R, spectral mixture analysis, Raman, IR, NIR, NMR, MS} %% without formatting
 
 %% publication information
 %% NOTE: Typically, this can be left commented and will be filled out by the technical editor
@@ -126,9 +126,9 @@ Hyperspectral data sets are encountered in many disciplines, on scales from nano
   \item Airborne imaging: A satellite, plane or drone flies a pattern over land and collects spectra in the visible, UV or NIR range.  Such studies have been used to map mineral formations, to study the quality of forest canopies, and for assessing the severity of wildfires (\cite{Green1998, Jetz2016, Veraverbeke2014}).
 
   \item Art history:  A painting is scanned to examine the underlying pigments and perhaps reveal the presence of additional hidden images (\cite{Dooley2013}).
-  
+
   \item Quality control:  Pharmaceutical tablets are scanned using a hyperspectral camera during production to monitor coatings, active pharmaceutical ingredients and excipients (\cite{Kandpal2016, Franch-Lage2011}).
-  
+
 \end{itemize}
 
 \section[Hyperspectral unmixing]{Hyperspectral unmixing}
@@ -192,7 +192,13 @@ After PCA (or a similar technique), the equation describing the system would be:
 \mathbf{X} = \mathbf{A}\mathbf{E}
 \end{equation}
 
-where $\epsilon$ has effectively been eliminated.  However, at this stage $\mathbf{X}$ is no longer the original data, but rather the abstract components.  Its dimensions are still $n \ \times \ p$, but $p$ is no longer the number of wavelengths or channels.  Instead, it is the number of abstract components kept after the PCA procedure.  There may be a good argument to call $X$ and $p$ by some other symbol since they have changed substantially, but the habit in the literature is to ignore these changes from a symbolic point of view. From a practical point of view however, the dimension reduction that PCA provides makes the subsequent calculations computationally tractable.
+where $\epsilon$ has effectively been eliminated.  However, at this stage $\mathbf{X}$ is no longer the original data, but rather the abstract components.  Its dimensions are still $n \ \times \ p$, but $p$ is no longer the number of wavelengths or channels.  Instead, $p$ is the number of abstract components kept after the PCA procedure.  The relationship is now:
+
+\begin{equation}
+\mathbf{X}^{(n \ \times \ p)}_{red} = \mathbf{A}^{(n \ \times \ p)}_{red} \times \mathbf{E}^{(p \ \times \ p)}_{red}
+\end{equation}
+
+A good argument can be made to call $X$ and $p$ by some other symbol since they have changed substantially, but the habit in the literature is to ignore these changes from a symbolic point of view. From a practical point of view however, the dimension reduction that PCA provides makes the subsequent calculations computationally tractable.
 
 \subsection[The role of the simplex]{The role of the simplex}
 

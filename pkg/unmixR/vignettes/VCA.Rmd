@@ -1,0 +1,111 @@
+---
+title: VCA Algorithm
+author: unmixR team
+date: 2017-06-01
+---
+
+<!--
+%\VignetteEngine{knitr::knitr}
+%\VignetteIndexEntry{VCA Algorithm}
+%\VignetteKeywords{hyperspectral unmixing, vertex component analysis, VCA, NFINDR, N-FINDR, iterative constrained endmembers, ICE, spectroscopy, R, spectral mixture analysis, Raman, IR, NIR, NMR, MS}
+ -->
+
+VCA Endmember Extraction Algorithm
+========================================================
+
+The unmixR Team, June 2017
+
+```{r setup, echo = FALSE}
+suppressPackageStartupMessages(library("hyperSpec"))
+suppressPackageStartupMessages(library("unmixR"))
+suppressPackageStartupMessages(library("rgl"))
+
+# Notes:
+# 1. The webgl hook doesn't seem to respond to plot3d(..., expand)
+# 2. The webgl hook plots squares for points, doesn't respond to
+#    point_antialias
+
+knit_hooks$set(webgl = hook_webgl)
+```
+
+This vignette is one of several provided with the `unmixR` package.  It is recommended that you read the introductory vignette before this one.  You can access all vignettes as follows:
+
+```{r vigs, eval = FALSE}
+library("unmixR")
+browseVignettes("unmixR")
+```
+
+The VCA algorithm for endmember extraction is credited to Nascimento and Dias.<sup id="Nascimento2003">[1](#fnNascimento2003)</sup>
+
+### VCA on a Synthetic Data Set
+
+For this demonstration we will create a synthetic data set consisting of 50 pixels (samples, $n$) each measured at three wavelengths (channels, $p$).  With only three wavelengths, this data can be readily visualized.  The data can be described as follows ($m$ is the number of endmembers):
+
+$$ \mathbf{X}^{(n \ \times \ p)} = \mathbf{A}^{(n \ \times \ m)} \times \mathbf{E}^{(m \ \times \ p)} + \epsilon $$
+
+where $\mathbf{X}$ is a matrix of the raw data (e.g. `dM1` in the code below) and $\mathbf{A}$ (wM) is a matrix giving the abundances of each endmember in each sample.  $\mathbf{E}$ (eM) is a matrix of the endmembers, the pure component spectra (if the pixels really are spectra of pure compounds, think of $\mathbf{E}$ as a library of reference spectra). $\epsilon$ is a Gaussian noise term.  
+
+#### Create the Data Set
+
+```{r dM1}
+set.seed(123)
+n <- 50 # no. of samples
+p <- 3 # no. of frequencies
+nem <- 4 # no. of endmembers
+
+# define endmembers / pure spectra / endmember matrix
+em1 <- c(3, 0, 0)
+em2 <- c(0, 1, 0)
+em3 <- c(0, 0, 5)
+em4 <- c(0, 3, 6)
+
+eM <- matrix(c(em1, em2, em3, em4), byrow = TRUE, ncol = p)
+
+# set up a weights matrix
+wM <- matrix(runif(nem*n), nrow = n)
+
+# set certain samples (weights) to pure endmembers
+wM[7, c(1, 2, 3)] <- 0 # em1
+wM[11, c(2, 3, 4)] <- 0 # em2
+wM[31, c(1, 2, 4)] <- 0 # em3
+wM[43, c(1, 3, 4)] <- 0 # em4
+
+# normalize the weights matrix
+wM <- wM/rowSums(wM)
+
+# create the data matrix (weighted averages)
+dM1 <- wM %*% eM # per the equation above
+colnames(dM1) <- c("X", "Y", "Z")
+```
+#### Inspect the Data
+
+Because of its low dimensionality, we can visualize this data directly in 3D (click and drag the figure to rotate):
+
+```{r dM1webgl, webgl = TRUE, results = 'hide'}
+plot3d(dM1, col = "red", expand = 1.5)
+```
+#### Data Reduction
+
+After data reduction, the system can be described as:
+
+$$ \mathbf{X}^{(n \ \times \ p)}_{red} = \mathbf{A}^{(n \ \times \ p)}_{red} \times \mathbf{E}^{(p \ \times \ p)}_{red} $$
+
+#### The Steps of VCA Illustrated
+
+The VCA algorithm works as follows:
+
+1. The original data is reduced to a dimensionality equal to $n \times p$ where $p$ is the desired (estimated) number of endmembers as described above.
+2. Initialize a matrix $\mathbf{E}$, a $p \times p$ matrix that will store the endmembers. The first column is set to a constant, which represents an initial dummy endmember to get the process started.
+3. Iterate from 1 to $p$:
+   + Calculate a reference vector orthogonal to the subspace spanned by columns of $\mathbf{X}$, the reduced original data.  This vector will pass through (0,0,...,0).
+   + Project all the data points onto this reference vector.
+   + Find which data point's projection  onto the reference vector is furthest from the origin.  That data point is one of the endmembers.  Update $\mathbf{E}$.
+
+When this process is done, the set of optimal endmembers is in $\mathbf{E}$.  These endmembers are the vertices of a simplex as in the N-FINDR method, though the simplex is not directly utilized in VCA.
+
+The following plots illustrate the process for the `dM1` synthetic data set. After initializing $\mathbf{E}$ with a dummy endmember $(0,0,1)$ as the first column (so these are ...), we draw a reference vector $f$ which is orthogonal to this endmember. Then, each data point in $\mathbf{X}$ is projected onto $f$.  The data point whose projection onto $f$ is farthest from the origin is selected as the first (real) endmember and the fake endmember is discarded.  This plot shows the result after these first steps:
+
+
+### Notes
+
+<b id="Nascimento2003">1</b> M. E. Winter "N-FINDR: an Algorithm for Fast Autonomous Spectral End-Member Determination in Hyperspectral Data" in Society of Photo-Optical Instrumentation Engineers (SPIE) Conference Series, vol 3753, pgs 266-275, edited by M. R. Descour and S. S. Shen (1999).[&crarr;](#Winter1999)

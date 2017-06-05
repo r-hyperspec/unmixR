@@ -7,7 +7,7 @@ date: 2017-06-01
 <!--
 %\VignetteEngine{knitr::knitr}
 %\VignetteIndexEntry{N-FINDR Algorithm}
-%\VignetteKeywords{hyperspectral unmixing, vertex component analysis, VCA, NFINDR, N-FINDR, iterative constrained endmembers, ICE, spectroscopy, R, spectral mixing analysis}
+%\VignetteKeywords{hyperspectral unmixing, vertex component analysis, VCA, NFINDR, N-FINDR, iterative constrained endmembers, ICE, spectroscopy, R, spectral mixture analysis, Raman, IR, NIR, NMR, MS}
  -->
 
 N-FINDR Endmember Extraction Algorithm
