@@ -39,7 +39,7 @@ The VCA algorithm for endmember extraction is credited to Nascimento and Dias.<s
 
 ### VCA on a Synthetic Data Set
 
-For this demonstration we will create a synthetic data set consisting of 50 pixels (samples, $n$) each measured at three wavelengths (channels, $p$).  With only three wavelengths, this data can be readily visualized.  The data can be described as follows ($m$ is the number of endmembers):
+For this demonstration we will create a synthetic data set consisting of 50 pixels (samples, $n$) each measured at three wavelengths (channels, $p$).  The data can be described algebraically as follows ($m$ is the number of endmembers):
 
 $$ \mathbf{X}^{(n \ \times \ p)} = \mathbf{A}^{(n \ \times \ m)} \times \mathbf{E}^{(m \ \times \ p)} + \epsilon $$
 
@@ -47,57 +47,108 @@ where $\mathbf{X}$ is a matrix of the raw data (e.g. `dM1` in the code below) an
 
 #### Create the Data Set
 
+We'll generate a demonstration data set using a helper function (not shown). The data set (`dM1`) consists of 50 samples measured at three wavelengths.
+
+```{r genTestDataFunction, echo = FALSE}
+
+genTestData <- function(n, nl, nem, noise) {
+
+	# Helper Function to Generate unmixR Random Test Data
+
+	# n <- 50 # no. of samples
+	# nl <- 3 # no. of frequencies / channels
+	# nem <- 3 # no. of endmembers
+	# noise = TRUE # add a huge amount of noise?
+
+	# Set up endmember matrix
+	eM <- matrix(NA_real_, nrow = nem, ncol = nl)
+	for (i in 1:nrow(eM)) {
+		eM[i,] <- sample(1:10, size = nl, replace = TRUE)
+	}
+
+	# Set up weights matrix
+	wM <- matrix(runif(nem*n), nrow = n)
+
+	# Set some rows to pure endmembers (weight = 100% of a particular endmember)
+	eW <- diag(nem)
+	eMrows <- sample(1:nrow(wM), size = nrow(eW))
+	for (i in 1:length(eMrows)) {
+		wM[eMrows[i],] <- eW[i,]
+	}
+
+	# Normalize the weights matrix
+	wM <- wM/rowSums(wM)
+
+	# Create the data matrix (weighted averages)
+	dM <- wM %*% eM
+
+	# Add noise if requested
+	if (noise) dM <- jitter(dM, factor = 100)
+
+	ans <- list(data = dM, indices = eMrows)
+
+	return(ans)
+}
+```
+
 ```{r dM1}
 set.seed(123)
-n <- 50 # no. of samples
-p <- 3 # no. of frequencies
-nem <- 4 # no. of endmembers
 
-# define endmembers / pure spectra / endmember matrix
-em1 <- c(3, 0, 0)
-em2 <- c(0, 1, 0)
-em3 <- c(0, 0, 5)
-em4 <- c(0, 3, 6)
+	# n <- 50 # no. of samples
+	# nl <- 3 # no. of frequencies / channels
+	# nem <- 4 # no. of endmembers
+	# noise = TRUE # add a huge amount of noise?
 
-eM <- matrix(c(em1, em2, em3, em4), byrow = TRUE, ncol = p)
-
-# set up a weights matrix
-wM <- matrix(runif(nem*n), nrow = n)
-
-# set certain samples (weights) to pure endmembers
-wM[7, c(1, 2, 3)] <- 0 # em1
-wM[11, c(2, 3, 4)] <- 0 # em2
-wM[31, c(1, 2, 4)] <- 0 # em3
-wM[43, c(1, 3, 4)] <- 0 # em4
-
-# normalize the weights matrix
-wM <- wM/rowSums(wM)
-
-# create the data matrix (weighted averages)
-dM1 <- wM %*% eM # per the equation above
-colnames(dM1) <- c("X", "Y", "Z")
+dM1 <- genTestData(50, 3, 4, TRUE)
+str(dM1)
 ```
-#### Inspect the Data
 
-Because of its low dimensionality, we can visualize this data directly in 3D (click and drag the figure to rotate):
-
-```{r dM1webgl, webgl = TRUE, results = 'hide'}
-plot3d(dM1, col = "red", expand = 1.5)
-```
 #### Data Reduction
+
+In the VCA series of algorithms, the signal-to-noise ratio of the data (SNR) determines how the data is pre-processed, but *it is always projected* as explained in a moment.  The SNR is a function of $p$.  In what follows, note the distinction between transformation, reduction and projection.
+
+If the SNR is high, the data is transformed using an SVD process without changing the value of $p$ (this amounts to transforming the data into an abstract space, similar to PCA, but keeping all the components).  It is then projected on to lower dimension.  For example, if the raw data is composed of random 3D data, the data will be projected onto a plane which resides in 3D space.  Thus, in a sense the data has become two-dimensional since every point lies in a plane.  One might call this "flattening".  Nascimento and Dias, in describing the VCA algorithm, use the awkward phrase "projective projection".  The process just described is the one of the projection steps.  The other is coming up shortly.
+
+If the SNR is low, the data is first reduced to dimension $p - 1$ using SVD thereby improving the SNR.  The data is projected as before, then a constant vector is added back so that the original dimension $p$ is restored.
 
 After data reduction, the system can be described as:
 
 $$ \mathbf{X}^{(n \ \times \ p)}_{red} = \mathbf{A}^{(n \ \times \ p)}_{red} \times \mathbf{E}^{(p \ \times \ p)}_{red} $$
 
+```{r dimRed}
+dM2 <- dimensionalityReduction(dM1$data, 3)
+```
+
+We've done the reduction step manually here, but it is carried out automatically in _unmixR_.
+
+#### Inspect the Data
+
+We can now visualize this data directly in 3D; we'll display the original data in red and the processed data in green (click and drag the figure to rotate):
+
+```{r compare_dM_webgl, webgl = TRUE}
+plot3d(dM1$data, col = "red", expand = 1.5)
+points3d(dM2*100, col = "green")
+```
+
+Note how the processed data has been projected onto a plane (flattened).
+
+```{r temporarilyHere, eval = FALSE, echo = FALSE}
+tst <- vca(dM1$data, p = 3)
+colnames(tst$data) <- c("X", "Y", "Z")
+
+#plot3d(tst$data, col = "red", expand = 1.2)
+points3d(dM2[tst$indices,]*100, col = "blue", size = 10)
+# cannot work! points3d(dM1$data[tst$indices,], col = "blue", size = 10)
+```
+
 #### The Steps of VCA Illustrated
 
 The VCA algorithm works as follows:
 
-1. The original data is reduced to a dimensionality equal to $n \times p$ where $p$ is the desired (estimated) number of endmembers as described above.
+1. The original data is processed to a dimensionality equal to $n \times p$ where $p$ is the desired (estimated) number of endmembers as described above.
 2. Initialize a matrix $\mathbf{E}$, a $p \times p$ matrix that will store the endmembers. The first column (row?) is set to a constant, which represents an initial dummy endmember to get the process started.
 3. Iterate from 1 to $p$:
-   + Calculate a reference vector orthogonal to the subspace spanned by columns of $\mathbf{X}$, the reduced original data.  This vector will pass through (0,0,...,0).
+   + Calculate a reference vector orthogonal to the subspace spanned by columns of $\mathbf{X}$, the processed original data.  This vector will pass through (0,0,...,0).
    + Project all the data points onto this reference vector.
    + Find which data point's projection  onto the reference vector is furthest from the origin.  That data point is one of the endmembers.  Update $\mathbf{E}$.
 
@@ -235,7 +286,7 @@ vca05allVals <- function(data, p, SNR = estSNR(data, p)) {
 }
 ```
 
-```{r EMs}
+```{r EMs, eval = FALSE}
 # Get the endmembers
 unmixR.options(debuglevel = 0) # seems to be "on" by default, can't see why!
 res <- vca05allVals(dM1, p = 3)

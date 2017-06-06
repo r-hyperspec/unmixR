@@ -36,6 +36,7 @@ dimensionalityReduction <- function(data, p, SNR = estSNR(data, p)){
     # Reduce depending upon SNR
     
     if (SNR > SNRth) {
+   	    if (.options ("debuglevel") >= 1L) cat("SNR > SNRth, transforming to", p, "channels\n")
         d <- p # reducing to p
         # obtain projection matrix
         Ud <- svd(tcrossprod(R) / N, nu =  d, nv = 0)$u
@@ -45,7 +46,7 @@ dimensionalityReduction <- function(data, p, SNR = estSNR(data, p)){
         Y <- t(t(X) / as.vector(crossprod(X, u)))
 
     } else {
-    	
+   	    if (.options ("debuglevel") >= 1L) cat("SNR < SNRth, reducing to", p-1, "channels & adding a constant\n")    	
         d <- p - 1 # reducing to p - 1
         u <- rowMeans(R)
         Ud <- svd(tcrossprod(R - u) / N, nu = d, nv = 0)$u
