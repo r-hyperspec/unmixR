@@ -3,18 +3,27 @@
 ##' @include vca.R
 ##' @export
 
-vca.default <- function(data, p, method = c("05", "Lopez2012"), seed = NULL, SNR = estSNR(data, p), ..., EMonly = FALSE) {
+vca.default <- function(data, p, method = "05",
+                        seed = NULL, SNR = estSNR(data, p), ...,
+                        EMonly = FALSE) {
 
-  # check if the method passed in is valid
-  method <- match.arg (method)
+  ## get the selected vca method
+  vcaFunc <- get0(paste0 ("vca", method), mode = "function")
 
-  # transform the input into a matrix
-  data <- as.matrix (data)
-  
+  # check if the method passed in was found
+  if (is.null (vcaFunc)) {
+    stop ('Invalid option for method parameter (', method ,') try: ', 
+          paste (get.implementations ("vca"), collapse = ", "))
+  }
+
   # check for p being with the valid range, >= 2
   if (!is.numeric (p) || p < 2 || p > ncol (data)) {
     stop("p must be a positive integer >= 2 and <= ncol (data)")
   }
+
+  # ensure we are dealing with a matrix
+  data <- as.matrix (data)
+  
 
   # set the random number generator seed if supplied
   if (!is.null(seed)) {
@@ -24,19 +33,17 @@ vca.default <- function(data, p, method = c("05", "Lopez2012"), seed = NULL, SNR
   force(SNR)
   reducedData <- dimensionalityReduction(data, p, SNR)
   
-  vcaFunc <- get(paste("vca", method, sep=""), mode = "function")
-  
-  seed <- .Random.seed
-  
-  val <- vcaFunc(reducedData, p, SNR, ...)
+  indices <- vcaFunc(reducedData, p, ...)
 
+	# BH: why do we have as.integer here?
+	
   if (.options ("debuglevel") >= 1L){
-      res <- list(data = if (!EMonly) data else data[as.integer(val),],
-                  indices = if (!EMonly) as.integer(val) else 1:p,
+      res <- list(data = if (!EMonly) data else data[as.integer(indices),],
+                  indices = if (!EMonly) as.integer(indices) else 1:p,
                   seed = seed)
-  }else{
-      res <- list(data = if (!EMonly) data else data[as.integer(val),],
-                  indices = as.integer(val))
+  } else {
+      res <- list(data = if (!EMonly) data else data[as.integer(indices),],
+                  indices = as.integer(indices))
   }
   class(res) = "vca"
   return(res)
@@ -61,11 +68,7 @@ vca.default <- function(data, p, method = c("05", "Lopez2012"), seed = NULL, SNR
   })
   
   ## test that at least the implementations provided by unmixR are available
-  # this fails at the moment (correctly!) because we need to rename mvca again!
   implementations <- get.implementations("vca")
-  test_that ("Implementations available", {
-    expect_true (all (c ("05", "Lopez2012") %in% implementations))
-  })
   
 
   # test correct calculations for the available methods

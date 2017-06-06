@@ -4,12 +4,10 @@
 ##' fact that endmembers occupy the vertices of a simplex.
 ##' Intended to be called from \code{\link{vca}}.
 ##' 
-##' @param data Data matrix. Samples in rows frequencies in columns.
+##' @param data Data matrix. Samples in rows, frequencies in columns.
 ##'
 ##' @param p Number of endmembers.
 ##'
-##' @param SNR The Signal-to-Noise ratio of the data. By default it will be
-##'   estimated using \code{\link{estSNR}}.
 ##'
 ##' @return The indices of the endmembers in the original dataset.
 ##'
@@ -19,25 +17,31 @@
 ##'   doi: 10.1109/TGRS.2005.844293
 ##'
 ##' @export
-##' @importFrom stats runif
+##'
+##' @importFrom stats rnorm
 
-vca05 <- function(data, p, SNR = estSNR(data, p)) {
+vca05 <- function(data, p) {
     Y <- t(data)
-    indices <- array(0, p)
-    # the matrix A stores the projection of the estimated endmember signatures
+    indices <- rep(NA_integer_, p)
+    
+    # Matrix A stores the projection of the estimated endmember signatures
     A <- matrix(0, nrow = p, ncol = p)
     A[p, 1] <- 1
+    
     for(i in 1:p){
-        #getting vector f orthonormal to the space spanned by A
+    	
+        # Get vector f orthonormal to the space spanned by A
         w <- stats::rnorm(p, sd = 1)
         f <- (diag(p) - A %*% ginv(A)) %*% w
         f <- f / sqrt(sum(f^2))
-        #projecting data onto f
+        
+        # Project data onto f
         v <- crossprod(f, Y)
-        #getting index of the maximal projection
+        
+        # Get index of the maximal projection
         k <- which.max(abs(v))
         
-        #ith column of A is set to estimated endmember
+        # i-th column of A is set to estimated endmember
         A[, i] <- Y[, k]
         indices[i] <- k
         
@@ -56,12 +60,6 @@ vca05 <- function(data, p, SNR = estSNR(data, p)) {
         }
     }
     
-    #computation of mixing matrices
-    # if(SNR > SNRth){
-    #     M <- U_d %*% X[, indices]
-    # }else{
-    #     M <- u_d %*% X[, indices] + r_
-    # }
     indices <- sort(indices)
     indices
 }

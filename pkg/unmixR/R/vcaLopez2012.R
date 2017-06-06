@@ -8,9 +8,6 @@
 ##'
 ##' @param p Number of endmembers.
 ##'
-##' @param SNR The Signal-to-Noise ratio of the data. By default it will be
-##'   estimated using \code{\link{estSNR}}.
-##'   
 ##' @note for \code{debuglevel}s 1 and 2 debug information is printed (1) and plotted (2).
 ##'
 ##' @return The indices of the endmembers in the original dataset.
@@ -20,12 +17,14 @@
 ##' Hyperspectral Endmember Extraction: Modified Vertex Component Analysis,"
 ##' Geoscience & Remote Sensing Letters, IEEE, vol. 9 no. 3 pp. 502-506, May 2012
 ##' doi: 10.1109/LGRS.2011.2172771
+##'
 ##' @export
+##'
 ##' @importFrom stats prcomp
 ##' @importFrom graphics title points
 
 
-vcaLopez2012 <- function(data, p, SNR = estSNR(data, p)) {
+vcaLopez2012 <- function(data, p) {
    Y <- t(data)
     #matrix of endmembers
     E <- matrix(0, nrow = p, ncol = p + 1)

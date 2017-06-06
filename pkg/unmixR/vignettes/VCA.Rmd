@@ -35,7 +35,7 @@ library("unmixR")
 browseVignettes("unmixR")
 ```
 
-The VCA algorithm for endmember extraction is credited to Nascimento and Dias.<sup id="Nascimento2003">[1](#fnNascimento2003)</sup>
+The VCA algorithm for endmember extraction is credited to Nascimento and Dias.<sup id="Nascimento2005">[1](#fnNascimento2005)</sup>
 
 ### VCA on a Synthetic Data Set
 
@@ -95,7 +95,7 @@ $$ \mathbf{X}^{(n \ \times \ p)}_{red} = \mathbf{A}^{(n \ \times \ p)}_{red} \ti
 The VCA algorithm works as follows:
 
 1. The original data is reduced to a dimensionality equal to $n \times p$ where $p$ is the desired (estimated) number of endmembers as described above.
-2. Initialize a matrix $\mathbf{E}$, a $p \times p$ matrix that will store the endmembers. The first column is set to a constant, which represents an initial dummy endmember to get the process started.
+2. Initialize a matrix $\mathbf{E}$, a $p \times p$ matrix that will store the endmembers. The first column (row?) is set to a constant, which represents an initial dummy endmember to get the process started.
 3. Iterate from 1 to $p$:
    + Calculate a reference vector orthogonal to the subspace spanned by columns of $\mathbf{X}$, the reduced original data.  This vector will pass through (0,0,...,0).
    + Project all the data points onto this reference vector.
@@ -105,7 +105,143 @@ When this process is done, the set of optimal endmembers is in $\mathbf{E}$.  Th
 
 The following plots illustrate the process for the `dM1` synthetic data set. After initializing $\mathbf{E}$ with a dummy endmember $(0,0,1)$ as the first column (so these are ...), we draw a reference vector $f$ which is orthogonal to this endmember. Then, each data point in $\mathbf{X}$ is projected onto $f$.  The data point whose projection onto $f$ is farthest from the origin is selected as the first (real) endmember and the fake endmember is discarded.  This plot shows the result after these first steps:
 
+```{r helperFunctions, echo = FALSE}
+
+.options <- settings::options_manager (
+  debuglevel = 0L,
+  implementation.search = "package:unmixR"
+  )
+
+# The following modified from Anton's Summer 2016 work
+
+extrapolateVector <- function(vector){
+    L <- sqrt(sum(vector^2))
+    slopes <- vector / L
+    D <- 100
+    res <- cbind(vector + D * slopes, vector - D * slopes)
+    return(res)
+}
+
+    plotVectors <- function(matrix, vector, newEndmember, testdata){
+
+        resMatrix <- matrix(rep(0, nrow(matrix)), ncol = 1)
+        for (i in 1:ncol(matrix)) {
+            resMatrix = cbind(resMatrix, matrix[,i], rep(0, nrow(matrix)))
+        }
+        resMatrix <- t(resMatrix)
+        colnames(resMatrix) <- c("x", "y", "z")
+
+#        print(resMatrix)
+
+        refVector <- extrapolateVector(vector)
+        refVector <- t(refVector)
+
+        newEndmember <- t(newEndmember)
+        crossp <- sum(newEndmember %*% vector)
+        if(crossp != 0){
+            proj <- vector / sum(vector^2) *  crossp/ sum(vector^2)
+        } else {
+            proj <- vector * crossp
+        }
+
+        newEndmember <- rbind(newEndmember, t(proj))
+        colnames(newEndmember) <- c("x", "y", "z")
+
+        # show the reduced data points
+        red <- dimensionalityReduction(testdata, 3)
+        colnames(red) <- c("x", "y", "z")
+        sc3 <- scatterplot3d(red,
+          type = "p", xlim = c(-1, 1), pch = 20,
+          ylim = c(-1, 1), zlim = c(-1, 1), main = "The VCA Process",)
+
+        # show the reference vector f
+        sc3$points3d(refVector, col = "blue", type = "l")
+
+        # show the projection onto f
+        sc3$points3d(resMatrix, col = "red", type = "p", cex = 1.5)
+        sc3$points3d(resMatrix, col = "red", type = "l")
+
+        # show new endmember
+        sc3$points3d(newEndmember, col = "brown", type = "p", cex = 1.5)
+        sc3$points3d(newEndmember, col = "brown", type = "l")
+
+        legend(x = "topright",
+          pch = c(20, 1, NA, NA, NA),
+          col = c("black", "red", "blue", "red", "brown"),
+          lty = c(NA, NA, 1, 1, 1),
+          legend = c("reduced data", "current endmembers",
+          expression(paste("reference vector ", italic(f))),
+          expression(paste("vectors used to construct ", italic(f))),
+          "largest projection"))
+    }
+
+```
+
+```{r hackedVCA05, echo = FALSE}
+
+
+vca05allVals <- function(data, p, SNR = estSNR(data, p)) {
+
+	# In this hacked version need to do reduction ourselves
+  force(SNR)
+  Y <- dimensionalityReduction(data, p, SNR)
+
+  Y <- t(data)
+  indices <- rep(NA_integer_, p)
+
+  # Matrix A stores the projection of the estimated endmember signatures
+  A <- matrix(0, nrow = p, ncol = p)
+  A[p, 1] <- 1
+
+  myf <- matrix(NA_real_, ncol = p, nrow = p) # store the ref vec at each stage
+
+  for(i in 1:p) {
+
+      # Get vector f orthonormal to the space spanned by A
+      # A is updated at each iteration
+      w <- stats::rnorm(p, sd = 1)
+      f <- (diag(p) - A %*% ginv(A)) %*% w
+      f <- f / sqrt(sum(f^2))
+
+      myf[i,] <- f
+
+      # Project data onto f
+      v <- crossprod(f, Y)
+
+      # Get index of the maximal projection
+      k <- which.max(abs(v))
+
+      # i-th column of A is set to estimated endmember
+      A[, i] <- Y[, k]
+      indices[i] <- k
+
+      if (.options ("debuglevel") >= 1L){
+          cat("Iteration", i, "\n")
+          cat("\tcurrent endmembers:", sort(indices[1:i]), "\n")
+          # To monitor the process, capture the volume
+          # of the current simplex using the same process
+          # as in nfindr.default, except the data set
+          # grows with each iteration
+          inds <- indices[1:i] # limit to non-zero indices
+          red_data <- stats::prcomp(data)[["x"]][, sequence(length(inds)-1), drop=FALSE]
+          simplex <- .simplex(red_data, inds)
+          vol <- abs(det(simplex))
+          cat("\tvolume:", vol, "\n")
+      }
+  }
+
+  res <- list(indices = sort(indices), refVec = myf, data = t(Y))
+  return(res)
+}
+```
+
+```{r EMs}
+# Get the endmembers
+unmixR.options(debuglevel = 0) # seems to be "on" by default, can't see why!
+res <- vca05allVals(dM1, p = 3)
+str(res)
+```
 
 ### Notes
 
-<b id="Nascimento2003">1</b> M. E. Winter "N-FINDR: an Algorithm for Fast Autonomous Spectral End-Member Determination in Hyperspectral Data" in Society of Photo-Optical Instrumentation Engineers (SPIE) Conference Series, vol 3753, pgs 266-275, edited by M. R. Descour and S. S. Shen (1999).[&crarr;](#Winter1999)
+<b id="Nascimento2005">1</b> J. M. P. Nascimento and J. M. Bioucas Dias "Vertex Component Analysis: a Fast Algorithm to Unmix Hyperspectral Data," Geoscience and Remote Sensing, vol. 43, no. 4, pp. 898-910, April 2005, doi: 10.1109/TGRS.2005.844293 [&crarr;](#Nascimento2005)

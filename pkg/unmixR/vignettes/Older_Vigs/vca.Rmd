@@ -101,7 +101,7 @@ The VCA algorithm works as follows:
         crossp <- sum(newEndmember %*% vector)
         if(crossp != 0){
             proj <- vector / sum(vector^2) *  crossp/ sum(vector^2)
-        }else {
+        } else {
             proj <- vector * crossp
         }
 

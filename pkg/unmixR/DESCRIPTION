@@ -1,7 +1,7 @@
 Package: unmixR
 Type: Package
 Title: Hyperspectral Unmixing Methods
-Version: 0.2.451
+Version: 0.2.477
 Date: 2017-06-05
 Authors@R: c(person("Anton", "Belov", role = "aut"),
 	person("Conor", "McManus", role = "aut"),

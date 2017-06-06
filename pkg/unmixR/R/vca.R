@@ -23,7 +23,7 @@
 ##'   }
 ##'   Default: 05.
 ##'
-##' @param seed vca05 generates a random vector. Set
+##' @param seed vca05 uses a random vector to get started. Set
 ##'   the random number generator seed with this argument.
 ##'
 ##' @param EMonly Boolean that indicates whether the original \code{data}
@@ -37,6 +37,7 @@
 ##'     \item \strong{data}: Either the original data or just the endmembers if
 ##'                          \code{EMonly = TRUE}.
 ##'     \item \strong{indices}: The indices the endmembers in the suppled \code{data}.
+##'     \item \strong{seed}: The value of \code{seed} if \code{debuglevel >= 1}. 
 ##'   }
 ##' 
 ##' @seealso \code{\link{endmembers}} to extract the spectra; \code{\link{predict}}
