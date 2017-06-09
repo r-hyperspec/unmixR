@@ -1,41 +1,42 @@
 ---
-title: VCA Algorithm
-author: unmixR team
-date: 2017-06-01
+title:  "The VCA Algorithm"
+author: "The unmixR Team"
+date: "`r Sys.Date()`"
+vignette: >
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{VCA Algorithm}
+  %\VignetteKeywords{hyperspectral unmixing, vertex component analysis, VCA, NFINDR, N-FINDR, iterative constrained endmembers, ICE, spectroscopy, R, spectral mixture analysis, Raman, IR, NIR, NMR, MS}
+output:
+  html_document:
+    toc: true
+    mathjax: "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
 ---
-
-<!--
-%\VignetteEngine{knitr::knitr}
-%\VignetteIndexEntry{VCA Algorithm}
-%\VignetteKeywords{hyperspectral unmixing, vertex component analysis, VCA, NFINDR, N-FINDR, iterative constrained endmembers, ICE, spectroscopy, R, spectral mixture analysis, Raman, IR, NIR, NMR, MS}
- -->
-
-VCA Endmember Extraction Algorithm
-========================================================
-
-The unmixR Team, June 2017
 
 ```{r setup, echo = FALSE}
 suppressPackageStartupMessages(library("hyperSpec"))
 suppressPackageStartupMessages(library("unmixR"))
 suppressPackageStartupMessages(library("rgl"))
 
-# Notes:
-# 1. The webgl hook doesn't seem to respond to plot3d(..., expand)
-# 2. The webgl hook plots squares for points, doesn't respond to
-#    point_antialias
+desc <- packageDescription("unmixR")
+vers <- paste("version ", desc$Version, sep = "")
 
-knit_hooks$set(webgl = hook_webgl)
+options(rgl.useNULL = TRUE) # not sure if this helps
+
+# Notes:
+# 1. For this vig to build correctly you need a current version of
+#    pandoc installed.  It works with 1.19.2.1, current as of June 2017
 ```
 
-This vignette is one of several provided with the `unmixR` package.  It is recommended that you read the introductory vignette before this one.  You can access all vignettes as follows:
+**unmixR** `r vers`
+
+This vignette is one of several provided with the `unmixR` package.  It is recommended that you read the introductory vignette before this one.  You can access all vignettes, including the code that generates them, as follows:
 
 ```{r vigs, eval = FALSE}
 library("unmixR")
 browseVignettes("unmixR")
 ```
 
-The VCA algorithm for endmember extraction is credited to Nascimento and Dias.<sup id="Nascimento2005">[1](#fnNascimento2005)</sup>
+The VCA algorithm for endmember extraction is credited to Nascimento and Dias.<sup id = "Nascimento2005">[1](#fnNascimento2005)</sup>
 
 ### VCA on a Synthetic Data Set
 
@@ -43,7 +44,7 @@ For this demonstration we will create a synthetic data set consisting of 50 pixe
 
 $$ \mathbf{X}^{(n \ \times \ p)} = \mathbf{A}^{(n \ \times \ m)} \times \mathbf{E}^{(m \ \times \ p)} + \epsilon $$
 
-where $\mathbf{X}$ is a matrix of the raw data (e.g. `dM1` in the code below) and $\mathbf{A}$ (wM) is a matrix giving the abundances of each endmember in each sample.  $\mathbf{E}$ (eM) is a matrix of the endmembers, the pure component spectra (if the pixels really are spectra of pure compounds, think of $\mathbf{E}$ as a library of reference spectra). $\epsilon$ is a Gaussian noise term.  
+where $\mathbf{X}$ is a matrix of the raw data (e.g. `dM1` in the code below) and $\mathbf{A}$ is a matrix giving the abundances of each endmember in each sample.  $\mathbf{E}$ is a matrix of the endmembers, the pure component spectra (if the pixels really are spectra of pure compounds, think of $\mathbf{E}$ as a library of reference spectra). $\epsilon$ is a Gaussian noise term.  
 
 #### Create the Data Set
 
@@ -55,10 +56,10 @@ genTestData <- function(n, nl, nem, noise) {
 
 	# Helper Function to Generate unmixR Random Test Data
 
-	# n <- 50 # no. of samples
-	# nl <- 3 # no. of frequencies / channels
-	# nem <- 3 # no. of endmembers
-	# noise = TRUE # add a huge amount of noise?
+	# n - no. of samples
+	# nl - no. of frequencies / channels
+	# nem - no. of endmembers
+	# noise - add a huge amount of noise?
 
 	# Set up endmember matrix
 	eM <- matrix(NA_real_, nrow = nem, ncol = nl)
@@ -97,141 +98,71 @@ set.seed(123)
 	# n <- 50 # no. of samples
 	# nl <- 3 # no. of frequencies / channels
 	# nem <- 4 # no. of endmembers
-	# noise = TRUE # add a huge amount of noise?
+	# noise = TRUE # add a huge amount of noise
 
-dM1 <- genTestData(50, 3, 4, TRUE)
+dM1 <- genTestData(n = 50, nl = 3, nem = 4, noise = TRUE)
 str(dM1)
 ```
 
-#### Data Reduction
+#### Data Pre-Processing
 
-In the VCA series of algorithms, the signal-to-noise ratio of the data (SNR) determines how the data is pre-processed, but *it is always projected* as explained in a moment.  The SNR is a function of $p$.  In what follows, note the distinction between transformation, reduction and projection.
+In the VCA series of algorithms, the signal-to-noise ratio of the data (SNR), which depends on $p$, determines how the data is pre-processed.  However, *the data is always projected* and *always reduced* as explained in a moment.  In what follows, note the distinction between reduction and projection.
 
-If the SNR is high, the data is transformed using an SVD process without changing the value of $p$ (this amounts to transforming the data into an abstract space, similar to PCA, but keeping all the components).  It is then projected on to lower dimension.  For example, if the raw data is composed of random 3D data, the data will be projected onto a plane which resides in 3D space.  Thus, in a sense the data has become two-dimensional since every point lies in a plane.  One might call this "flattening".  Nascimento and Dias, in describing the VCA algorithm, use the awkward phrase "projective projection".  The process just described is the one of the projection steps.  The other is coming up shortly.
+If the SNR is above a certain threshold, the data is reduced to $p'$ abstract wavelengths, where $p'$ is the desired number of endmembers (Unfortunately, the literature uses the same symbol, $p$, for the number of raw channels and the number of abstract channels after reduction. In this document we will use $p'$ to refer to the abstract wavelength space).  It is then projected onto a dimension of $p' - 1$, but all $p'$ abstract wavelengths are retained.  For example, if the reduced data is composed of random 3D points, the data will be projected onto a plane which resides in 3D space.  In a sense the data has become two-dimensional since every point lies in a plane, but the plane is positioned in 3D space.  One might call this "flattening".  Nascimento and Dias, in describing the VCA algorithm, use the awkward phrase "projective projection".  The process just described is the one of the projection steps.  The other is coming up shortly.
 
-If the SNR is low, the data is first reduced to dimension $p - 1$ using SVD thereby improving the SNR.  The data is projected as before, then a constant vector is added back so that the original dimension $p$ is restored.
+If the SNR is below the threshold, the data is first reduced to dimension $p' - 1$ using SVD, thereby improving the SNR and "flattening" the data. Then a constant vector is added back so that the original dimension $p'$ is restored.
 
-After data reduction, the system can be described as:
+After pre-processing, the system can be described as:
 
-$$ \mathbf{X}^{(n \ \times \ p)}_{red} = \mathbf{A}^{(n \ \times \ p)}_{red} \times \mathbf{E}^{(p \ \times \ p)}_{red} $$
+$$ \mathbf{X}^{(n \ \times \ p')}_{red} = \mathbf{A}^{(n \ \times \ p')}_{red} \times \mathbf{E}^{(p' \ \times \ p')}_{red} $$
+
+Where the subscript $red$ denotes the pre-processed and reduced data.
+
+Our sample data set `dM1` has three wavelengths, we are going to keep all the channels but they will be returned as abstract channels.
 
 ```{r dimRed}
 dM2 <- dimensionalityReduction(dM1$data, 3)
 ```
 
-We've done the reduction step manually here, but it is carried out automatically in _unmixR_.
+We've done the reduction step separately here to illustrate the process, but it is carried out automatically in **unmixR**.
 
 #### Inspect the Data
 
 We can now visualize this data directly in 3D; we'll display the original data in red and the processed data in green (click and drag the figure to rotate):
 
-```{r compare_dM_webgl, webgl = TRUE}
-plot3d(dM1$data, col = "red", expand = 1.5)
+```{r preprocessed1, eval = FALSE}
+plot3d(dM1$data, col = "red", expand = 1.2, aspect = "iso",
+  xlab = "", ylab = "", zlab = "")
 points3d(dM2*100, col = "green")
 ```
 
+```{r preprocessed2, echo = FALSE}
+plot3d(dM1$data, col = "red", expand = 1.2, aspect = "iso")
+points3d(dM2*100, col = "green")
+rglwidget()
+```
 Note how the processed data has been projected onto a plane (flattened).
 
-```{r temporarilyHere, eval = FALSE, echo = FALSE}
-tst <- vca(dM1$data, p = 3)
-colnames(tst$data) <- c("X", "Y", "Z")
-
-#plot3d(tst$data, col = "red", expand = 1.2)
-points3d(dM2[tst$indices,]*100, col = "blue", size = 10)
-# cannot work! points3d(dM1$data[tst$indices,], col = "blue", size = 10)
-```
-
-#### The Steps of VCA Illustrated
+#### The Steps of VCA
 
 The VCA algorithm works as follows:
 
-1. The original data is processed to a dimensionality equal to $n \times p$ where $p$ is the desired (estimated) number of endmembers as described above.
-2. Initialize a matrix $\mathbf{E}$, a $p \times p$ matrix that will store the endmembers. The first column (row?) is set to a constant, which represents an initial dummy endmember to get the process started.
-3. Iterate from 1 to $p$:
-   + Calculate a reference vector orthogonal to the subspace spanned by columns of $\mathbf{X}$, the processed original data.  This vector will pass through (0,0,...,0).
-   + Project all the data points onto this reference vector.
-   + Find which data point's projection  onto the reference vector is furthest from the origin.  That data point is one of the endmembers.  Update $\mathbf{E}$.
+1. The original data is processed to a dimensionality equal to $n \times p'$ where $p$ is the desired (estimated) number of endmembers as described above.
+2. Initialize a matrix $\mathbf{E}$, a $p' \times p'$ matrix that will store the endmembers. The first row is set to a constant, which represents an initial dummy endmember to get the process started.
+3. Iterate from 1 to $p'$:
+   + Calculate a reference vector orthogonal to the subspace spanned by the columns of $\mathbf{X}$, the processed original data.  This vector will pass through (0,0,...,0).  We'll refer to this vector as $f$.
+   + Project all the data points onto $f$.  This is the second projection referred to in the phrase "projective projection".
+   + Find which data point's projection  onto $f$ is furthest from the origin.  That data point is one of the endmembers.  Update $\mathbf{E}$.
 
-When this process is done, the set of optimal endmembers is in $\mathbf{E}$.  These endmembers are the vertices of a simplex as in the N-FINDR method, though the simplex is not directly utilized in VCA.
+When this process is done, the identified endmembers are in $\mathbf{E}$.  These endmembers are the vertices of a simplex as in the N-FINDR method, though the simplex is not directly utilized in VCA.
 
-The following plots illustrate the process for the `dM1` synthetic data set. After initializing $\mathbf{E}$ with a dummy endmember $(0,0,1)$ as the first column (so these are ...), we draw a reference vector $f$ which is orthogonal to this endmember. Then, each data point in $\mathbf{X}$ is projected onto $f$.  The data point whose projection onto $f$ is farthest from the origin is selected as the first (real) endmember and the fake endmember is discarded.  This plot shows the result after these first steps:
+#### Extract the Endmembers
 
-```{r helperFunctions, echo = FALSE}
+Next, we'll extract the endmembers using a modified version of `vca05`, the original algorithm.  This modified version includes dimensional reduction (normally handled by a separate function) but most importantly, it records the values of $f$ and the simplex volume as the algorithm iterates.  This allows us to demonstrate the process of locating the endmembers.
 
-.options <- settings::options_manager (
-  debuglevel = 0L,
-  implementation.search = "package:unmixR"
-  )
+```{r VCA05mod, echo = FALSE}
 
-# The following modified from Anton's Summer 2016 work
-
-extrapolateVector <- function(vector){
-    L <- sqrt(sum(vector^2))
-    slopes <- vector / L
-    D <- 100
-    res <- cbind(vector + D * slopes, vector - D * slopes)
-    return(res)
-}
-
-    plotVectors <- function(matrix, vector, newEndmember, testdata){
-
-        resMatrix <- matrix(rep(0, nrow(matrix)), ncol = 1)
-        for (i in 1:ncol(matrix)) {
-            resMatrix = cbind(resMatrix, matrix[,i], rep(0, nrow(matrix)))
-        }
-        resMatrix <- t(resMatrix)
-        colnames(resMatrix) <- c("x", "y", "z")
-
-#        print(resMatrix)
-
-        refVector <- extrapolateVector(vector)
-        refVector <- t(refVector)
-
-        newEndmember <- t(newEndmember)
-        crossp <- sum(newEndmember %*% vector)
-        if(crossp != 0){
-            proj <- vector / sum(vector^2) *  crossp/ sum(vector^2)
-        } else {
-            proj <- vector * crossp
-        }
-
-        newEndmember <- rbind(newEndmember, t(proj))
-        colnames(newEndmember) <- c("x", "y", "z")
-
-        # show the reduced data points
-        red <- dimensionalityReduction(testdata, 3)
-        colnames(red) <- c("x", "y", "z")
-        sc3 <- scatterplot3d(red,
-          type = "p", xlim = c(-1, 1), pch = 20,
-          ylim = c(-1, 1), zlim = c(-1, 1), main = "The VCA Process",)
-
-        # show the reference vector f
-        sc3$points3d(refVector, col = "blue", type = "l")
-
-        # show the projection onto f
-        sc3$points3d(resMatrix, col = "red", type = "p", cex = 1.5)
-        sc3$points3d(resMatrix, col = "red", type = "l")
-
-        # show new endmember
-        sc3$points3d(newEndmember, col = "brown", type = "p", cex = 1.5)
-        sc3$points3d(newEndmember, col = "brown", type = "l")
-
-        legend(x = "topright",
-          pch = c(20, 1, NA, NA, NA),
-          col = c("black", "red", "blue", "red", "brown"),
-          lty = c(NA, NA, 1, 1, 1),
-          legend = c("reduced data", "current endmembers",
-          expression(paste("reference vector ", italic(f))),
-          expression(paste("vectors used to construct ", italic(f))),
-          "largest projection"))
-    }
-
-```
-
-```{r hackedVCA05, echo = FALSE}
-
-
-vca05allVals <- function(data, p, SNR = estSNR(data, p)) {
+vca05mod <- function(data, p, SNR = estSNR(data, p)) {
 
 	# In this hacked version need to do reduction ourselves
   force(SNR)
@@ -239,7 +170,8 @@ vca05allVals <- function(data, p, SNR = estSNR(data, p)) {
 
   Y <- t(data)
   indices <- rep(NA_integer_, p)
-
+	vols <- rep(NA_real_, p) # modification to capture volumes
+  vols[1] <- 0.0
   # Matrix A stores the projection of the estimated endmember signatures
   A <- matrix(0, nrow = p, ncol = p)
   A[p, 1] <- 1
@@ -266,33 +198,208 @@ vca05allVals <- function(data, p, SNR = estSNR(data, p)) {
       A[, i] <- Y[, k]
       indices[i] <- k
 
-      if (.options ("debuglevel") >= 1L){
-          cat("Iteration", i, "\n")
-          cat("\tcurrent endmembers:", sort(indices[1:i]), "\n")
-          # To monitor the process, capture the volume
-          # of the current simplex using the same process
-          # as in nfindr.default, except the data set
-          # grows with each iteration
-          inds <- indices[1:i] # limit to non-zero indices
-          red_data <- stats::prcomp(data)[["x"]][, sequence(length(inds)-1), drop=FALSE]
-          simplex <- .simplex(red_data, inds)
-          vol <- abs(det(simplex))
-          cat("\tvolume:", vol, "\n")
-      }
+			# This next piece modified from debug reporting
+      # To monitor the process, capture the volume
+      # of the current simplex using the same process
+      # as in nfindr.default, except the data set
+      # grows with each iteration
+			if (i > 1) {
+	      inds <- indices[1:i] # limit to non-NA indices
+	      red_data <- stats::prcomp(data)[["x"]][, sequence(length(inds)-1), drop=FALSE]
+	      simplex <- .simplex(red_data, inds)
+	      vols[i] <- abs(det(simplex))
+		  }
   }
 
-  res <- list(indices = sort(indices), refVec = myf, data = t(Y))
+  res <- list(indices = sort(indices), refVec = myf, data = t(Y), volume = vols)
   return(res)
 }
 ```
 
-```{r EMs, eval = FALSE}
-# Get the endmembers
+```{r HelperFunctions, echo = FALSE}
+
+showVCAsteps <- function(input, rf, showAllEM = TRUE, ...) {
+
+	# input: structure produced by vca05mod; elements: data, indices, f
+	# rf: which reference vector to plot
+	# showAllEM: highlight all EM's, not just the one being projected
+
+	data <- input$data
+	if (ncol(data) > 3) stop("Cannot handle more than 3D data sets")
+	indices <- input$indices
+	rfs <- input$refVec
+
+	# Helper functions
+	extrapolateVector <- function(vector, scale, symZero = FALSE, oneSided = FALSE){
+		# Modified from Anton Belov Summer 2016
+
+		# Takes an input vector of any dimension D and extrapolates it
+		# Assumes one end of vector is (0, 0, ..., 0)
+		# Returns a line segment
+		# Call example: extrapolateVector(c(1,1,1))
+		# symZero = TRUE ensures the midpoint of line segment is origin,
+		#   otherwise the midpoint is the vector
+		# oneSided = TRUE means the line segment starts at origin and runs
+		#   in the direction of the vector
+
+	  if (symZero & oneSided) message("symZero & oneSided cannot both be TRUE, oneSided will prevail")
+	  L <- sqrt(sum(vector^2))
+	  slopes <- vector / L
+	  if (!symZero) res <- rbind(vector + scale * slopes, vector - scale * slopes)
+	  if (symZero) res <- rbind(scale * slopes, -scale * slopes)
+	  if (oneSided) res <- rbind(rep(0.0, length(vector)), scale * slopes)
+	  colnames(res) <- c("x", "y", "z")
+	  return(res) # 2 x D matrix giving extreme end points of a line segment
+	}
+
+	pointOnLineNearPoint3d <- function(p1, p2, p3) {
+
+	# Method adapted from https://stackoverflow.com/a/9368901/633251
+	# p1, p2 ends of line segment
+	# p3, point off the line segment
+	# returns p4, a point on line p1-p2 nearest p3
+	# p1 etc are each c(x, y, z)
+
+		u <- p2 - p1
+		pq <- p3 - p1
+		w2 <- pq -  u * as.vector((pq %*% u)) /sum(u^2)
+		p4 <- p3 - w2
+		return(p4)
+	}
+
+	# Plot the data and the origin
+	plot3d(data, col = "red", aspect = "iso", xlab = "", ylab = "", zlab = "", ...)
+	origin <- rbind(
+		c(-1.0, 0.0, 0.0), # -x
+		c(1.0, 0.0, 0.0),  # +x
+		c(0.0, -1.0, 0.0), # -y
+		c(0.0, 1.0, 0.0),  # +y
+		c(0.0, 0.0, -1.0), # -z
+		c(0.0, 0.0, 1.0))  # +z
+
+	scale = 0.05*diff(range(data))
+	origin <- origin * scale
+	segments3d(origin, col = "black")
+
+	# Highlight the specified EM, or all of them
+	# When highlighting all, all but specified EM are lighter
+	if (!showAllEM) points3d(data[indices[rf],, drop = FALSE], col = "blue", size = 10)
+	if (showAllEM) {
+		points3d(data[indices[rf],, drop = FALSE], col = "blue", size = 10)
+		show <- setdiff(indices, rf)
+		points3d(data[show,, drop = FALSE], col = "blue", size = 10, alpha = 0.35)
+  }
+
+	# Show the refVec specified (for troubleshooting)
+	#points3d(rfs[indices[rf],, drop = FALSE], col = "blue", size = 20)
+
+	# Extrapolate the refVec and show it
+	refVec <- extrapolateVector(rfs[rf,, drop = FALSE], max(abs(data))*1.2, symZero = TRUE)
+	segments3d(refVec, col = "blue")
+
+	# Show the projection of the endmember on the refVec
+	pp <- pointOnLineNearPoint3d(refVec[1,], refVec[2,], data[indices[rf],])
+
+  # Show the point of intersection (for troubleshooting)
+	#points3d(pp[1], pp[2], pp[3], col = "green", size = 10)
+	projVec <- rbind(c(pp), data[indices[rf],])
+
+	segments3d(projVec, col = "blue")
+
+}
+
 unmixR.options(debuglevel = 0) # seems to be "on" by default, can't see why!
-res <- vca05allVals(dM1, p = 3)
+
+# Also need this as it is not exported:
+
+.simplex <- function(data, indices) {
+
+  if (ncol (data) != length (indices) - 1L)
+    stop ("length(indices) -1 != ncol(data)")
+
+  data <- data [indices, , drop = FALSE]
+  rbind (rep (1, length(indices)), t (data)) # See Winter1999 Eqn (3) - needed for volume computation
+}
+```
+
+```{r getEMs}
+# Get the endmembers
+res <- vca05mod(dM1$data, p = 3)
 str(res)
+
+```
+
+#### The Steps of VCA Illustrated
+
+The following plots illustrate the process for the `dM1` synthetic data set. After initializing $\mathbf{E}$ with a dummy endmember, we draw the reference vector $f$ which is orthogonal to this endmember (the direction of the first reference vector is arbitrary). Then, each data point in $\mathbf{X}$ is projected onto $f$.  The data point whose projection onto $f$ is farthest from the origin is selected as the first (real) endmember and the dummy endmember is discarded.  The next plot shows the result after this first step.  Note that the reduced data is shown in red, and there is a small marker at the origin.  The most-recently-identified endmember is shown in blue, while the other end members are shown in a pale blue.  The blue line shows the reference vector and the normal from the current endmember to the reference vector.
+
+```{r 1stEM, echo = FALSE}
+showVCAsteps(res, 1)
+rglwidget()
+```
+
+And after the second step:
+
+```{r 2ndEM, echo = FALSE}
+showVCAsteps(res, 2)
+rglwidget()
+```
+
+After one more iteration, all three endmembers have been identified:
+
+```{r 3rdEM, echo = FALSE}
+showVCAsteps(res, 3)
+rglwidget()
+```
+
+
+
+#### The Final Result
+
+At last all endmembers have been identified.
+
+```{r finalResult, echo = FALSE}
+M <- res$data
+colnames(M) <- c("X", "Y", "Z")
+indx <- res$indices
+plot3d(M, col = "red", expand = 1.2, aspect = "iso")
+points3d(M[indx,], col = "blue", size = 10)
+rglwidget()
+```
+
+### VCA on the chondro Data Set
+
+The chondro data set from package `hyperSpec` is composed of 875 Raman spectra collected on a grid in a tissue imaging experiment.  There are 300 channels.
+
+```{r chondro}
+chondro
+```
+
+Since there are 300 channels, we'll ask for three endmembers so we can visualize the results.  As described above, the data is flattened during pre-processing, which will be evident momentarily.  We'll plot the 3D data, and mark the three endmembers identified, but clearly there are really only two dimensions here, and the data is contained within a 2-simplex (triangle) rather than a 3-simplex (tetrahedron).
+
+```{r chondroEMs, echo = FALSE, eval = TRUE}
+# Plot the reduced data set
+Ch <- chondro@data$spc # extract just the matrix of spectra
+ChR <- dimensionalityReduction(Ch, 3)
+colnames(ChR) <- c("X", "Y", "Z")
+# The magnitude of ChR is quite small, scale up for better viewing
+# (i.e. small axis labels); small numbers may also be choking webgl
+ChR <- ChR*1e5
+# Adjust the X dimension which is basically flat for better viewing
+xR <- range(ChR[,"X"])
+xDelta <- diff(xR)*100
+limX <- xR + c(-xDelta, xDelta)
+#plot3d(ChR, col = "red", expand = 1.2, aspect = "iso", xlim = limX)
+#plot3d(ChR, col = "red", expand = 1.2, aspect = "iso")
+
+# Mark the endmembers
+#Chvca <- vca05mod(data = Ch, p = 3) # error: need to check why
+res <- vca05mod(data = ChR, p = 3)
+points3d(ChR[res$indices,], col = "blue", size = 10)
+
+rglwidget()
 ```
 
 ### Notes
 
-<b id="Nascimento2005">1</b> J. M. P. Nascimento and J. M. Bioucas Dias "Vertex Component Analysis: a Fast Algorithm to Unmix Hyperspectral Data," Geoscience and Remote Sensing, vol. 43, no. 4, pp. 898-910, April 2005, doi: 10.1109/TGRS.2005.844293 [&crarr;](#Nascimento2005)
+<b id="fnNascimento2005">1</b> J. M. P. Nascimento and J. M. Bioucas Dias "Vertex Component Analysis: a Fast Algorithm to Unmix Hyperspectral Data," Geoscience and Remote Sensing, vol. 43, no. 4, pp. 898-910, April 2005, doi: 10.1109/TGRS.2005.844293 [&crarr;](#Nascimento2005)

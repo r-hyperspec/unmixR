@@ -1,41 +1,41 @@
 ---
-title: N-FINDR Algorithm
-author: Bryan A. Hanson
-date: 2017-06-01
+title: "The N-FINDR Algorithm"
+author: "The unmixR Team"
+date: "`r Sys.Date()`"
+vignette: >
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{N-FINDR Algorithm}
+  %\VignetteKeywords{hyperspectral unmixing, vertex component analysis, VCA, NFINDR, N-FINDR, iterative constrained endmembers, ICE, spectroscopy, R, spectral mixture analysis, Raman, IR, NIR, NMR, MS}
+output:
+  html_document:
+    toc: true
+    mathjax: "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
 ---
-
-<!--
-%\VignetteEngine{knitr::knitr}
-%\VignetteIndexEntry{N-FINDR Algorithm}
-%\VignetteKeywords{hyperspectral unmixing, vertex component analysis, VCA, NFINDR, N-FINDR, iterative constrained endmembers, ICE, spectroscopy, R, spectral mixture analysis, Raman, IR, NIR, NMR, MS}
- -->
-
-N-FINDR Endmember Extraction Algorithm
-========================================================
-
-Bryan A. Hanson, June 2017
 
 ```{r setup, echo = FALSE}
 suppressPackageStartupMessages(library("hyperSpec"))
 suppressPackageStartupMessages(library("unmixR"))
 suppressPackageStartupMessages(library("rgl"))
 
+desc <- packageDescription("unmixR")
+vers <- paste("version ", desc$Version, sep = "")
+
+options(rgl.useNULL = TRUE) # not sure if this helps
+
 # Notes:
-# 1. The webgl hook doesn't seem to respond to plot3d(..., expand)
-# 2. The webgl hook plots squares for points, doesn't respond to
-#    point_antialias
-
-knit_hooks$set(webgl = hook_webgl)
+# 1. For this vig to build correctly you need a current version of
+#    pandoc installed.  It works with 1.19.2.1, current as of June 2017
 ```
+**unmixR** `r vers`
 
-This vignette is one of several provided with the `unmixR` package.  It is recommended that you read the introductory vignette before this one.  You can access all vignettes as follows:
+This vignette is one of several provided with the `unmixR` package.  It is recommended that you read the introductory vignette before this one.  You can access all vignettes, including the code that generates them, as follows:
 
 ```{r vigs, eval = FALSE}
 library("unmixR")
 browseVignettes("unmixR")
 ```
 
-The N-FINDR algorithm for endmember extraction is credited to M. E. Winter.<sup id="Winter1999">[1](#fnWinter1999)</sup>
+The N-FINDR algorithm for endmember extraction is credited to M. E. Winter.<sup id = "Winter1999">[1](#fnWinter1999)</sup>
 
 ### N-FINDR on a Synthetic Data Set
 
@@ -81,15 +81,16 @@ colnames(dM1) <- c("X", "Y", "Z")
 
 Because of its low dimensionality, we can visualize this data directly in 3D (click and drag the figure to rotate):
 
-```{r dM1webgl, webgl = TRUE, results = 'hide'}
-plot3d(dM1, col = "red", expand = 1.5)
+```{r dM1plot, echo = FALSE}
+plot3d(dM1, col = "red", expand = 1.2, aspect = "iso")
+rglwidget()
 ```
 
 #### Extract the Endmembers
 
 Next, we'll extract the endmembers using a modified version of `nfinder99`, the original algorithm by M. E. Winter.  This modified version includes optional dimensional reduction (normally handled by a separate function) but most importantly, it records the sequence of endmembers as the algorithm iterates.  This allows us to inspect the process of locating the endmembers.  Because `dM1` is a low dimension data set, it does not need to be reduced. You can see the modified function in the source for this vignette if desired.
 
-```{r hackedFunc, echo = FALSE}
+```{r nfindr99mod, echo = FALSE}
 ##' Michael E. Winter's 1999 N-FINDR Unmixing Algorithm
 ##'
 ##' A modified version which saves the endmembers and volumes
@@ -97,7 +98,7 @@ Next, we'll extract the endmembers using a modified version of `nfinder99`, the 
 ##'
 ##' B. Hanson June 2017
 ##'
-nfindr99allEM <- function(data, p, indices, iters=3*p) {
+nfindr99mod <- function(data, p, indices, iters=3*p) {
 
   # Modified from nfindr99 to save results of the endmember search
 
@@ -182,7 +183,7 @@ nfindr99allEM <- function(data, p, indices, iters=3*p) {
 ```
 
 ```{r extract_dM1}
-results1 <- nfindr99allEM(data = dM1, p = 4, indices = 1:4)
+results1 <- nfindr99mod(data = dM1, p = 4, indices = 1:4)
 str(results1)
 ```
 
@@ -196,15 +197,15 @@ The first row of the data frame above is the initial endmembers as specified in 
 
 We are now in a position to visualize the simplex, which in this case is the largest tetrahedron which can be inscribed inside the data and whose vertices are the purest pixels found.  Clearly in this case the purest pixels are the most extreme, and all data points are inside the tetrahedron.
 
-```{r simplex_dM1, webgl = TRUE, results = 'hide'}
+```{r simplex_dM1, echo = FALSE}
 # note dM1 & results1$data are the same, no PCA was performed
-plot3d(dM1, col = "red", expand = 1.2)
+plot3d(dM1, col = "red", expand = 1.2, aspect = "iso")
 points3d(dM1[results1$EMs[2,],], color = "blue", size = 10)
 triangles3d(dM1[results1$EMs[2,1:3],], color = "blue", alpha = 0.15)
 triangles3d(dM1[results1$EMs[2,2:4],], color = "blue", alpha = 0.15)
 triangles3d(dM1[results1$EMs[2,c(1, 2, 4)],], color = "blue", alpha = 0.15)
 triangles3d(dM1[results1$EMs[2,c(1, 3, 4)],], color = "blue", alpha = 0.15)
-
+rglwidget()
 ```
 
 ### More Realistic Noisy Data
@@ -217,14 +218,15 @@ dM2 <- dM1 + matrix(rnorm(n*p), nrow = n)
 
 We'll repeat the same analysis as before without showing the details.  Here is the resulting simplex:
 
-```{r simplex_dM2, webgl = TRUE, echo = FALSE}
-results2 <- nfindr99allEM(data = dM2, p = 4, indices = 1:4)
-plot3d(results2$data, col = "red", expand = 1.2)
+```{r simplex_dM2, echo = FALSE}
+results2 <- nfindr99mod(data = dM2, p = 4, indices = 1:4)
+plot3d(results2$data, col = "red", expand = 1.2, aspect = "iso")
 points3d(dM2[results2$EMs[3,],], color = "blue", size = 10)
 triangles3d(dM2[results2$EMs[3,1:3],], color = "blue", alpha = 0.15)
 triangles3d(dM2[results2$EMs[3,2:4],], color = "blue", alpha = 0.15)
 triangles3d(dM2[results2$EMs[3,c(1, 2, 4)],], color = "blue", alpha = 0.15)
 triangles3d(dM2[results2$EMs[3,c(1, 3, 4)],], color = "blue", alpha = 0.15)
+rglwidget()
 ```
 
 In this case it took two iterations to find the best answer:
@@ -250,16 +252,17 @@ chondro
 
 Since there are 300 channels, in order to visualize the data we'll have to reduce it using PCA, and we'll keep just 3 principal components so we can plot as before (the reduction is automatically carried out by the modified function).  We'll ask for four endmembers so we can draw the simplex.
 
-```{r simplex_chondro, webgl = TRUE, echo = TRUE}
+```{r simplex_chondro, echo = FALSE}
 Ch <- chondro@data$spc # extract just the matrix of spectra
-results3 <- nfindr99allEM(data = Ch, p = 4, indices = 1:4)
+results3 <- nfindr99mod(data = Ch, p = 4, indices = 1:4)
 ChR <- results3$data # grab the reduced data for plotting
-plot3d(ChR, col = "red", expand = 1.2)
+plot3d(ChR, col = "red", expand = 1.2) # looks better w/o aspect = "iso"
 points3d(ChR[results3$EMs[4,],], color = "blue", size = 10)
 triangles3d(ChR[results3$EMs[4,1:3],], color = "blue", alpha = 0.15)
 triangles3d(ChR[results3$EMs[4,2:4],], color = "blue", alpha = 0.15)
 triangles3d(ChR[results3$EMs[4,c(1, 2, 4)],], color = "blue", alpha = 0.15)
 triangles3d(ChR[results3$EMs[4,c(1, 3, 4)],], color = "blue", alpha = 0.15)
+rglwidget()
 ```
 
 Here is how the search for endmembers played out in this case:

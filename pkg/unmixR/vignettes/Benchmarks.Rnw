@@ -39,9 +39,10 @@ res <- microbenchmark(
 	Brute = nfindr(laser, p = 3, method = "Brute"),
 	Winter = nfindr(laser, p = 3, method = "99"),
 	LDU = nfindr(laser, p = 3, method = "LDU"),
-	SeqLDU = nfindr(laser, p = 3, method = "SeqLDU",
-	times = 10L) # change to 100 for final run
-	)
+	SeqLDU = nfindr(laser, p = 3, method = "SeqLDU"),
+	vca05 = vca(laser, p = 2, method = "05"),
+	vcaLopez2012 = vca(laser, p = 2, method = "Lopez2012"),
+	times = 100L)
 autoplot(res)
 @
 

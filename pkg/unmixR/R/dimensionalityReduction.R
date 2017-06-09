@@ -36,13 +36,13 @@ dimensionalityReduction <- function(data, p, SNR = estSNR(data, p)){
     # Reduce depending upon SNR
     
     if (SNR > SNRth) {
-   	    if (.options ("debuglevel") >= 1L) cat("SNR > SNRth, transforming to", p, "channels\n")
+   	    if (.options ("debuglevel") >= 1L) cat("SNR > SNRth, reducing to", p, "channels\n")
         d <- p # reducing to p
         # obtain projection matrix
         Ud <- svd(tcrossprod(R) / N, nu =  d, nv = 0)$u
         X <- crossprod(Ud, R)
         u <- rowMeans(X) # after transposition, the means of each dimension
-        # project data on subspace ("projective projection")
+        # project data on subspace ("projective projection", 1st projection)
         Y <- t(t(X) / as.vector(crossprod(X, u)))
 
     } else {
