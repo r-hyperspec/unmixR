@@ -51,12 +51,12 @@
 ##' data(demo_data)
 ##' demo <- vca(demo_data, 2, method = "05")
 ##' em <- endmembers(demo)
-##' em <- rbind(demo_data[c(7,9),], em)
+##' em <- rbind(demo_data[c(3, 7),], em)
 ##' em[3:4,] <- em[3:4,] + 0.5 # a small offset for the found em's
 ##' matplot(t(em), type = "l",
 ##'    col = c("black", "blue", "black", "blue"), lty = c(1, 1, 2, 2),
 ##'    xlab = "frequency", ylab = "intensity",
-##'    main = "mvca of demo_data")
+##'    main = "vca of demo_data")
 ##' leg.txt <- c("Endmember 2", "Endmember 3", "Endmember 2 (found)", "Endmember 3 (found)")
 ##' legend("topright", leg.txt, col = c("black", "blue", "black", "blue"),
 ##' lty = c(1, 1, 2, 2), cex = 0.75)

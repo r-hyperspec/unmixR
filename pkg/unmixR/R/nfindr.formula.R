@@ -24,12 +24,12 @@ nfindr.formula <- function(formula, frame, ...) {
   expect_true (require(hyperSpec))
   
   test_that("Exception on response term in formula", {
-    expect_error(nfindr (x ~ ., .testdata, p = 2))
+    expect_error(nfindr (x ~ ., .triangle, p = 2))
   })
   
   test_that ("Formula interface gives same results as regular interface", {
-    expect_equal(nfindr (~ x, .testdata, p = 3)$indices,
-                 nfindr (.testdata$x, p = 3)$indices)
+    expect_equal(nfindr (~ x, .triangle, p = 3)$indices,
+                 nfindr (.triangle$x, p = 3)$indices)
   })  
   
   test_that ("Check conversion of classes", {
@@ -37,11 +37,11 @@ nfindr.formula <- function(formula, frame, ...) {
   })
   
   test_that ("Formula interface ~x same as ~.", {
-    expect_equal(nfindr (~ x, .testdata, p = 3)$indices, .correct)  
-    expect_equal(nfindr (~ ., as.data.frame (.testdata$x), p = 3)$indices, .correct)  
+    expect_equal(nfindr (~ x, .triangle, p = 3)$indices, .correct.triangle)  
+    expect_equal(nfindr (~ ., as.data.frame (.triangle$x), p = 3)$indices, .correct.triangle)  
   })
   
   test_that ("Formula interface does not produce offset term", {
-    expect_false("(Intercept)" %in% colnames (nfindr (~ x, .testdata, p = 3)$data))
+    expect_false("(Intercept)" %in% colnames (nfindr (~ x, .triangle, p = 3)$data))
   })
 }

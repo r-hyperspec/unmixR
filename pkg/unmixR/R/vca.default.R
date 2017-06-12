@@ -54,63 +54,73 @@ vca.default <- function(data, p, method = "05",
 .test(vca.default) <- function() {
   context ("vca")
   
-  # Note: .testdata$x matches all columns of .testdata, which are x.L1, x.L2, x.L3
+  # Note: .triangle$x matches all columns of .triangle, which are x.L1, x.L2, x.L3
+  
+  # Misc. front end tests
   
   test_that ("vca produces error for invalid values of p", {
-    expect_error (vca (.testdata$x, p = "---"))
-    expect_error (vca (.testdata$x, p = 0))
-    expect_error (vca (.testdata$x, p = 1))
-    expect_error (vca (.testdata$x, p = 4))
+    expect_error (vca (.triangle$x, p = "---"))
+    expect_error (vca (.triangle$x, p = 0))
+    expect_error (vca (.triangle$x, p = 1))
+    expect_error (vca (.triangle$x, p = 4))
   })
 
   test_that ("vca produces error for invalid method", {
-    expect_error (vca (.testdata$x, p, method="invalid"))
+    expect_error (vca (.triangle$x, p, method="invalid"))
   })
   
-  ## test that at least the implementations provided by unmixR are available
   implementations <- get.implementations("vca")
-  
 
-  # test correct calculations for the available methods
-  implementations <- get.implementations("vca")
+  test_that("Built-in vca implementations are in fact available", {
+      expect_true (all (c("05", "Lopez2012") %in% implementations))
+  })
   
-  test_that("correct results for all available methods: triangle data", {
+  test_that("Correct results for all available vca methods: triangle data", {
     for (i in implementations) {
-      expect_equal (vca (.testdata$x, p = 3, method = i)$indices, .correct)
+      expect_equal (vca (.triangle$x, p = 3, method = i)$indices, .correct.triangle)
       
-      indices <- vca (.testdata$x, p = 2, method = i)$indices
-      expect_true (all (indices %in% .correct), info = i)
+      indices <- vca (.triangle$x, p = 2, method = i)$indices
+      expect_true (all (indices %in% .correct.triangle), info = i)
       
-      if (i == "Lopez2012") skip ("temporarily disabled: known issue #36")
+      if (i == "Lopez2012") skip ("Temporarily disabled: known issue #36")
       expect_false (any (duplicated (indices)), info = i)
     }
   })
 
-  test_that ("no duplicates with Lopez2012 for test data", {
-    skip ("known issue: #36")
-    
-    indices <- replicate (10, vca (.testdata$x, p = 2, method = "Lopez2012")$indices)
-    expect_true (all (indices %in% .correct))            
-    expect_true (all (indices [1, ] != indices [2, ]), info = "Lopez2012 duplicate indices: testdata, p = 2")
-  }
-  )
-  
-  test_that("correct results for all available methods: laser data", {
-    skip ("temporarily disabled")
+  test_that("Correct results for all available vca methods: laser data", {
+    skip ("Disabled: returns 4, 84 rather than 4, 79, see issue #20")
     for (i in implementations) {
       expect_equal (vca (laser$spc, p = 2, method = i)$indices, .correct.laser)
     }
   })
+
+  test_that("Correct results for all available vca methods: demo_data", {
+    data(demo_data, envir = environment())
+    for (i in implementations) {
+      expect_equal (vca (demo_data, p = 2, method = i)$indices, c(3,7))
+    }
+  })
+
+  # Misc. back end tests
   
-  ## all 3 components should be recovered, vca output is sorted.
+  test_that ("No duplicates with Lopez2012 for test data", {
+  	
+    skip ("Known issue: #36")
+    
+    indices <- replicate (10, vca (.triangle$x, p = 2, method = "Lopez2012")$indices)
+    expect_true (all (indices %in% .correct))            
+    expect_true (all (indices [1, ] != indices [2, ]), info = "Lopez2012 duplicate indices: testdata, p = 2")
+  })
+  
+
   test_that("vca output is sorted", {
-    indices <- vca (.testdata$x, p = 3)$indices
+    indices <- vca (.triangle$x, p = 3)$indices
     expect_equal(indices, sort (indices))
   })
 
-  # test: if hyperSpec is available, test on hyperSpec object
-  # tests also the correct application of as.matrix.
-  test_that("check conversion of classes", {
+  # If hyperSpec is available, test on hyperSpec object; also tests the correct application of as.matrix.
+  
+  test_that("Check conversion of classes", {
       expect_equal (vca (~ spc, laser, p = 2, seed = 12345)$indices, 
                     vca (~ spc, laser$., p = 2, seed = 12345)$indices)
   })

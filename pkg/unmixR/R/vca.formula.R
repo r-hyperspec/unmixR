@@ -29,8 +29,8 @@ vca.formula <- function(formula, frame, p, method = "05", seed = NULL, ...) {
   })
 
   test_that ("same results with formula interface", {
-    expect_equal(vca (~ x, .testdata, p = 3)$indices,
-                 vca (.testdata$x, p = 3)$indices)
+    expect_equal(vca (~ x, .triangle, p = 3)$indices,
+                 vca (.triangle$x, p = 3)$indices)
   })  
 
   test_that ("check conversion of classes", {
@@ -39,7 +39,7 @@ vca.formula <- function(formula, frame, p, method = "05", seed = NULL, ...) {
   })
 
   test_that ("Formula Interface does not produce offset term", {
-    expect_false("(Intercept)" %in% colnames (vca (~ x, .testdata, p = 3)$data))
+    expect_false("(Intercept)" %in% colnames (vca (~ x, .triangle, p = 3)$data))
   })
   
 }

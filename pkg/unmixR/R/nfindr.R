@@ -28,6 +28,7 @@
 ##'
 ##' @param indices Rows in the dataset that will be used to
 ##'   form the initial simplex. Default: Randomly selected indices.
+##'   If you need reproducibility, specify the indices.
 ##'   Irrelevant if \code{method = "Brute"} is chosen since all
 ##'   possibilities will be computed.
 ##'
@@ -67,63 +68,4 @@
 
 nfindr <- function (...) {
   UseMethod("nfindr")
-}
-
-# Note: nfindr.formula has its own tests
-# There is also a test in nfinderLDU
-
-.test(nfindr) <- function() {
-  context ("N-FINDR")
-  
-  ## test triangle data
-  triangle <- .testdata$x
-  correct.triangle <- .correct
-  
-  expect_true(require (hyperSpec))
-  
-  test_that ("Exceptions for invalid values of p", {
-    # invalid p
-    expect_error (nfindr(triangle, p="---"))
-    expect_error (nfindr(triangle, p = 0))  
-  })
-
-  test_that ("Exceptions for invalid method", {
-    expect_error (nfindr(triangle, p, method="invalid"))
-  })
-
-  implementations <- get.implementations("nfindr")
-  
-  test_that ("All implementations available", {
-    expect_true (all (c ("99", "Brute", "LDU", "SeqLDU") %in% implementations))
-  })
-
-  test_that ("Correct endmembers by nfindr default method for laser", {
-    expect_equal (nfindr(laser, p = 2)$indices, .correct.laser)
-  })
-
-  test_that ("Correct endmembers by nfindr default method for triangle data", {
-    expect_equal (nfindr(triangle, p = 3)$indices, correct.triangle)
-  })
-  
-  test_that ("All implementations return correct (same) results for laser data", {
-    for (i in implementations)
-      expect_equal(nfindr (laser, method = i, p = 2)$indices, .correct.laser)
-  })
-  
-  test_that ("All implementations return correct (same) results for triangle data", {
-    for (i in implementations) {
-      
-      if (i == "LDU")
-        skip ("LDU skipped: known issue #38")
-      
-      expect_equal(nfindr (triangle, method = i, p = 3)$indices, correct.triangle,
-                   info = i)
-    }
-  })
-  
-  test_that ("Return values for laser match the hyperSpec object", {
-    output <- nfindr (laser, 2)
-    expect_equal (output$data, laser@data$spc)
-    expect_equal (output$indices, .correct.laser)
-  })
 }

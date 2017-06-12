@@ -1,7 +1,7 @@
 #' Find implementations 
 #' 
 #' Find all currently available implementations for methods like \code{"\link{nfindr}"}
-#' or \code{"\link{vca}"}).  Also permits implementations in other packages to be
+#' or \code{"\link{vca}"}.  Also permits implementations in other packages to be
 #' integrated into \pkg{unmixR}.
 #'
 #' @param method The method (e.g. \code{"\link{nfindr}"} or \code{"\link{vca}"}).

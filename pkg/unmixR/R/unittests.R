@@ -8,7 +8,6 @@
 ##'
 ##' @author Claudia Beleites
 ##'
-##' @seealso  \link[svUnit]{svUnit}
 ##' @keywords programming utilities
 ##' @export
 ##' @include unmixR-package.R
@@ -41,21 +40,22 @@ unmixR.unittest <- function () {
  invisible(lister$get_results())
 }
 
-##' test data for unit tests
+##' Test data for unit tests (the "triangle")
 ##' @noRd
 {
 .C <- expand.grid ( 0 : 3, 0 : 3)
 .C [, 3] <- 3 - rowSums (.C)
 .C <- as.matrix (.C [.C [, 3] >= 0,])
 dimnames(.C) <- list(samples = 1:10, wavelengths = paste("L", 1:3, sep = "")) # BH
-.testdata <- data.frame (sample = paste("s", 1:10, sep = ""), x = I (.C))
+.triangle <- data.frame (sample = paste("s", 1:10, sep = ""), x = I (.C))
 rm (.C)
-.correct <- c (1, 4, 10)
 
+.correct.triangle <- c (1, 4, 10)
 .correct.laser <- c (4, 79)
+.correct.demo_data <- c(3, 7)
 }
 
-##' get test that is attached to object as "test" attribute
+##' Get tests that are attached to object as "test" attribute
 ##' @noRd
 get.test <- function (object)
   attr (object, "test")

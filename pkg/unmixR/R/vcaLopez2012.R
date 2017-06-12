@@ -26,46 +26,54 @@
 
 vcaLopez2012 <- function(data, p) {
    Y <- t(data)
-    #matrix of endmembers
+   
+    # Matrix of endmembers
     E <- matrix(0, nrow = p, ncol = p + 1)
     E[p, 1] <- 1
-    #U stores the set of orthogonal vectors
+    
+    # U stores the set of orthogonal vectors
     U <- matrix(0, nrow = p, ncol = p)
-    #px1 vector
+    
+    # px1 vector
     w <- c(rep(1, p))
     proj_acc <- c(rep(0, p))
     indices <- c(rep(0, p))
     for (i in 1:p) {
-        #U_i is initialized with the endmember computed in the last iteration
+        # U_i is initialized with the endmember computed in the last iteration
         U[, i] <- E[, i]
         
-        #Gram-Schmidt orthogonalization
+        # Gram-Schmidt orthogonalization
         if(i >= 3)
         {
             for (j in 3:i) {
-                proj_ei_uj_1 <- (crossprod(E[, i], U[, j - 1]) / crossprod(U[, j - 1])) * U[, j - 1]
+            	# BH June 12 2017 added as.vector due to new warning in R 3.4+
+                proj_ei_uj_1 <- as.vector(crossprod(E[, i], U[, j - 1]) / crossprod(U[, j - 1])) * U[, j - 1]
                 U[, i] <- U[, i] - proj_ei_uj_1
             }
         }
+        
         #U_i is orthogonal to other i-1 vectors
         
-        #projecting w onto U_i
-        proj_w_ui <- (crossprod(w, U[, i]) / crossprod(U[, i])) * U[, i]
+        # Projecting w onto U_i
+        # BH June 12 2017 added as.vector due to new warning in R 3.4+
+        proj_w_ui <- as.vector((crossprod(w, U[, i]) / crossprod(U[, i]))) * U[, i]
         
-        #vector f is orthogonal to to the subspace spaned by columns of E
+        # Vector f is orthogonal to to the subspace spaned by columns of E
         proj_acc <- proj_acc + proj_w_ui
         f <- w - proj_acc
         
-        #projection accumulator is reset on the first iteration
+        # Projection accumulator is reset on the first iteration
         if(i == 1){
             proj_acc <- c(rep(0, p))
         }
-        #projecting data onto f
+        # Projecting data onto f
         v <- crossprod(f, Y)
-        #getting index of the maximal projection
+        
+        # Getting index of the maximal projection
         index <- which.max(abs(v))
         indices[i] <- index
-        #estimated endmember is stored in E
+        
+        # Estimated endmember is stored in E
         E[, i + 1] <- Y[, index]
 
         if (.options ("debuglevel") >= 1L){

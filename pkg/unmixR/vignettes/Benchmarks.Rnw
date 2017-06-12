@@ -34,16 +34,31 @@ opts_chunk$set(out.width = "0.8\\textwidth", fig.align = "center", fig.width = 7
 
 Evaluation may be turned off to save time \ldots
 
-<< bench, cache = TRUE, echo = TRUE, eval = FALSE >>=
-res <- microbenchmark(
-	Brute = nfindr(laser, p = 3, method = "Brute"),
-	Winter = nfindr(laser, p = 3, method = "99"),
-	LDU = nfindr(laser, p = 3, method = "LDU"),
-	SeqLDU = nfindr(laser, p = 3, method = "SeqLDU"),
+<< bench1, cache = TRUE, echo = FALSE, eval = TRUE >>=
+res1 <- microbenchmark(
+	Brute = nfindr(laser, p = 2, method = "Brute"),
+	Winter = nfindr(laser, p = 2, method = "99"),
+	LDU = nfindr(laser, p = 2, method = "LDU"),
+	SeqLDU = nfindr(laser, p = 2, method = "SeqLDU"),
 	vca05 = vca(laser, p = 2, method = "05"),
 	vcaLopez2012 = vca(laser, p = 2, method = "Lopez2012"),
 	times = 100L)
-autoplot(res)
+p1 <- autoplot(res1)
+p1 <- p1 + ggtitle("laser data set, p = 2")
+print(p1)
+@
+
+<< bench2, cache = TRUE, echo = FALSE, eval = FALSE >>=
+res2 <- microbenchmark(
+	Winter = nfindr(chondro, p = 4, method = "99"),
+	LDU = nfindr(chondro, p = 4, method = "LDU"),
+	SeqLDU = nfindr(chondro, p = 4, method = "SeqLDU"),
+	vca05 = vca(chondro, p = 4, method = "05"),
+	vcaLopez2012 = vca(chondro, p = 4, method = "Lopez2012"),
+	times = 100L)
+p2 <- autoplot(res2)
+p2 <- p2 + ggtitle("chondro data set, p = 4")
+print(p2)
 @
 
 \end{document}
