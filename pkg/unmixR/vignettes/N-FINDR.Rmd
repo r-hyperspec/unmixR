@@ -20,7 +20,7 @@ suppressPackageStartupMessages(library("rgl"))
 desc <- packageDescription("unmixR")
 vers <- paste("version ", desc$Version, sep = "")
 
-options(rgl.useNULL = TRUE) # not sure if this helps
+options(rgl.useNULL = TRUE) # suppresses display during build/check
 
 # Notes:
 # 1. For this vig to build correctly you need a current version of
@@ -37,13 +37,13 @@ browseVignettes("unmixR")
 
 The N-FINDR algorithm for endmember extraction is credited to M. E. Winter.<sup id = "Winter1999">[1](#fnWinter1999)</sup>
 
-### N-FINDR on a Synthetic Data Set
+### A Synthetic Data Set
 
-For this demonstration we will create a synthetic data set consisting of 50 pixels (samples, $n$) each measured at three wavelengths (channels, $p$).  With only three wavelengths, this data can be readily visualized.  The data can be described as follows ($m$ is the number of endmembers):
+For this demonstration we will create a synthetic data set consisting of 50 pixels (or samples, $n$) each measured at three wavelengths (or channels, $p$).  With only three wavelengths, this data can be readily visualized.  The data can be described algebraically as follows ($m$ is the number of endmembers):
 
 $$ \mathbf{X}^{(n \ \times \ p)} = \mathbf{A}^{(n \ \times \ m)} \times \mathbf{E}^{(m \ \times \ p)} + \epsilon $$
 
-where $\mathbf{X}$ is a matrix of the raw data (e.g. `dM1` in the code below) and $\mathbf{A}$ (wM) is a matrix giving the abundances of each endmember in each sample.  $\mathbf{E}$ (eM) is a matrix of the endmembers, the pure component spectra (if the pixels really are spectra of pure compounds, think of $\mathbf{E}$ as a library of reference spectra). $\epsilon$ is a Gaussian noise term.  
+where $\mathbf{X}$ is a matrix of the raw data (`dM1` in the code below) and $\mathbf{A}$ (wM) is a matrix giving the abundances of each endmember in each sample.  $\mathbf{E}$ (eM) is a matrix of the endmembers, the pure component spectra (if the pixels really are spectra of pure compounds, think of $\mathbf{E}$ as a library of reference spectra). $\epsilon$ is a Gaussian noise term.  
 
 #### Create the Data Set
 
@@ -88,7 +88,7 @@ rglwidget()
 
 #### Extract the Endmembers
 
-Next, we'll extract the endmembers using a modified version of `nfinder99`, the original algorithm by M. E. Winter.  This modified version includes optional dimensional reduction (normally handled by a separate function) but most importantly, it records the sequence of endmembers as the algorithm iterates.  This allows us to inspect the process of locating the endmembers.  Because `dM1` is a low dimension data set, it does not need to be reduced. You can see the modified function in the source for this vignette if desired.
+Next, we'll extract the endmembers using a modified version of `nfinder99`, the original algorithm by M. E. Winter.  This modified version includes optional dimensional reduction (normally handled by a separate function) but most importantly, it records the sequence of endmembers found as the algorithm iterates.  This allows us to inspect the process of locating the endmembers.  Because `dM1` is a low dimension data set, it does not need to be reduced.
 
 ```{r nfindr99mod, echo = FALSE}
 ##' Michael E. Winter's 1999 N-FINDR Unmixing Algorithm
@@ -107,7 +107,7 @@ nfindr99mod <- function(data, p, indices, iters=3*p) {
   # do nothing if the data was passed in already reduced
   if (ncol(data) != p - 1) {
     data <- stats::prcomp(data)[["x"]][, sequence(p-1), drop=FALSE]
-    cat("Reduced the data\n")
+    #cat("Reduced the data\n")
   }
 
   simplex <- .simplex(data, indices)
@@ -182,6 +182,8 @@ nfindr99mod <- function(data, p, indices, iters=3*p) {
 }
 ```
 
+Here are the volumes as the search progressed:
+
 ```{r extract_dM1}
 results1 <- nfindr99mod(data = dM1, p = 4, indices = 1:4)
 str(results1)
@@ -191,7 +193,7 @@ str(results1)
 data.frame(results1$EMs, volume = results1$VOLs,
   row.names = rownames(results1$EMs)) # easy to compare presentation
 ```
-The first row of the data frame above is the initial endmembers as specified in the function call (argument indices).  The second data frame row is the row indices of the identified endmembers, which were found in one iteration.  Note that these endmembers are the pure pixels which we specified above when we created the data set, so we are getting the correct answer.
+The first row of the data frame above is the initial endmembers as specified in the function call (argument `indices`).  The second data frame row is the row indices of the identified endmembers, which were found in one iteration.  Note that these endmembers are the pure pixels which we specified above when we created the data set, so we are getting the correct answer.
 
 #### Inspect the Simplex
 
@@ -200,7 +202,7 @@ We are now in a position to visualize the simplex, which in this case is the lar
 ```{r simplex_dM1, echo = FALSE}
 # note dM1 & results1$data are the same, no PCA was performed
 plot3d(dM1, col = "red", expand = 1.2, aspect = "iso")
-points3d(dM1[results1$EMs[2,],], color = "blue", size = 10)
+spheres3d(dM1[results1$EMs[2,],], color = "blue", radius = 0.1)
 triangles3d(dM1[results1$EMs[2,1:3],], color = "blue", alpha = 0.15)
 triangles3d(dM1[results1$EMs[2,2:4],], color = "blue", alpha = 0.15)
 triangles3d(dM1[results1$EMs[2,c(1, 2, 4)],], color = "blue", alpha = 0.15)
@@ -208,7 +210,7 @@ triangles3d(dM1[results1$EMs[2,c(1, 3, 4)],], color = "blue", alpha = 0.15)
 rglwidget()
 ```
 
-### More Realistic Noisy Data
+### A More Realistic Noisy Data
 
 Let's take the synthetic data set and add noise to make it more realistic:
 
@@ -221,7 +223,7 @@ We'll repeat the same analysis as before without showing the details.  Here is t
 ```{r simplex_dM2, echo = FALSE}
 results2 <- nfindr99mod(data = dM2, p = 4, indices = 1:4)
 plot3d(results2$data, col = "red", expand = 1.2, aspect = "iso")
-points3d(dM2[results2$EMs[3,],], color = "blue", size = 10)
+spheres3d(dM2[results2$EMs[3,],], color = "blue", radius = 0.15)
 triangles3d(dM2[results2$EMs[3,1:3],], color = "blue", alpha = 0.15)
 triangles3d(dM2[results2$EMs[3,2:4],], color = "blue", alpha = 0.15)
 triangles3d(dM2[results2$EMs[3,c(1, 2, 4)],], color = "blue", alpha = 0.15)
@@ -229,7 +231,7 @@ triangles3d(dM2[results2$EMs[3,c(1, 3, 4)],], color = "blue", alpha = 0.15)
 rglwidget()
 ```
 
-In this case it took two iterations to find the best answer:
+In this case it took three iterations to find the best answer:
 
 ```{r results2EMs, echo = FALSE}
 data.frame(results2$EMs, volume = na.omit(results2$VOLs),
@@ -250,14 +252,15 @@ The chondro data set from package `hyperSpec` is composed of 875 Raman spectra c
 chondro
 ```
 
-Since there are 300 channels, in order to visualize the data we'll have to reduce it using PCA, and we'll keep just 3 principal components so we can plot as before (the reduction is automatically carried out by the modified function).  We'll ask for four endmembers so we can draw the simplex.
+Since there are 300 channels, in order to visualize the data we'll have to reduce it using PCA, and we'll keep just three principal components so we can plot as before (the reduction is automatically carried out by the modified function).  We'll ask for four endmembers so we can draw the simplex.
 
 ```{r simplex_chondro, echo = FALSE}
+unmixR.options(debuglevel = 0)
 Ch <- chondro@data$spc # extract just the matrix of spectra
 results3 <- nfindr99mod(data = Ch, p = 4, indices = 1:4)
 ChR <- results3$data # grab the reduced data for plotting
 plot3d(ChR, col = "red", expand = 1.2) # looks better w/o aspect = "iso"
-points3d(ChR[results3$EMs[4,],], color = "blue", size = 10)
+spheres3d(ChR[results3$EMs[4,],], color = "blue", radius = 60)
 triangles3d(ChR[results3$EMs[4,1:3],], color = "blue", alpha = 0.15)
 triangles3d(ChR[results3$EMs[4,2:4],], color = "blue", alpha = 0.15)
 triangles3d(ChR[results3$EMs[4,c(1, 2, 4)],], color = "blue", alpha = 0.15)

@@ -20,11 +20,20 @@ suppressPackageStartupMessages(library("rgl"))
 desc <- packageDescription("unmixR")
 vers <- paste("version ", desc$Version, sep = "")
 
-options(rgl.useNULL = TRUE) # not sure if this helps
+options(rgl.useNULL = TRUE) # suppresses display during build/check
 
 # Notes:
 # 1. For this vig to build correctly you need a current version of
 #    pandoc installed.  It works with 1.19.2.1, current as of June 2017
+#
+# 2. In this vig (N-FINDR.Rmd is fine) webgl graphics are acting oddly.
+#    The first figure is there is there but only shows up if you move
+#    the mouse over it.  The other figures are missing.   However, all
+#    figures are present in the html code.  Turn off line 23 above and you
+#    can see the figures are drawn.  Not sure when this behavior
+#    crept in... still looking for cause.  Also not a browser issue,
+#    I see the problem in Firefox and Chrome.
+#
 ```
 
 **unmixR** `r vers`
@@ -38,7 +47,7 @@ browseVignettes("unmixR")
 
 The VCA algorithm for endmember extraction is credited to Nascimento and Dias.<sup id = "Nascimento2005">[1](#fnNascimento2005)</sup>
 
-### VCA on a Synthetic Data Set
+### A Synthetic Data Set
 
 For this demonstration we will create a synthetic data set consisting of 50 pixels (samples, $n$) each measured at three wavelengths (channels, $p$).  The data can be described algebraically as follows ($m$ is the number of endmembers):
 
@@ -130,13 +139,13 @@ We've done the reduction step separately here to illustrate the process, but it 
 
 We can now visualize this data directly in 3D; we'll display the original data in red and the processed data in green (click and drag the figure to rotate):
 
-```{r preprocessed1, eval = FALSE}
+```{r preprocessed1, eval = TRUE}
 plot3d(dM1$data, col = "red", expand = 1.2, aspect = "iso",
   xlab = "", ylab = "", zlab = "")
 points3d(dM2*100, col = "green")
 ```
 
-```{r preprocessed2, echo = FALSE}
+```{r preprocessed2, echo = TRUE}
 plot3d(dM1$data, col = "red", expand = 1.2, aspect = "iso")
 points3d(dM2*100, col = "green")
 rglwidget()
@@ -324,8 +333,8 @@ unmixR.options(debuglevel = 0) # seems to be "on" by default, can't see why!
 
 ```{r getEMs}
 # Get the endmembers
-res <- vca05mod(dM1$data, p = 3)
-str(res)
+results1 <- vca05mod(dM1$data, p = 3)
+str(results1)
 
 ```
 
@@ -334,21 +343,21 @@ str(res)
 The following plots illustrate the process for the `dM1` synthetic data set. After initializing $\mathbf{E}$ with a dummy endmember, we draw the reference vector $f$ which is orthogonal to this endmember (the direction of the first reference vector is arbitrary). Then, each data point in $\mathbf{X}$ is projected onto $f$.  The data point whose projection onto $f$ is farthest from the origin is selected as the first (real) endmember and the dummy endmember is discarded.  The next plot shows the result after this first step.  Note that the reduced data is shown in red, and there is a small marker at the origin.  The most-recently-identified endmember is shown in blue, while the other end members are shown in a pale blue.  The blue line shows the reference vector and the normal from the current endmember to the reference vector.
 
 ```{r 1stEM, echo = FALSE}
-showVCAsteps(res, 1)
+showVCAsteps(results1, 1)
 rglwidget()
 ```
 
 And after the second step:
 
-```{r 2ndEM, echo = FALSE}
-showVCAsteps(res, 2)
+```{r 2ndEM, echo = FALSE, eval = TRUE}
+showVCAsteps(results1, 2)
 rglwidget()
 ```
 
 After one more iteration, all three endmembers have been identified:
 
-```{r 3rdEM, echo = FALSE}
-showVCAsteps(res, 3)
+```{r 3rdEM, echo = FALSE, eval = TRUE}
+showVCAsteps(results1, 3)
 rglwidget()
 ```
 
@@ -359,15 +368,15 @@ rglwidget()
 At last all endmembers have been identified.
 
 ```{r finalResult, echo = FALSE}
-M <- res$data
+M <- results1$data
 colnames(M) <- c("X", "Y", "Z")
-indx <- res$indices
+indx <- results1$indices
 plot3d(M, col = "red", expand = 1.2, aspect = "iso")
 points3d(M[indx,], col = "blue", size = 10)
 rglwidget()
 ```
 
-### VCA on the chondro Data Set
+### chondro Data Set
 
 The chondro data set from package `hyperSpec` is composed of 875 Raman spectra collected on a grid in a tissue imaging experiment.  There are 300 channels.
 
@@ -377,13 +386,13 @@ chondro
 
 Since there are 300 channels, we'll ask for three endmembers so we can visualize the results.  As described above, the data is flattened during pre-processing, which will be evident momentarily.  We'll plot the 3D data, and mark the three endmembers identified, but clearly there are really only two dimensions here, and the data is contained within a 2-simplex (triangle) rather than a 3-simplex (tetrahedron).
 
-```{r chondroEMs, echo = FALSE, eval = TRUE}
+```{r chondroEMs, echo = FALSE}
 # Plot the reduced data set
 Ch <- chondro@data$spc # extract just the matrix of spectra
 ChR <- dimensionalityReduction(Ch, 3)
 colnames(ChR) <- c("X", "Y", "Z")
 # The magnitude of ChR is quite small, scale up for better viewing
-# (i.e. small axis labels); small numbers may also be choking webgl
+# (i.e. small axis labels)
 ChR <- ChR*1e5
 # Adjust the X dimension which is basically flat for better viewing
 xR <- range(ChR[,"X"])
@@ -394,8 +403,8 @@ limX <- xR + c(-xDelta, xDelta)
 
 # Mark the endmembers
 #Chvca <- vca05mod(data = Ch, p = 3) # error: need to check why
-res <- vca05mod(data = ChR, p = 3)
-points3d(ChR[res$indices,], col = "blue", size = 10)
+results2 <- vca05mod(data = ChR, p = 3)
+points3d(ChR[results2$indices,], col = "blue", size = 10)
 
 rglwidget()
 ```
