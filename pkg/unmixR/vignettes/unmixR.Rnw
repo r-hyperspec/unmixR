@@ -230,7 +230,7 @@ Dowler (\cite{Dowler2013}) describes two endmember extraction algorithms that ar
 
 \subsection[Vertex component analysis]{Vertex component analysis}
 
-Vertex component analysis (VCA) is an alternative method of locating the endmembers, first described by Nascimento and Dias, with an improved algorithm reported by Lopez and colleagues.\cite{Nascimento2005, Lopez2012}
+Vertex component analysis (VCA) is an alternative method of locating the endmembers, first described by Nascimento and Dias, with an improved algorithm reported by Lopez and colleagues (\cite{Nascimento2005, Lopez2012}).
 
 In the VCA series of algorithms, the signal-to-noise ratio of the data (SNR), which depends on $p$, determines how the data is pre-processed.  However, \emph{the data is always projected} and \emph{always reduced} as explained in a moment.  In what follows, note the distinction between reduction and projection.
 
@@ -243,6 +243,8 @@ After these pre-processing steps, the endmembers are identified as follows.  An 
 If the reduced data were three-dimensional, the process is somewhat like the shadow of a cloud falling on the surface of the earth.  The reference vector is analogous to a straight highway, and we can take the origin of the system to be a particular town. The endmember is found where the cloud's shadow intersects (i.e. projects onto) the highway farthest from the town.  Then the process is repeated using a different highway perpendicular to the first highway.  While a simplex is never invoked in the explanation nor the algorithm, what one in fact identifes using VCA is a simplex.  The process described above can be visualized step-by-step in the "VCA Algorithm" vignette.
 
 \subsection[Iterated constrained endmembers]{Iterated constrained endmembers}
+
+The iterated constrained endmember (ICE) algorithm takes a rather different approach to extracting the endmembers, namely to minimize the error between the observed data, $X_{obs}$, and the predicted data, $X_{pred}$ (\cite{Berman2004, Berman2009})  This is accomplished by...
 
 \subsection[Unmixing to generate abundance maps]{Unmixing to generate abundance maps}
 
