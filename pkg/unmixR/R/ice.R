@@ -8,7 +8,7 @@
 ##' @param p Number of endmembers.
 ##'
 ##' @param mu Regularization parameter from 0 to 1 that penaltizes the model 
-##' for large simplex volume. The smaller the value the bigger the simplex
+##' for large simplex volume. The smaller the value the bigger the simplex.
 ##'
 ##' @param t Tolerance ratio from 0 to 1 that affects number of iterations.
 ##' The higher the value the more iterations.

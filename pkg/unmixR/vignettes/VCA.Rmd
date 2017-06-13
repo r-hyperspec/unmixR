@@ -163,6 +163,8 @@ The VCA algorithm works as follows:
    + Project all the data points onto $f$.  This is the second projection referred to in the phrase "projective projection".
    + Find which data point's projection  onto $f$ is furthest from the origin.  That data point is one of the endmembers.  Update $\mathbf{E}$.
 
+A simple visualization of this process is possible with three-dimensional data.  In this case the projection process is somewhat like the shadow of a cloud falling on the surface of the earth.  The reference vector is analogous to a straight highway, and we can take the origin of the system to be a particular town. The endmember is found where the cloud's shadow intersects the highway farthest from the town.  Then the process is repeated using a different highway perpendicular to the first highway.  If you follow this analogy literally, the final "highway" originates at the town and points towards outer space.
+
 When this process is done, the identified endmembers are in $\mathbf{E}$.  These endmembers are the vertices of a simplex as in the N-FINDR method, though the simplex is not directly utilized in VCA.
 
 #### Extract the Endmembers
