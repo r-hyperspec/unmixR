@@ -3,18 +3,31 @@
 ##' This method iteratively computes endmembers and abundances using quadratic
 ##' programming until it converges to a solution.
 ##'
-##' @param data Data matrix. Samples in rows frequencies in columns.
+##' @param data Data matrix. Samples in rows, frequencies in columns.
 ##'
-##' @param p Number of endmembers.
+##' @param p Integer.  Desired number of endmembers.
 ##'
-##' @param mu Regularization parameter from 0 to 1 that penaltizes the model 
+##' @param mu Regularization parameter on [0 \ldots 1] that penalizes the model 
 ##' for large simplex volume. The smaller the value the bigger the simplex.
+##' Default value is the recommendation from XXX.
 ##'
-##' @param tol Tolerance value from 0 to 1 that affects number of iterations.
-##' The higher the value the more iterations.
+##' @param tol Tolerance value from [0 \ldots 1] that affects number of iterations.
+##' The higher the value the more iterations.  Default value is the recommendation from XXX.
 ##'
-##' @return Structure with endmembers and abundances such that \eqn{abundances * endmembers = data\_}
-##' where data\_ is an approximation of data. Endmembers are a matrix with samples in rows frequencies in columns.
+##' @param reduce Logical.  Should the data be dimensionally reduced? If
+##' \code{nrow(data) > ncol(data)} the minimum noise fraction will be computed,
+##' otherwise PCA will be carried out.  Defaults to \code{TRUE}. Set to \code{FALSE}
+##' if you pre-process your data, or if you don't want data reduction.  This last
+##' option will be slow for large data sets.
+##'
+##' @return A list of class \code{ice} with elements:
+##'   \itemize{
+##'     \item \strong{endmembers}: The \code{p} endmembers.
+##'     \item \strong{abundance}: Abundance matrix.
+##'     \item \strong{reduce}: How and if the data was reduced.
+##'   }
+##'  \eqn{abundances * endmembers} gives an approximation of the original data matrix
+##'  if the data was reduced.
 ##'
 ##' @references M. Berman, H. Kiiveri, R. Lagerstrom, A. Ernst, R. Dunne, and
 ##' J. F. Huntington, "Ice: A statistical approach to identifying endmembers
@@ -34,32 +47,34 @@
 ##' @importFrom matrixcalc matrix.trace frobenius.norm
 ##' @importFrom spacetime mnf
 ##' 
-ice <- function(data, p, mu = 0.00001, tol = 0.9999){
+ice <- function(data, p, mu = 0.00001, tol = 0.9999, reduce = TRUE){
 
 	data <- as.matrix(data) # brings in hyperSpec objects seamlessly
+	reduced <- "no"
 	
-    # Carry out MNF transform, returning p channels
-    # mnf requires nrow(x) >= ncol(x) for the matrix calc to work
-    # so need to check for this.
+	# Default is to reduce the data.
+    # mnf requires nrow(x) >= ncol(x) for the matrix calc to work, do so if possible,
+    # otherwise use PCA.
     # Save the entire transformed/reduced data structure, as we need it for reconstruction
+    
     # NOTE: mnf does not (cannot) center the data, and centering changes the result
     
-    transposed <- FALSE
-    
-    if (!nrow(data) >= ncol(data)) {
-      cat("Transposing\n")
-      data <- t(data)
-      transposed <- TRUE
-      red <- spacetime::mnf(data)
-      data <- red[["x"]][seq(p),, drop = FALSE]
-    }
-      
-    if (nrow(data) >= ncol(data)) {
-    	red <- spacetime::mnf(data)
-    	data <- red[["x"]][, seq(p), drop = FALSE]
+    if (reduce) {
+    	
+	    if (nrow(data) > ncol(data)) { # Can use mnf in this case, it is preferred
+	    	red <- spacetime::mnf(data)
+	    	data <- red[["x"]][, seq(p), drop = FALSE]
+	    	reduced <- "MNF"
+		}
+	
+	    if (!nrow(data) > ncol(data)) { # Must use PCA in this case
+	      red <- prcomp(data)
+	      data <- red[["x"]][, seq(p), drop = FALSE]
+	      reduced <- "PCA"
+    	}
 	}
-
-    if (!transposed) data <- t(data)
+	
+    data <- t(data)
 	
     # Select several points as initial endmembers
     means <- rowMeans(data)
@@ -100,19 +115,34 @@ ice <- function(data, p, mu = 0.00001, tol = 0.9999){
     
     # Reconstruct the original data dimensions but of reduced rank
     curEnd <- t(curEnd)
-    
-    if (!transposed) {
-    	curEnd <- curEnd %*% t(red$rotation[,seq(p)]) + red$center # center = FALSE = 0 in mnf by the way
-    }
-    
-    if (transposed) {
-    	cat("dim(curEnd)", dim(curEnd), "\n")
-    	cat("dim(red$rotation)", dim(red$rotation), "\n")
-    	str(red)
-    	curEnd <- curEnd %*% t(red$rotation[,seq(p)]) + red$center # center = FALSE = 0 in mnf by the way
-    }
+    if (reduce) curEnd <- curEnd %*% t(red$rotation[,seq(p)]) +
+                          red$center # center = FALSE = 0 in mnf by the way
 
-    ans <- list(endmembers = curEnd, abundances = t(abund))
+    ans <- list(endmembers = curEnd, abundances = t(abund), reduce = reduced)
     class(ans) <- "ice"
     return(ans)
+}
+
+.test(ice) <- function() {
+  context ("ice")
+  
+  # Misc. front end tests
+  
+  expect_true(require (hyperSpec))
+  
+  test_that ("Exceptions for invalid values of p", {
+  	# Are we checking input?
+    expect_error (ice(.triangle$x, p="---"))
+    expect_error (ice(.triangle$x, p = 0))  
+  })
+
+  # Check correct answers
+  # This is a pretty crude test!  hist(mean(M - as.matrix(laser))) shows the truth
+  
+  test_that ("ice on laser w/o reduction returns original data matrix within reason", {
+    chk <- ice(laser, p = 3, reduce = FALSE)
+    M <- chk$abundances %*% chk$endmembers
+    expect_lt (mean(M - as.matrix(laser)), 1e-10)
+  })
+
 }
