@@ -1,8 +1,8 @@
 Package: unmixR
 Type: Package
 Title: Hyperspectral Unmixing Methods
-Version: 0.2.637
-Date: 2017-06-13
+Version: 0.2.654
+Date: 2017-06-14
 Authors@R: c(person("Anton", "Belov", role = "aut"),
 	person("Conor", "McManus", role = "aut"),
 	person("Claudia", "Beleites", role = c("aut", "cre"),
@@ -30,7 +30,8 @@ Imports:
     testthat,
     settings,
     limSolve,
-    matrixcalc
+    matrixcalc,
+    spacetime
 VignetteBuilder: knitr
 Collate: 
     'demo_data.R'

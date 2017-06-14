@@ -10,7 +10,7 @@
 ##' @param mu Regularization parameter from 0 to 1 that penaltizes the model 
 ##' for large simplex volume. The smaller the value the bigger the simplex.
 ##'
-##' @param t Tolerance ratio from 0 to 1 that affects number of iterations.
+##' @param tol Tolerance value from 0 to 1 that affects number of iterations.
 ##' The higher the value the more iterations.
 ##'
 ##' @return Structure with endmembers and abundances such that \eqn{abundances * endmembers = data\_}
@@ -32,12 +32,36 @@
 ##' @importFrom stats rnorm
 ##' @importFrom limSolve lsei
 ##' @importFrom matrixcalc matrix.trace frobenius.norm
-##'
-ice <- function(data, p, mu = 0.00001, t = 0.9999){
+##' @importFrom spacetime mnf
+##' 
+ice <- function(data, p, mu = 0.00001, tol = 0.9999){
 
-    data <- t(as.matrix(data))
-    #selecting several points as initial endmembers
-    #curEnd <- data[, sample(dim(data)[2], p)]
+	data <- as.matrix(data) # brings in hyperSpec objects seamlessly
+	
+    # Carry out MNF transform, returning p channels
+    # mnf requires nrow(x) >= ncol(x) for the matrix calc to work
+    # so need to check for this.
+    # Save the entire transformed/reduced data structure, as we need it for reconstruction
+    # NOTE: mnf does not (cannot) center the data, and centering changes the result
+    
+    transposed <- FALSE
+    
+    if (!nrow(data) >= ncol(data)) {
+      cat("Transposing\n")
+      data <- t(data)
+      transposed <- TRUE
+      red <- spacetime::mnf(data)
+      data <- red[["x"]][seq(p),, drop = FALSE]
+    }
+      
+    if (nrow(data) >= ncol(data)) {
+    	red <- spacetime::mnf(data)
+    	data <- red[["x"]][, seq(p), drop = FALSE]
+	}
+
+    if (!transposed) data <- t(data)
+	
+    # Select several points as initial endmembers
     means <- rowMeans(data)
     meanMatrix <- matrix(rep(means, p), ncol = p)
     curEnd <- matrix(rnorm(nrow(data) * p), ncol = p)
@@ -48,29 +72,47 @@ ice <- function(data, p, mu = 0.00001, t = 0.9999){
     nIter <- 0
     while(TRUE){
         nIter <- nIter + 1
-        #acquiring abundances with nonnegativity and sum-to-one constraints via quadratic programming
+        # Acquiring abundances with nonnegativity and sum-to-one constraints via quadratic programming
         abund <- apply(data, 2, function(spectrum){
             lsei(A = curEnd, B = spectrum, E = rep(1, p), F = 1, diag(1, p), rep(0, p))[["X"]]
         })
-        #reqularisation parameter
+        
+        # Regularisation parameter
+        # BH: should this be dim(data)[2]?  data is transposed, no of samples is ncol(data)
+        # See eqn 14 in Berman2009
         lambda <- dim(data)[1] * mu / ((p - 1)*(1 - mu))
-        #acquiring current endmembers from previously calculated abundances
+        
+        # Acquiring current endmembers from previously calculated abundances
         curEndTransposed <- solve(abund %*% t(abund) + lambda*(diag(p) - 1/p * matrix(rep(1, p*p), nrow = p))) %*% (abund %*% t(data))
         curEnd <- t(curEndTransposed)
         
-        #checking convergence conditions
+        # Checking convergence conditions
         v <- matrix.trace(cov(curEnd))
         t_i_1 <- t_i
         t_i <- (1 - mu)/dim(data)[1]*frobenius.norm(data - curEnd %*% abund) + mu*v
 
         if(nIter > 1){
-            if (t_i / t_i_1 >= t) {
+            if (t_i / t_i_1 >= tol) {
                 break
             }
         }
     }
     
-    ans <- list(endmembers = t(curEnd), abundances = t(abund))
+    # Reconstruct the original data dimensions but of reduced rank
+    curEnd <- t(curEnd)
+    
+    if (!transposed) {
+    	curEnd <- curEnd %*% t(red$rotation[,seq(p)]) + red$center # center = FALSE = 0 in mnf by the way
+    }
+    
+    if (transposed) {
+    	cat("dim(curEnd)", dim(curEnd), "\n")
+    	cat("dim(red$rotation)", dim(red$rotation), "\n")
+    	str(red)
+    	curEnd <- curEnd %*% t(red$rotation[,seq(p)]) + red$center # center = FALSE = 0 in mnf by the way
+    }
+
+    ans <- list(endmembers = curEnd, abundances = t(abund))
     class(ans) <- "ice"
     return(ans)
 }
