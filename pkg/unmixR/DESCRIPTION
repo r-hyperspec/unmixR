@@ -1,8 +1,8 @@
 Package: unmixR
 Type: Package
 Title: Hyperspectral Unmixing Methods
-Version: 0.2.660
-Date: 2017-06-14
+Version: 0.2.670
+Date: 2017-06-15
 Authors@R: c(person("Anton", "Belov", role = "aut"),
 	person("Conor", "McManus", role = "aut"),
 	person("Claudia", "Beleites", role = c("aut", "cre"),
@@ -20,8 +20,8 @@ ByteCompile: TRUE
 Depends:
     R (>= 3.0),
     hyperSpec,
-    MASS,
-    nnls
+    nnls,
+    MASS
 Suggests:
     knitr,
     microbenchmark,
@@ -35,7 +35,7 @@ Imports:
 VignetteBuilder: knitr
 Collate: 
     'demo_data.R'
-    'dimensionalityReduction.R'
+    'dimRed.R'
     'unmixR-package.R'
     'endmembers.R'
     'estSNR.R'

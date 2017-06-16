@@ -29,25 +29,17 @@
 ##'  \eqn{abundances * endmembers} gives an approximation of the original data matrix
 ##'  if the data was reduced.
 ##'
-##' @references M. Berman, H. Kiiveri, R. Lagerstrom, A. Ernst, R. Dunne, and
-##' J. F. Huntington, "Ice: A statistical approach to identifying endmembers
-##' in hyperspectral images: Learning from Earth's shapes and colors,"
-##' IEEE Trans. Geosci. Remote Sens., vol. 42, no. 10, pp. 2085-2095, Oct. 2004.
-##' 
-##' E. M. Sigurdsson, A. Plaza and J. A. Benediktsson, "GPU Implementation of 
-##' Iterative-Constrained Endmember Extraction from Remotely Sensed Hyperspectral
-##' Images," in IEEE Journal of Selected Topics in Applied Earth Observations and
-##' Remote Sensing, vol. 8, no. 6, pp. 2939-2949, June 2015.
-##' doi: 10.1109/JSTARS.2015.2441699
+##' @references Berman et al. ICE: A New Method for the Multivariate Curve Resolution
+##' of Hyperspectral Images, Journal of Chemometrics, vol. 29 pgs 101-116 (2009).
 ##'
 ##' @export
 ##'
-##' @importFrom stats rnorm
+##' @importFrom stats rnorm prcomp
 ##' @importFrom limSolve lsei
 ##' @importFrom matrixcalc matrix.trace frobenius.norm
 ##' @importFrom spacetime mnf
 ##' 
-ice <- function(data, p, mu = 0.00001, tol = 0.9999, reduce = TRUE){
+ice <- function(data, p, mu = 0.01, tol = 0.9999, reduce = TRUE){
 
 	data <- as.matrix(data) # brings in hyperSpec objects seamlessly
 	reduced <- "no"
@@ -57,18 +49,23 @@ ice <- function(data, p, mu = 0.00001, tol = 0.9999, reduce = TRUE){
     # otherwise use PCA.
     # Save the entire transformed/reduced data structure, as we need it for reconstruction
     
-    # NOTE: mnf does not (cannot) center the data, and centering changes the result
-    
     if (reduce) {
     	
 	    if (nrow(data) > ncol(data)) { # Can use mnf in this case, it is preferred
+	    	if (.options ("debuglevel") >= 1L) cat("Using minimum noise transform\n")
 	    	red <- spacetime::mnf(data)
-	    	data <- red[["x"]][, seq(p), drop = FALSE]
+	    	# Literature is a bit unclear as to the order of components.
+	    	# Some say order is highest SNR to lowest, other the opposite.
+	    	# This gives much better looking endmembers if the last components are used.
+	    	#keep <- seq(p) # keep the first p components
+	    	keep <- (ncol(data)-p+1):ncol(data) # keep the last p components
+	    	data <- red[["x"]][, keep, drop = FALSE]
 	    	reduced <- "MNF"
 		}
 	
 	    if (!nrow(data) > ncol(data)) { # Must use PCA in this case
-	      red <- prcomp(data)
+	      if (.options ("debuglevel") >= 1L) cat("Reducing via PCA\n")
+	      red <- stats::prcomp(data)
 	      data <- red[["x"]][, seq(p), drop = FALSE]
 	      reduced <- "PCA"
     	}

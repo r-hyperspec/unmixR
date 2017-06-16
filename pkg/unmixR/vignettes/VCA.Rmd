@@ -130,7 +130,7 @@ Where the subscript $red$ denotes the pre-processed and reduced data.
 Our sample data set `dM1` has three wavelengths, we are going to keep all the channels but they will be returned as abstract channels.
 
 ```{r dimRed}
-dM2 <- dimensionalityReduction(dM1$data, 3)
+dM2 <- dimRed(dM1$data, 3)
 ```
 
 We've done the reduction step separately here to illustrate the process, but it is carried out automatically in **unmixR**.
@@ -177,7 +177,7 @@ vca05mod <- function(data, p, SNR = estSNR(data, p)) {
 
 	# In this hacked version need to do reduction ourselves
   force(SNR)
-  Y <- dimensionalityReduction(data, p, SNR)
+  Y <- dimRed(data, p, SNR)
 
   Y <- t(data)
   indices <- rep(NA_integer_, p)
@@ -391,7 +391,7 @@ Since there are 300 channels, we'll ask for three endmembers so we can visualize
 ```{r chondroEMs, echo = FALSE}
 # Plot the reduced data set
 Ch <- chondro@data$spc # extract just the matrix of spectra
-ChR <- dimensionalityReduction(Ch, 3)
+ChR <- dimRed(Ch, 3)
 colnames(ChR) <- c("X", "Y", "Z")
 # The magnitude of ChR is quite small, scale up for better viewing
 # (i.e. small axis labels)

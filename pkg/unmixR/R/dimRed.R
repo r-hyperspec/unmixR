@@ -25,7 +25,7 @@
 ##' @export
 ##' 
 
-dimensionalityReduction <- function(data, p, SNR = estSNR(data, p)){
+dimRed <- function(data, p, SNR = estSNR(data, p)){
 
     # Mostly using the symbols in Algorithm 1 in the ref
 

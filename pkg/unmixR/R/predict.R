@@ -27,7 +27,7 @@
 ##'
 ##' @param object The N-FINDR/VCA structure returned by the
 ##'   \code{\link{nfindr}} or \code{\link{vca}} interface (note: \code{\link{ice}}
-##'   intrinsically returns the abundances so this function isn't need for that method).
+##'   intrinsically computes the abundances so this function isn't needed).
 ##'
 ##' @param newdata If the data stored in the object is not the data that
 ##'   should be checked for abundances, then this parameter allows for passing

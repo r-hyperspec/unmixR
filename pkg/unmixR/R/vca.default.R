@@ -31,7 +31,7 @@ vca.default <- function(data, p, method = "05",
   }
   
   force(SNR)
-  reducedData <- dimensionalityReduction(data, p, SNR)
+  reducedData <- dimRed(data, p, SNR)
   
   indices <- vcaFunc(reducedData, p, ...)
 
