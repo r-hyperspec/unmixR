@@ -47,7 +47,7 @@ res1 <- microbenchmark(
 	ICE = ice(laser, p = 2),
 	times = 100L)
 p1 <- autoplot(res1)
-p1 <- p1 + ggtitle("laser data set, p = 2")
+p1 <- p1 + ggtitle("laser data set, p = 2, 100 replicates")
 print(p1)
 @
 

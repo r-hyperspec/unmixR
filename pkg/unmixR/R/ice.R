@@ -92,6 +92,7 @@ ice <- function(data, p, mu = 0.01, tol = 0.9999, reduce = TRUE){
         # Regularisation parameter
         # BH: should this be dim(data)[2]?  data is transposed, no of samples is ncol(data)
         # See eqn 14 in Berman2009
+        # Also see a few lines below
         lambda <- dim(data)[1] * mu / ((p - 1)*(1 - mu))
         
         # Acquiring current endmembers from previously calculated abundances

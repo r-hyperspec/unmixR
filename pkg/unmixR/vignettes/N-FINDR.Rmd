@@ -246,10 +246,17 @@ brute <- nfindr(dM2, p = 4, method = "Brute")
 
 ### chondro Data Set
 
-The chondro data set from package `hyperSpec` is composed of 875 Raman spectra collected on a grid in a tissue imaging experiment.  There are 300 channels.
+The chondro data set from package **hyperSpec** is composed of 875 Raman spectra collected on a grid in a tissue imaging experiment.  There are 300 channels. We'll clean the data up as described in the **hyperSpec** chondro vignette (the steps are baseline correction, normalization, background subtraction).
 
 ```{r chondro}
 chondro
+```
+
+```{r clean_chondro, echo = FALSE, eval = FALSE}
+chondro <- chondro - spc.fit.poly.below (chondro)
+chondro <- chondro / rowMeans (chondro)
+chondro <- chondro - quantile (chondro, 0.05)
+chondro <- chondro [! is.na (chondro$clusters)]
 ```
 
 Since there are 300 channels, in order to visualize the data we'll have to reduce it using PCA, and we'll keep just three principal components so we can plot as before (the reduction is automatically carried out by the modified function).  We'll ask for four endmembers so we can draw the simplex.

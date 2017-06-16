@@ -140,7 +140,7 @@ In applications which involve collecting data over a $x,y$ grid, the complete da
 \subsection[Algebraic description of the data]{Algebraic description of the data}
 In the following discussion, lower-case bold letters represent vectors (matrices with a single row or column), e.g. $\mathbf{x}$.  The corresponding upper-case letter, $\mathbf{X}$,  is a matrix.  Since hyperspectral data sets are typically stored with samples in rows and wavelengths in columns, $\mathbf{x}$ would be a particular row of $\mathbf{X}$.
 
-For hyperspectral data measured at $p$ wavelengths, and assuming $m$ endmembers are present, the data in a hyperspectral study can be represented in several ways.  A single sample observation is a spectrum at location (pixel) or time point.  It can be represented as linear mixing model
+For hyperspectral data measured at $p$ wavelengths, and assuming $m$ endmembers are present, the data in a hyperspectral study can be represented in several ways.  A single sample observation is a spectrum at a location (pixel) or time point.  It can be represented as linear mixing model
 
 \begin{equation}
 \mathbf{x}^{(1 \ \times \ p)} = \mathbf{a}^{(1 \ \times \ m)} \times \mathbf{E}^{(m \ \times \ p)} + \epsilon
@@ -157,34 +157,31 @@ If we scale this up to a real data set containing $n$ samples, the equation abov
 where $\mathbf{X}$ is a matrix of the raw data and $\mathbf{A}$ is a matrix giving the abundances of each endmember in each sample ($\mathbf{E}$ and $\epsilon$ as before).  Dropping the dimensional superscripts, the above can be written
 
 \begin{equation}
+\label{LinearCombo}
 \mathbf{X} = \mathbf{A}\mathbf{E} + \epsilon
 \end{equation}
 
-for simplicity.
-
-If instead we scale down to a single wavelength in a single spectrum, the equation becomes
+for simplicity.  If instead we scale down to a single wavelength in a single spectrum, the equation becomes
 
 \begin{equation}
-x_k = \mathbf{a} \times \mathbf{e}_k
+\mathbf{x}_k = \mathbf{a} \times \mathbf{e}_k
 \end{equation}
 
-where $k$ is one of the $p$ wavelengths ($\mathbf{e}_k$ is one wavelength selected from the reference library $\mathbf{E}$).
-
-The system is subject to several constraints.  The abundances must be positive, and they must sum to one.
+where $k$ is one of the $p$ wavelengths ($\mathbf{e}_k$ is one wavelength selected from the reference library $\mathbf{E}$).  The system is subject to several constraints.  The abundances must be positive, and they must sum to one.
 
 \begin{equation}
-0 \leqq a_i \leqq 1
+0 \leqq \mathbf{a}_i \leqq 1
 \end{equation}
 
 \begin{equation}
-\sum_{i=1}^{m} a_i = 1
+\sum_{i=1}^{m} \mathbf{a}_i = 1
 \end{equation}
 
 where $i$ is one of the $m$ endmembers of the system.
 
 \subsection[Data pre-processing]{Data pre-processing}
 
-All hyperspectral unmixing algorithms begin with some sort of data pre-processing step.  The details vary, but usually the data is reduced to lower dimensionality using some variation on principal components analysis (PCA).  PCA is a widely used method which converts raw data into uncorrelated abstract components which can stand in for the data.  The advantage is that one doesn't need all the components to represent the data, because some or even many of them are merely noise, or redundant.  In the spectral context, this is equivalent to saying that some wavelengths are not informative, so we can discard them with little change to our analysis.  PCA is a dimensional reduction method because instead of having $p$ wavelengths, we now have many fewer abstract components to deal with.  Hence PCA not only removes noise but makes the problem computationally much faster by lowering the dimensionality of the problem.
+All hyperspectral unmixing algorithms begin with some sort of data pre-processing step.  The details vary, but usually the data is reduced to lower dimensionality using some variation of principal components analysis (PCA).  PCA is a widely used method which converts raw data into uncorrelated abstract components which can stand in for the data.  The advantage is that one doesn't need all the components to represent the data, because some or even many of them are merely noise, or redundant.  In the spectral context, this is equivalent to saying that some wavelengths are not informative, so we can discard them with little change to our analysis.  PCA is a dimensional reduction method because instead of having $p$ wavelengths, we now have many fewer abstract components to deal with.  Hence PCA not only removes noise but makes the problem computationally much faster by lowering the dimensionality of the problem.
 
 After PCA (or a similar technique), the equation describing the system would be:
 
@@ -195,10 +192,10 @@ After PCA (or a similar technique), the equation describing the system would be:
 where $\epsilon$ has effectively been eliminated.  However, at this stage $\mathbf{X}$ is no longer the original data, but rather the abstract components.  Its dimensions are still $n \ \times \ p$, but $p$ is no longer the number of wavelengths or channels.  Instead, $p$ is the number of abstract components kept after the PCA procedure.  The literature typically continues to use the symbol $p$ even though its meaning has changed considerably.  A more accurate representation of the system after data reduction would be:
 
 \begin{equation}
-\mathbf{X}^{(n \ \times \ p')}_{red} = \mathbf{A}^{(n \ \times \ p')}_{red} \times \mathbf{E}^{(p' \ \times \ p')}_{red}
+\mathbf{X}^{(n \ \times \ p')}_{reduced} = \mathbf{A}^{(n \ \times \ p')}_{reduced} \times \mathbf{E}^{(p' \ \times \ p')}_{reduced}
 \end{equation}
 
-where $red$ reminds us the dimensions have been reduced and we are now in an abstract space of $p'$ dimensions.  However, for consistency with the literature we will continue to use the original symbols.
+and we are now in an abstract space of $p'$ dimensions.  However, for consistency with the literature we will continue to use the original symbols.
 
 \subsection[The role of the simplex]{The role of the simplex}
 
@@ -221,8 +218,7 @@ A number of algorithms to extract endmembers have been described in the literatu
 
 \subsection[N-FINDR]{N-FINDR}
 
-The N-FINDR method finds purest pixels in the scene, which are the vertices of the largest $p$-dimensional simplex that can be inscribed within the data.  An iterative inflation algorithm is used (\cite{Winter1999}).  This approach assumes that pure pixels are present in the scene, an assumption that doesn't always hold, but is not critical in practice.  In this algorithm $p$ pixels are chosen at random as a starting point, and the volume of the simplex is computed.  Then each of the chosen pixels is replaced sequentially by each of the pixels not currently chosen, checking the volume at each replacement.  If the volume increases, the new pixel is retained, otherwise the original pixel is retained.  This is the first pass.  This interim answer serves as a new starting point, and the process is repeated up to a specified number of iterations, or until the simplex volume cannot be inflated any further.  At this point, the vertices of the simplex are the purest pixels in the scene.  A visual illustration of this process is available in the "N-FINDR Algorithm" vignette.
-
+The N-FINDR method finds purest pixels in the scene, which are the vertices of the largest $p$-dimensional simplex that can be inscribed within the data.  An iterative inflation algorithm is used (\cite{Winter1999}).  This approach assumes that pure pixels are present in the scene, an assumption that doesn't always hold, but is not critical in practice.  In this algorithm, the data are first reduced using PCA.  Then $p$ pixels are chosen at random as a starting point, and the volume of the simplex is computed.  Each of the chosen pixels is replaced sequentially by each of the pixels not currently chosen, checking the volume at each replacement.  If the volume increases, the new pixel is retained, otherwise the original pixel is retained.  This is the first pass.  This interim answer serves as a new starting point, and the process is repeated up to a specified number of iterations, or until the simplex volume cannot be inflated any further.  At this point, the vertices of the simplex are the purest pixels in the scene.  A visual illustration of this process in 3D is available in the "N-FINDR Algorithm" vignette.
 
 \pkg{unmixR} includes several variants of this approach.  For testing purposes, the "Brute" method computes all possible simplices.  This will naturally be quite slow for all but trivial data sets.  Method "99" implements Winter's original algorithm (\cite{Winter1999} described above.  The iterative approach is necessary in the event that there are no pure pixels in the data set, as local maxima may be found rather than the global maximum.  Even so, the algorithm is not guaranteed to conduct an exhaustive search of all possible combinations of endmembers, and there is some sensitivity to the randomly chosen initial pixels (\cite{Plaza2005, Dowler2013}).
 
@@ -230,13 +226,9 @@ Dowler (\cite{Dowler2013}) describes two endmember extraction algorithms that ar
 
 \subsection[Vertex component analysis]{Vertex component analysis}
 
-Vertex component analysis (VCA) is an alternative method of locating the endmembers, first described by Nascimento and Dias, with an improved algorithm reported by Lopez and colleagues (\cite{Nascimento2005, Lopez2012}).
+Vertex component analysis (VCA) is an alternative geometric method of locating the endmembers, first described by Nascimento and Dias, with an improved algorithm reported by Lopez and colleagues (\cite{Nascimento2005, Lopez2012}).  In the VCA series of algorithms, the signal-to-noise ratio of the data (SNR), which depends on $p$, determines how the data is pre-processed.  However, \emph{the data is always projected} and \emph{always reduced} as explained in a moment.  In what follows, note the distinction between reduction and projection.
 
-In the VCA series of algorithms, the signal-to-noise ratio of the data (SNR), which depends on $p$, determines how the data is pre-processed.  However, \emph{the data is always projected} and \emph{always reduced} as explained in a moment.  In what follows, note the distinction between reduction and projection.
-
-If the SNR is above a certain threshold, the data is reduced to $p$ abstract wavelengths, where $p$ is the desired number of endmembers.  It is then projected onto a dimension of $p - 1$, but all $p$ abstract wavelengths are retained.  For example, if the reduced data is composed of random 3D points, the data will be projected onto a plane which resides in 3D space.  In a sense the data has become two-dimensional since every point lies in a plane, but the plane is positioned in 3D space.  One might call this "flattening".  Nascimento and Dias, in describing the VCA algorithm, use the phrase "projective projection".  The process just described is the one of the projection steps.
-
-If the SNR is below the threshold, the data is first reduced to dimension $p - 1$ using SVD, thereby improving the SNR and "flattening" the data. Then a constant vector is added back so that the original dimension $p$ is restored.
+If the SNR is above a certain threshold, the data is reduced to $p$ abstract wavelengths, where $p$ is the desired number of endmembers.  It is then projected onto a dimension of $p - 1$, but all $p$ abstract wavelengths are retained.  For example, if the reduced data is composed of random 3D points, the data will be projected onto a plane which resides in 3D space.  In a sense the data has become two-dimensional since every point lies in a plane, but the plane is positioned in 3D space.  One might call this "flattening".  Nascimento and Dias, in describing the VCA algorithm, use the phrase "projective projection".  The process just described is the one of the projection steps.  If the SNR is below the threshold, the data is first reduced to dimension $p - 1$ using SVD, thereby improving the SNR and "flattening" the data. Then a constant vector is added back so that the original dimension $p$ is restored.
 
 After these pre-processing steps, the endmembers are identified as follows.  An arbitrary reference vector is calculated which is orthogonal to the $p$-dimensional data, and each data point is projected onto this reference vector.  The data point whose projection onto the reference vector is farthest from the origin is selected as an endmember.  This is the second projection referred to in the phrase "projective projection."   This process is repeated until all $p$ endmembers have been selected.
 
@@ -244,43 +236,39 @@ If the reduced data were three-dimensional, the process is somewhat like the sha
 
 \subsection[Iterated constrained endmembers]{Iterated constrained endmembers}
 
-The iterated constrained endmember (ICE) algorithm takes a rather different approach to extracting the endmembers, namely to minimize the error between the observed data, $X_{obs}$, and the predicted data, $X_{pred}$ (\cite{Berman2004, Berman2009})  This is accomplished by...
+The iterated constrained endmember (ICE) algorithm differs from N-FINDR and VCA in several significant ways (\cite{Berman2004, Berman2009}).  It begins by reducing the data using the minimum noise fraction (MNF, \cite{Green1988}).  This is a variant of PCA which sorts the abstract components according to the SNR ratio (PCA sorts components by the amount of variance explained).  Computing the MNF is only possible when the number of observations ($n$) is greater than the number of channels ($p$).  When this is not true, the \pkg{unmixR} implementation of ICE reverts to using PCA.  Luo \emph{et al.} discuss the applications of MNF versus PCA in hyperspectral unmixing and note that the performance depends upon the type of noise in the data set (\cite{Luo2016}).
 
-\subsection[Unmixing to generate abundance maps]{Unmixing to generate abundance maps}
+The N-FINDR and VCA algorithms approach the simplex using strategies based on geometry.  In contrast, ICE solves Equation~\ref{LinearCombo} using the alternating least squares method.  After estimating an initial value for $\mathbf{E}$,  $\mathbf{A}$ is computed and then $\mathbf{E}$ is updated.  A modified form of the residual sum of squares is computed as a convergence criterion (i.e, $\mathbf{X}_{observed}$ is compared to $\mathbf{X}_{predicted}$. If the criterion is not met, the algorithm continues iterating between updating $\mathbf{E}$ and $\mathbf{A}$ until the criterion is reached.  When the process is complete, estimates of $\mathbf{A}$ and $\mathbf{E}$ are returned directly.  Recall that N-FINDR and VCA return the indices of the endmembers in the original data set.  The endmembers returned by ICE do not necessarily correspond to a particular spectrum in the original data set.
 
-\section[An example]{An example}
+\subsection[Abundance maps]{Abundance maps}
+
+There are two steps to creating an abundance map.  First, one has to generate an estimate of the original data matrix $\mathbf{A}$ based on one (or more) endmembers.  As noted above, the ICE algorithm returns an estimate of $\mathbf{A}$ and $\mathbf{E}$ directly.  From these two matrices one can reconstruct an approximation of the entire data set by
+
+\begin{equation}
+\mathbf{X}^{(n \ \times \ p)}_{estimated} = \mathbf{A}^{(n \ \times \ m)}_{estimated} \times \mathbf{E}^{(m \ \times \ p)}_{estimated}
+\end{equation}
+
+where $m$ was the number of endmembers requested.  An abundance map for a specific endmember can be constructed by using only the $i^{th}$ endmember from among the $m$ endmembers.
+
+In the case of the N-FINDR and VCA algorithms, the $\mathbf{A}_{estimated}$ matrix can be computed using the predict function, then multiplied by the rows of the original data matrix that contain the endmembers of interest to generate an estimate of $\mathbf{X}$.
+
+The second step in creating an abundance map is to re-fold the $\mathbf{X}_{estimated}$ matrix back into the data cube, that is, one must reverse the process illustrated in Figure~\ref{DataCube}.
+
+\section[Application: AVIRIS remote sensing data]{Application: AVIRIS remote sensing data}
 
 Much of the hyperspectral unmixing literature comes from the field of remote sensing where airborne platforms are employed to collect the data.  The mineral-rich landscape example above is not an abstraction.  A frequently used example is the airborne visible/infrared imaging spectrometer (AVIRIS) study of the cuprite region in the state of Nevada, USA.  This region is devoid of most vegetation and rich in geological formations (\cite{Green1998}).
 
-The following results are based on unmixing a small portion of the cuprite data set.  The first figure shows two of the endmembers (careful work and comparison to ground-based geological studies suggest that there are at least 19 distinct mineral entities present).  Using the appropriate domain knowledge these endmembers can be identified.
-
-\begin{center}
-  \includegraphics[scale = 1.0]{endmembers.pdf}
-\end{center}
-
-The next figure is an abundance map of these endmembers.  Clearly if you were a prospector these maps would be a great guide to finding treasure!
-
-\begin{center}
-  \includegraphics[scale = 1.0]{map.pdf}
-\end{center}
-
 \section[Performance]{Performance}
 
-Demonstrate bench-marking here.  Note: temporarily, there is a separate vignette to do the benchmarking.  Benchmarking will be way too slow for CRAN checking.
+The relative performance of the algorithms is presented in Figures~\ref{laserBenchmark} and \ldots  These benchmarks were measured on a MacBook Pro (early 2015) with a 2.9 GHz Intel Core i5 processor and 16GB RAM. \emph{Should we consider the version of BLAS involved?}
 
-<< bench, cache = TRUE, eval = FALSE >>=
+\begin{figure}
+  \begin{center}
+  \includegraphics[scale = 1.0]{laserBenchmark.pdf}
+  \caption{\label{laserBenchmark}Relative perfomance of the algorithms on the laser data set.}
+  \end{center}
+\end{figure}
 
-# This will be too slow for CRAN -- do as a separate task
-
-library("microbenchmark")
-res <- microbenchmark(
-	Brute = nfindr(laser, p = 3, method = "Brute"),
-	Winter = nfindr(laser, p = 3, method = "99"),
-	LDU = nfindr(laser, p = 3, method = "LDU"),
-	SeqLDU = nfindr(laser, p = 3, method = "SeqLDU")
-	)
-autoplot(res)
-@
 
 \section*{Acknowledgements}
 
