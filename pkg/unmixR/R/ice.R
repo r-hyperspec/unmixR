@@ -9,16 +9,17 @@
 ##'
 ##' @param mu Regularization parameter on [0 \ldots 1] that penalizes the model 
 ##' for large simplex volume. The smaller the value the bigger the simplex.
-##' Default value is the recommendation from XXX.
+##' Default value is the recommendation from the reference.
 ##'
 ##' @param tol Tolerance value from [0 \ldots 1] that affects number of iterations.
-##' The higher the value the more iterations.  Default value is the recommendation from XXX.
+##' The higher the value the more iterations.  Default value is the recommendation
+##' from the reference.
 ##'
-##' @param reduce Logical.  Should the data be dimensionally reduced? If
-##' \code{nrow(data) > ncol(data)} the minimum noise fraction will be computed,
-##' otherwise PCA will be carried out.  Defaults to \code{TRUE}. Set to \code{FALSE}
-##' if you pre-process your data, or if you don't want data reduction.  This last
-##' option will be slow for large data sets.
+##' @param reduce Character.  Chosen from \code{c("MNF", "PCA", "no")}.  Defaults to \code{"MNF"},
+##' which is the recommended approach. However, using \code{"MNF"} is only possible if 
+##' \code{nrow(data) > ncol(data)}.  When this is not the case, \code{"PCA"} is the next best
+##' option. Set to \code{"no"} if you pre-process your data, or if you don't want data reduction.
+##' This last option will be impractical for large data sets.
 ##'
 ##' @return A list of class \code{ice} with elements:
 ##'   \itemize{
@@ -39,36 +40,33 @@
 ##' @importFrom matrixcalc matrix.trace frobenius.norm
 ##' @importFrom spacetime mnf
 ##' 
-ice <- function(data, p, mu = 0.01, tol = 0.9999, reduce = TRUE){
+ice <- function(data, p, mu = 0.01, tol = 0.9999, reduce = "MNF"){
 
 	data <- as.matrix(data) # brings in hyperSpec objects seamlessly
 	reduced <- "no"
 	
-	# Default is to reduce the data.
-    # mnf requires nrow(x) >= ncol(x) for the matrix calc to work, do so if possible,
-    # otherwise use PCA.
+	# Default is to reduce the data using mnf, however
+    # mnf requires nrow(x) >= ncol(x) for the matrix calc to work.
     # Save the entire transformed/reduced data structure, as we need it for reconstruction
     
-    if (reduce) {
-    	
-	    if (nrow(data) > ncol(data)) { # Can use mnf in this case, it is preferred
-	    	if (.options ("debuglevel") >= 1L) cat("Using minimum noise transform\n")
-	    	red <- spacetime::mnf(data)
-	    	# Literature is a bit unclear as to the order of components.
-	    	# Some say order is highest SNR to lowest, other the opposite.
-	    	# This gives much better looking endmembers if the last components are used.
-	    	#keep <- seq(p) # keep the first p components
-	    	keep <- (ncol(data)-p+1):ncol(data) # keep the last p components
-	    	data <- red[["x"]][, keep, drop = FALSE]
-	    	reduced <- "MNF"
-		}
+    if (reduce == "MNF") {
+	   if (.options ("debuglevel") >= 1L) cat("Using minimum noise fraction\n")
+	   if (!nrow(data) > ncol(data)) stop("Cannot use MNF unless nrow(data) > ncol(data)")
+	   red <- spacetime::mnf(data)
+	   # Literature is a bit unclear as to the order of components.
+	   # Some say order is highest SNR to lowest, other the opposite.
+	   # This gives much better looking endmembers if the last components are used.
+	   #keep <- seq(p) # keep the first p components
+	   keep <- (ncol(data)-p+1):ncol(data) # keep the last p components
+       data <- red[["x"]][, keep, drop = FALSE]
+       reduced <- "MNF"
+	}
 	
-	    if (!nrow(data) > ncol(data)) { # Must use PCA in this case
-	      if (.options ("debuglevel") >= 1L) cat("Reducing via PCA\n")
-	      red <- stats::prcomp(data)
-	      data <- red[["x"]][, seq(p), drop = FALSE]
-	      reduced <- "PCA"
-    	}
+    if (reduce == "PCA") {
+      if (.options ("debuglevel") >= 1L) cat("Reducing via PCA\n")
+      red <- stats::prcomp(data)
+      data <- red[["x"]][, seq(p), drop = FALSE]
+      reduced <- "PCA"
 	}
 	
     data <- t(data)
