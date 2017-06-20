@@ -16,15 +16,15 @@ vca.default <- function(data, p, method = "05",
           paste (get.implementations ("vca"), collapse = ", "))
   }
 
+  data <- as.matrix (data) # brings in hyperSpec objects seemlessly
+  # must do now, as ncol() on a hyperSpec object will fail the next check
+
   # check for p being with the valid range, >= 2
   if (!is.numeric (p) || p < 2 || p > ncol (data)) {
     stop("p must be a positive integer >= 2 and <= ncol (data)")
   }
 
-  # ensure we are dealing with a matrix
-  data <- as.matrix (data)
   
-
   # set the random number generator seed if supplied
   if (!is.null(seed)) {
     set.seed(seed)

@@ -25,9 +25,9 @@
 Functions implementing the N-FINDR, Iterated Constrained Endmembers (ICE) and Vertex Component Analysis (VCA) algorithms which can recover pure component spectra and their respective concentrations from a hyperspectral data set.
 }
 
-\Keywords{hyperspectral unmixing, vertex component analysis, VCA, NFINDR, N-FINDR, iterative constrained endmembers, ICE, spectroscopy, \proglang{R}, spectral mixture analysis, Raman, IR, NIR, NMR, MS}
+\Keywords{hyperspectral unmixing, vertex component analysis, VCA, NFINDR, N-FINDR, iterative constrained endmembers, ICE, spectroscopy, \proglang{R}, spectral mixture analysis, Raman, IR, NIR, NMR, MS, XRF}
 
-\Plainkeywords{hyperspectral unmixing, vertex component analysis, VCA, NFINDR, N-FINDR, iterative constrained endmembers, ICE, spectroscopy, R, spectral mixture analysis, Raman, IR, NIR, NMR, MS} %% without formatting
+\Plainkeywords{hyperspectral unmixing, vertex component analysis, VCA, NFINDR, N-FINDR, iterative constrained endmembers, ICE, spectroscopy, R, spectral mixture analysis, Raman, IR, NIR, NMR, MS, XRF} %% without formatting
 
 %% publication information
 %% NOTE: Typically, this can be left commented and will be filled out by the technical editor
@@ -89,11 +89,13 @@ suppressMessages(library("knitr")) # needed to access opts_chunk below
 suppressMessages(library("unmixR"))
 suppressMessages(library("hyperSpec"))
 suppressMessages(library("microbenchmark"))
+suppressMessages(library("R.utils"))
+suppressMessages(library("viridis"))
 
 
 # Stuff specifically for knitr:
 
-opts_chunk$set(out.width = "0.8\\textwidth", fig.align = "center", fig.width = 7, fig.height = 7, cache = FALSE)
+opts_chunk$set(out.width = "0.9\\textwidth", fig.align = "center", fig.width = 7, fig.height = 7, cache = FALSE)
 
 @
 \newpage
@@ -103,16 +105,18 @@ Notes for developers (to be removed later):
   \item This vignette is a work in progress and is based on unmixR \Sexpr{vers}.
   \item The JSS header and footer can be removed via documentclass[nojss]{jss}
   \item There are files in the vignettes folder which permit building the vignette by running make on the whole package, or just pointing to the directory and knitting (followed by typesetting).  The .bst and .cls files can eventually be removed as they are built-in to R.
+  \item When all major pieces are drafted, we need to go through and make sure we define an acronym when we first use it (e.g. ICE) and also that 2D and 3D are two-dimensional or whatever, for consistency.
+  \item Write the actual abstract.
 \end{enumerate}
 
-\section[Hyperspectral datasets]{Hyperspectral datasets}
+\section[Introduction: Hyperspectral datasets]{Introduction: Hyperspectral datasets}
 
-Hyperspectral data are spectroscopic data collected in a spatial or temporal context.  Each sample observation is a spectrum collected at a particular location or time.  Each spectrum is thus accompanied by meta-data giving this information, which is needed to reconstruct images and for other types of analysis.  Figure~\ref{DataCube} illustrates the conceptual nature of a typical data set collected over a spatial ($x,y$) domain.
+Hyperspectral data are spectroscopic data collected in a spatial or temporal context.  The spectra are typically collected in the visible or infrared range, or by Raman or X-ray fluorescence spectroscopy.  Each sample observation is a spectrum collected at a particular location or time.  Each spectrum is thus accompanied by meta-data which is needed to reconstruct images and for other types of analysis.  Figure~\ref{DataCube} illustrates the conceptual nature of a typical data set collected over a spatial ($x,y$) domain.
 
 
 \begin{figure}
   \begin{center}
-  \includegraphics[scale = 1.0]{DataCube.pdf}
+  \includegraphics[scale = 1.2]{DataCube.pdf}
   \caption{\label{DataCube}Unfolding of spectral data collected over an $x,y$ grid.}
   \end{center}
 \end{figure}
@@ -123,13 +127,16 @@ Hyperspectral data sets are encountered in many disciplines, on scales from nano
 
   \item Biomedical imaging: a series of Raman spectra are collected as a microscopic piece of tissue is scanned in an $x,y$ plane.  Such studies are of interest for real time imaging of surgical tissue samples.  Other types of spectroscopy can be employed, for instance mass spectrometry (\cite{Bergner2013, Hedegaard2011}).
 
-  \item Airborne imaging/remote sensing: A satellite, plane or drone flies a pattern over land and collects spectra in the visible, UV or NIR range.  Such studies have been used to map mineral formations, to study the quality of forest canopies, and for assessing the severity of wildfires (\cite{Green1998, Jetz2016, Veraverbeke2014}).
+  \item Airborne imaging/remote sensing: A satellite, plane or drone flies a pattern over land and collects reflectance spectra in the visible, UV or NIR range.  Such studies have been used to map mineral formations, to study the quality of forest canopies, and for assessing the severity of wildfires (\cite{Green1998, Jetz2016, Veraverbeke2014}).
 
-  \item Art history:  A painting is scanned to examine the underlying pigments and perhaps reveal the presence of additional hidden images (\cite{Dooley2013}).
-
+  \item Art history:  A portion of a painting or manuscript is scanned by IR to examine the underlying pigments and perhaps reveal the presence of additional hidden images (\cite{Dooley2013, Catelli2017}).  Others have used x-ray fluorescence (XRF) to examine paintings (\cite{Alfeld2017}).
+  
   \item Quality control:  Pharmaceutical tablets are scanned using a hyperspectral camera during production to monitor coatings, active pharmaceutical ingredients and excipients (\cite{Kandpal2016, Franch-Lage2011}).
 
 \end{itemize}
+
+In this article we provide background and demonstrations of the \pkg{unmixR} package (\cite{unmixR}) which is written in the R language (\cite{R2017}).
+
 
 \section[Hyperspectral unmixing]{Hyperspectral unmixing}
 
@@ -203,7 +210,7 @@ A key concept common to unmixing algorithms is that of a simplex.  A simplex is 
 
 \begin{figure}
   \begin{center}
-  \includegraphics[scale = 1.2]{Simplex.pdf}
+  \includegraphics[scale = 1.8]{Simplex.pdf}
   \caption{\label{Simplex}Comparison of a convex hull to a 2-simplex for a data set collected at two wavelengths. The middle panel is an idealized 2-simplex which contains all the data points but the vertices are unobserved endmembers (or pure pixels).  The right panel is 2-simplex that would be identified in noisy data using unmixing algorithms.  In this case the vertices are the purest pixels, and the area (or volume more generally) would be the largest that can be inscribed within the data.}
   \end{center}
 \end{figure}
@@ -218,7 +225,14 @@ A number of algorithms to extract endmembers have been described in the literatu
 
 \subsection[N-FINDR]{N-FINDR}
 
-The N-FINDR method finds purest pixels in the scene, which are the vertices of the largest $p$-dimensional simplex that can be inscribed within the data.  An iterative inflation algorithm is used (\cite{Winter1999}).  This approach assumes that pure pixels are present in the scene, an assumption that doesn't always hold, but is not critical in practice.  In this algorithm, the data are first reduced using PCA.  Then $p$ pixels are chosen at random as a starting point, and the volume of the simplex is computed.  Each of the chosen pixels is replaced sequentially by each of the pixels not currently chosen, checking the volume at each replacement.  If the volume increases, the new pixel is retained, otherwise the original pixel is retained.  This is the first pass.  This interim answer serves as a new starting point, and the process is repeated up to a specified number of iterations, or until the simplex volume cannot be inflated any further.  At this point, the vertices of the simplex are the purest pixels in the scene.  A visual illustration of this process in 3D is available in the "N-FINDR Algorithm" vignette.
+The N-FINDR method finds purest pixels in the scene, which are the vertices of the largest $p$-dimensional simplex that can be inscribed within the data.  An iterative inflation algorithm is used (\cite{Winter1999}).  This approach assumes that pure pixels are present in the scene, an assumption that doesn't always hold, but is not critical in practice.  In this algorithm, the data are first reduced using PCA.  Then $p$ pixels are chosen at random as a starting point, and the volume of the simplex is computed (Figure~\ref{NFINDR} shows the process in two-dimensions).  Each of the chosen pixels is replaced sequentially by each of the pixels not currently chosen, checking the volume at each replacement.  If the volume increases, the new pixel is retained, otherwise the original pixel is retained.  This is the first pass.  This interim answer serves as a new starting point, and the process is repeated up to a specified number of iterations, or until the simplex volume cannot be inflated any further.  At this point, the vertices of the simplex are the purest pixels in the scene.  A visual illustration of this process in 3D is available in the "N-FINDR Algorithm" vignette.
+
+\begin{figure}
+  \begin{center}
+  \includegraphics[scale = 1.8]{NFINDR.pdf}
+  \caption{\label{NFINDR}Finding endmembers using N-FINDR in 2D.  After an initial random 2-simplex is chosen (left panel), optimization and iteration (middle panels) lead to the 2-simplex with the largest volume (final panel).}
+  \end{center}
+\end{figure}
 
 \pkg{unmixR} includes several variants of this approach.  For testing purposes, the "Brute" method computes all possible simplices.  This will naturally be quite slow for all but trivial data sets.  Method "99" implements Winter's original algorithm (\cite{Winter1999} described above.  The iterative approach is necessary in the event that there are no pure pixels in the data set, as local maxima may be found rather than the global maximum.  Even so, the algorithm is not guaranteed to conduct an exhaustive search of all possible combinations of endmembers, and there is some sensitivity to the randomly chosen initial pixels (\cite{Plaza2005, Dowler2013}).
 
@@ -230,13 +244,20 @@ Vertex component analysis (VCA) is an alternative geometric method of locating t
 
 If the SNR is above a certain threshold, the data is reduced to $p$ abstract wavelengths, where $p$ is the desired number of endmembers.  It is then projected onto a dimension of $p - 1$, but all $p$ abstract wavelengths are retained.  For example, if the reduced data is composed of random 3D points, the data will be projected onto a plane which resides in 3D space.  In a sense the data has become two-dimensional since every point lies in a plane, but the plane is positioned in 3D space.  One might call this "flattening".  Nascimento and Dias, in describing the VCA algorithm, use the phrase "projective projection".  The process just described is the one of the projection steps.  If the SNR is below the threshold, the data is first reduced to dimension $p - 1$ using SVD, thereby improving the SNR and "flattening" the data. Then a constant vector is added back so that the original dimension $p$ is restored.
 
-After these pre-processing steps, the endmembers are identified as follows.  An arbitrary reference vector is calculated which is orthogonal to the $p$-dimensional data, and each data point is projected onto this reference vector.  The data point whose projection onto the reference vector is farthest from the origin is selected as an endmember.  This is the second projection referred to in the phrase "projective projection."   This process is repeated until all $p$ endmembers have been selected.
+After these pre-processing steps, the endmembers are identified as follows.  An arbitrary reference vector is calculated which is orthogonal to the $p$-dimensional data, and each data point is projected onto this reference vector.  The data point whose projection onto the reference vector is farthest from the origin is selected as an endmember.  This is the second projection referred to in the phrase "projective projection."   This process is repeated until all $p$ endmembers have been selected.  Figure~\ref{VCA} shows the process in two-dimensions.
+
+\begin{figure}
+  \begin{center}
+  \includegraphics[scale = 1.0]{VCA.pdf}
+  \caption{\label{VCA}Finding endmembers using VCA in 2D.  Left panel: An arbitrary reference vector passing through the origin is created, and the minimum and maximum projections onto it are the first two endmembers.  Right panel: A second reference vector is created which is orthogonal to the first, and the projection onto it gives the third endmember. }
+  \end{center}
+\end{figure}
 
 If the reduced data were three-dimensional, the process is somewhat like the shadow of a cloud falling on the surface of the earth.  The reference vector is analogous to a straight highway, and we can take the origin of the system to be a particular town. The endmember is found where the cloud's shadow intersects (i.e. projects onto) the highway farthest from the town.  Then the process is repeated using a different highway perpendicular to the first highway.  While a simplex is never invoked in the explanation nor the algorithm, what one in fact identifes using VCA is a simplex.  The process described above can be visualized step-by-step in the "VCA Algorithm" vignette.
 
 \subsection[Iterated constrained endmembers]{Iterated constrained endmembers}
 
-The iterated constrained endmember (ICE) algorithm differs from N-FINDR and VCA in several significant ways (\cite{Berman2004, Berman2009}).  It begins by reducing the data using the minimum noise fraction (MNF, \cite{Green1988}).  This is a variant of PCA which sorts the abstract components according to the SNR ratio (PCA sorts components by the amount of variance explained).  Computing the MNF is only possible when the number of observations ($n$) is greater than the number of channels ($p$).  When this is not true, the \pkg{unmixR} implementation of ICE reverts to using PCA.  Luo \emph{et al.} discuss the applications of MNF versus PCA in hyperspectral unmixing and note that the performance depends upon the type of noise in the data set (\cite{Luo2016}).
+The iterated constrained endmember (ICE) algorithm differs from N-FINDR and VCA in several significant ways (\cite{Berman2004, Berman2009}).  It begins (ideally) by reducing the data using the minimum noise fraction (MNF, \cite{Green1988}).  This is a variant of PCA which sorts the abstract components according to the SNR ratio (PCA sorts components by the amount of variance explained).  Computing the MNF is only possible when the number of observations ($n$) is greater than the number of channels ($p$).  When this is not true, the \pkg{unmixR} stops with a message.  In these cases one can employ PCA instead.  Luo \emph{et al.} discuss the applications of MNF versus PCA in hyperspectral unmixing and note that the performance depends upon the type of noise in the data set (\cite{Luo2016}).
 
 The N-FINDR and VCA algorithms approach the simplex using strategies based on geometry.  In contrast, ICE solves Equation~\ref{LinearCombo} using the alternating least squares method.  After estimating an initial value for $\mathbf{E}$,  $\mathbf{A}$ is computed and then $\mathbf{E}$ is updated.  A modified form of the residual sum of squares is computed as a convergence criterion (i.e, $\mathbf{X}_{observed}$ is compared to $\mathbf{X}_{predicted}$). If the criterion is not met, the algorithm continues iterating between updating $\mathbf{E}$ and $\mathbf{A}$ until the criterion is reached.  When the process is complete, estimates of $\mathbf{A}$ and $\mathbf{E}$ are returned directly.  Recall that N-FINDR and VCA return the indices of the endmembers in the original data set.  The endmembers returned by ICE do not necessarily correspond to a particular spectrum in the original data set.
 
@@ -256,11 +277,27 @@ The second step in creating an abundance map is to re-fold the $\mathbf{X}_{esti
 
 \section[Application: AVIRIS remote sensing data]{Application: AVIRIS remote sensing data}
 
-Much of the hyperspectral unmixing literature comes from the field of remote sensing where airborne platforms are employed to collect the data.  The mineral-rich landscape example above is not an abstraction.  A frequently used example is the airborne visible/infrared imaging spectrometer (AVIRIS) study of the cuprite region in the state of Nevada, USA.  This region is devoid of most vegetation and rich in geological formations (\cite{Green1998}).
+Much of the hyperspectral unmixing literature comes from the field of remote sensing where airborne platforms are employed to collect the data.  A frequently used example is the airborne visible/infrared imaging spectrometer (AVIRIS) study of the cuprite region in the state of Nevada, USA (\cite{Green1998}; the data is freely available \cite{Anon}).  This arid region is devoid of most vegetation and rich in geological formations which are well-documented (for further background see \cite{Clark1993}).  The spectroscopic data is collected from an altitude of 20,000 m, and consists of 224 bands covering the range 250 - 4000 nm.  On the ground, a typical scene covers about 45 x 10 km with a 20 m spatial resolution.
+
+For demonstration purposes, we'll look at 350 x 350 pixel region which is rich in geological features.  After reading the data in, we'll normalize each spectrum by dividing it by its mean, then plot (Figure~\ref{Cup350}).
+
+<< Cuprite350, fig.cap = "\\label{Cup350}Overview of the cuprite test data." >>=
+Cuprite350 <- loadObject("Cuprite350x350.Rdata")
+# normalize
+Cuprite350N <- sweep(Cuprite350, 1, mean, "/")
+# set up plotting details
+wl <- 667 # wavelength to plot (mean of a row is used in the plot)
+myticks <- seq(50, 300, 50) # native plot dimensions are pixels
+mypal <- inferno(20) # palette to use
+plotmap(Cuprite350N[,, wl], col.regions = mypal,
+	scales = list(at = myticks, labels = myticks/50),
+	xlab = "km", ylab = "km",
+	main = bquote("Cuprite, Nevada" ~ lambda == .(wl) ~ "nm"))
+@
 
 \section[Performance]{Performance}
 
-The relative performance of the algorithms is presented in Figures~\ref{laserBenchmark} and \ldots  These benchmarks were measured on a MacBook Pro (early 2015) with a 2.9 GHz Intel Core i5 processor and 16GB RAM. \emph{Should we consider the version of BLAS involved?}
+The relative performance of the algorithms is presented in Figures~\ref{laserBenchmark} and \ref{cupriteBenchmark}.  These benchmarks were measured on a MacBook Pro (early 2015) with a 2.9 GHz Intel Core i5 processor and 16GB RAM, running R version 3.5.  \emph{Should we report the version of BLAS involved?}
 
 \begin{figure}
   \begin{center}
@@ -269,10 +306,25 @@ The relative performance of the algorithms is presented in Figures~\ref{laserBen
   \end{center}
 \end{figure}
 
+\begin{figure}
+  \begin{center}
+  \includegraphics[scale = 1.0]{cupriteBenchmark.pdf}
+  \caption{\label{cupriteBenchmark}Relative perfomance of the algorithms on the cuprite data set. TEMPORARY FIGURE}
+  \end{center}
+\end{figure}
 
 \section*{Acknowledgements}
 
 We are grateful for support from the Google Summer of Code program to Conor McManus (2013) and Anton Belov (2016).
+
+\section*{Session Info (temporary?)}
+
+<< SessionInfo >>=
+sessionInfo()
+@
+
+We are grateful for support from the Google Summer of Code program to Conor McManus (2013) and Anton Belov (2016).
+
 
 \bibliography{unmix}
 
