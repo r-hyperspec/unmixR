@@ -91,7 +91,8 @@ suppressMessages(library("hyperSpec"))
 suppressMessages(library("microbenchmark"))
 suppressMessages(library("R.utils"))
 suppressMessages(library("viridis"))
-
+suppressMessages(library("latticeExtra"))
+suppressMessages(library("plotrix"))
 
 # Stuff specifically for knitr:
 
@@ -107,6 +108,7 @@ Notes for developers (to be removed later):
   \item There are files in the vignettes folder which permit building the vignette by running make on the whole package, or just pointing to the directory and knitting (followed by typesetting).  The .bst and .cls files can eventually be removed as they are built-in to R.
   \item When all major pieces are drafted, we need to go through and make sure we define an acronym when we first use it (e.g. ICE) and also that 2D and 3D are two-dimensional or whatever, for consistency.
   \item Write the actual abstract.
+  \item includegraphics[scale = whatever] is being ignored by the jss style.
 \end{enumerate}
 
 \section[Introduction: Hyperspectral datasets]{Introduction: Hyperspectral datasets}
@@ -279,25 +281,36 @@ The second step in creating an abundance map is to re-fold the $\mathbf{X}_{esti
 
 Much of the hyperspectral unmixing literature comes from the field of remote sensing where airborne platforms are employed to collect the data.  A frequently used example is the airborne visible/infrared imaging spectrometer (AVIRIS) study of the cuprite region in the state of Nevada, USA (\cite{Green1998}; the data is freely available \cite{Anon}).  This arid region is devoid of most vegetation and rich in geological formations which are well-documented (for further background see \cite{Clark1993}).  The spectroscopic data is collected from an altitude of 20,000 m, and consists of 224 bands covering the range 250 - 4000 nm.  On the ground, a typical scene covers about 45 x 10 km with a 20 m spatial resolution.
 
-For demonstration purposes, we'll look at 350 x 350 pixel region which is rich in geological features.  After reading the data in, we'll normalize each spectrum by dividing it by its mean, then plot (Figure~\ref{Cup350}).
+For demonstration purposes, we'll look at 350 x 350 pixel subregion which is rich in geological features.  We will use the \pkg{hyperSpec} package since it was designed for the tasks at hand (\cite{hyperSpec}).  After reading the data in, we will remove several channels which are zeroed out in the data set because of scattering due to atmospheric water vapor.  After normalizing each spectrum, we arrive at Figure~\ref{Cup350}, which is drawn using $\lambda$ = 667 nm.  A full spectrum of a single pixel is shown in Figure~\ref{OnePix}.
 
-<< Cuprite350, fig.cap = "\\label{Cup350}Overview of the cuprite test data." >>=
-Cuprite350 <- loadObject("Cuprite350x350.Rdata")
-# normalize
-Cuprite350N <- sweep(Cuprite350, 1, mean, "/")
-# set up plotting details
-wl <- 667 # wavelength to plot (mean of a row is used in the plot)
-myticks <- seq(50, 300, 50) # native plot dimensions are pixels
+<< Cup350, fig.cap = "\\label{Cup350}Overview of the cuprite test data.  The black circle shows the approximate location of the pixel whose full spectrum is shown in Figure~\\ref{OnePix}." >>=
+Cup350 <- loadObject("Cuprite350x350.Rdata")
+# select bands of interest, omitting water vapor
+keep <- c(min~1345, 1430~1805, 1955~max)
+Cup350 <- Cup350[,,keep]
+Cup350N <- sweep(Cup350, 1, mean, "/") # normalize
+
+# set up plot
+wl <- 667 # wavelength to plot
+myticks <- seq(50, 300, 50) # native plot dimensions are pixels, want km
 mypal <- inferno(20) # palette to use
-plotmap(Cuprite350N[,, wl], col.regions = mypal,
+p1 <- plotmap(Cup350N[,, wl], col.regions = mypal,
 	scales = list(at = myticks, labels = myticks/50),
 	xlab = "km", ylab = "km",
 	main = bquote("Cuprite, Nevada" ~ lambda == .(wl) ~ "nm"))
+# add circle marking location of full spectrum in the next figure
+p1 <- p1 + layer(panel.xyplot(x = 286, y = 115, col = "black", cex = 2))
+print(p1)
+@
+
+<< OnePix, fig.cap = "\\label{OnePix}The reflectance spectrum of the bright pixel at the center of the circle in Figure~\\ref{Cup350} (water bands removed).", warning = FALSE >>=
+brightpix <- which((Cup350@data$x == 286) & (Cup350@data$y == 115)) # no easier way?
+plotspc(Cup350[brightpix,,], wl.range = keep, xoffset = c(0, 0))
 @
 
 \section[Performance]{Performance}
 
-The relative performance of the algorithms is presented in Figures~\ref{laserBenchmark} and \ref{cupriteBenchmark}.  These benchmarks were measured on a MacBook Pro (early 2015) with a 2.9 GHz Intel Core i5 processor and 16GB RAM, running R version 3.5.  \emph{Should we report the version of BLAS involved?}
+The relative performance of the algorithms is presented in Figures~\ref{laserBenchmark} and \ref{Cup350Benchmark}.  These benchmarks were measured on a MacBook Pro (early 2015) with a 2.9 GHz Intel Core i5 processor and 16GB RAM, running R version 3.5.  \emph{Should we report the version of BLAS involved?}
 
 \begin{figure}
   \begin{center}
@@ -308,8 +321,8 @@ The relative performance of the algorithms is presented in Figures~\ref{laserBen
 
 \begin{figure}
   \begin{center}
-  \includegraphics[scale = 1.0]{cupriteBenchmark.pdf}
-  \caption{\label{cupriteBenchmark}Relative perfomance of the algorithms on the cuprite data set. TEMPORARY FIGURE}
+  \includegraphics[scale = 1.0]{Cup350Benchmark.pdf}
+  \caption{\label{Cup350Benchmark}Relative perfomance of the algorithms on the cuprite data set. TEMPORARY FIGURE}
   \end{center}
 \end{figure}
 
@@ -322,9 +335,6 @@ We are grateful for support from the Google Summer of Code program to Conor McMa
 << SessionInfo >>=
 sessionInfo()
 @
-
-We are grateful for support from the Google Summer of Code program to Conor McManus (2013) and Anton Belov (2016).
-
 
 \bibliography{unmix}
 
