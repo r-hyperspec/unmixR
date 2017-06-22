@@ -1,7 +1,7 @@
 Package: unmixR
 Type: Package
 Title: Hyperspectral Unmixing Methods
-Version: 0.2.698
+Version: 0.2.701
 Date: 2017-06-21
 Authors@R: c(person("Anton", "Belov", role = "aut"),
 	person("Conor", "McManus", role = "aut"),
@@ -38,9 +38,10 @@ Imports:
     spacetime
 VignetteBuilder: knitr
 Collate: 
+    'unmixR-package.R'
+    'AEM.R'
     'demo_data.R'
     'dimRed.R'
-    'unmixR-package.R'
     'endmembers.R'
     'estSNR.R'
     'getimplementations.R'
@@ -53,7 +54,6 @@ Collate:
     'nfindrLDU.R'
     'nfindrSeqLDU.R'
     'options.R'
-    'plotAmap.R'
     'predict.R'
     'simplex.R'
     'unittests.R'
