@@ -81,9 +81,6 @@ Functions implementing the N-FINDR, Iterated Constrained Endmembers (ICE) and Ve
 # R options & configuration:
 
 rm(list = ls())
-options(width =  50, show.signif.stars = FALSE)
-desc <- packageDescription("unmixR")
-vers <- paste("version ", desc$Version, sep = "")
 
 suppressMessages(library("knitr")) # needed to access opts_chunk below
 suppressMessages(library("unmixR"))
@@ -94,21 +91,28 @@ suppressMessages(library("viridis"))
 suppressMessages(library("latticeExtra"))
 suppressMessages(library("plotrix"))
 
-# Stuff specifically for knitr:
+# unmixR and R info
+desc <- packageDescription("unmixR")
+vers <- paste("version ", desc$Version, sep = "")
+Rvers <- R.Version()$version.string
+Soft <- sessionInfo()$running 
 
-opts_chunk$set(out.width = "0.9\\textwidth", fig.align = "center", fig.width = 7, fig.height = 7, cache = FALSE)
+# knitr configuration
+
+opts_chunk$set(out.width = "0.9\\textwidth", fig.align = "center", fig.width = 7, fig.height = 7)
 
 @
 \newpage
 
-Notes for developers (to be removed later):
+Notes for CB and BH (to be removed later):
 \begin{enumerate}
   \item This vignette is a work in progress and is based on unmixR \Sexpr{vers}.
   \item The JSS header and footer can be removed via documentclass[nojss]{jss}
   \item There are files in the vignettes folder which permit building the vignette by running make on the whole package, or just pointing to the directory and knitting (followed by typesetting).  The .bst and .cls files can eventually be removed as they are built-in to R.
   \item When all major pieces are drafted, we need to go through and make sure we define an acronym when we first use it (e.g. ICE) and also that 2D and 3D are two-dimensional or whatever, for consistency.
   \item Write the actual abstract.
-  \item includegraphics[scale = whatever] is ignored by the jss style.  Not sure what is controlling the size of these pdf figures.  Need to investigate.
+  \item includegraphics[scale = whatever] is ignored by the jss style.  Use [height = 2 in, keepaspectratio] for example.
+  \item Cuprite data set is probably too large for CRAN.
 \end{enumerate}
 
 \section[Introduction: Hyperspectral datasets]{Introduction: Hyperspectral datasets}
@@ -212,7 +216,7 @@ A key concept common to unmixing algorithms is that of a simplex.  A simplex is 
 
 \begin{figure}
   \begin{center}
-  \includegraphics{Simplex.pdf}
+  \includegraphics[height = 2 in, keepaspectratio]{Simplex.pdf}
   \caption{\label{Simplex}Different ways to enclose data collected at two wavelengths. \textbf{A} A convex hull shrink-wraps the data.  \textbf{B} An idealized 2-simplex which contains all the data points but the vertices are unobserved endmembers (or pure pixels).  \textbf{C} A 2-simplex that would be identified in noisy data using unmixing algorithms.  In this case the vertices are the purest pixels, and the area (or volume more generally) would be the largest that can be inscribed within the data.}
   \end{center}
 \end{figure}
@@ -231,7 +235,7 @@ The N-FINDR method finds purest pixels in the scene, which are the vertices of t
 
 \begin{figure}
   \begin{center}
-  \includegraphics[scale = 0.8]{NFINDR.pdf}
+  \includegraphics[height = 4 in, keepaspectratio]{NFINDR.pdf}
   \caption{\label{NFINDR}Finding endmembers using N-FINDR in 2D.  \textbf{A} An initial random 2-simplex is chosen. \textbf{B, C} Optimization and iteration. \textbf{D} The answer is the 2-simplex with the largest volume.}
   \end{center}
 \end{figure}
@@ -250,7 +254,7 @@ After these pre-processing steps, the endmembers are identified as follows.  An 
 
 \begin{figure}
   \begin{center}
-  \includegraphics{VCA.pdf}
+  \includegraphics[height = 2 in, keepaspectratio]{VCA.pdf}
   \caption{\label{VCA}Finding endmembers using VCA in 2D.  \textbf{A} An arbitrary reference vector passing through the origin is created, and the minimum and maximum projections onto it are the first two endmembers.  \textbf{B} A second reference vector is created which is orthogonal to the first, and the projection onto it gives the third endmember. }
   \end{center}
 \end{figure}
@@ -265,23 +269,26 @@ The N-FINDR and VCA algorithms approach the simplex using strategies based on ge
 
 \subsection[Abundance maps]{Abundance maps}
 
-There are two steps to creating an abundance map.  First, one has to generate an estimate of the original data matrix $\mathbf{X}$ based on one (or more) endmembers.  As noted above, the ICE algorithm returns an estimate of $\mathbf{A}$ and $\mathbf{E}$ directly.  From these two matrices one can reconstruct an approximation of the entire data set by
+There are two steps to creating an abundance map.  First, one has to generate an estimate of the original data matrix $\mathbf{X}$ based on one (or more) endmembers, and for this, one needs estimates of $\mathbf{A}$ and $\mathbf{E}$.  From these two matrices one can reconstruct an approximation of the entire data set by
 
 \begin{equation}
+\label{recon}
 \mathbf{X}^{(n \ \times \ p)}_{estimated} = \mathbf{A}^{(n \ \times \ m)}_{estimated} \times \mathbf{E}^{(m \ \times \ p)}_{estimated}
 \end{equation}
 
 where $m$ was the number of endmembers requested.  An abundance map for a specific endmember can be constructed by using only the $i^{th}$ endmember from among the $m$ endmembers.
 
-In the case of the N-FINDR and VCA algorithms, the $\mathbf{A}_{estimated}$ matrix can be computed using the predict function, then multiplied by the rows of the original data matrix that contain the endmembers of interest to generate an estimate of $\mathbf{X}$.
+The ICE algorithm returns estimates of $\mathbf{A}$ and $\mathbf{E}$ directly.  In the case of the N-FINDR and VCA algorithms, the $\mathbf{A}_{estimated}$ matrix can be computed using the predict function and then Equation~\ref{recon} can be employed.
 
-The second step in creating an abundance map is to re-fold the $\mathbf{X}_{estimated}$ matrix back into the data cube, that is, one must reverse the process illustrated in Figure~\ref{DataCube}.
+\emph{CB: we could show code here demonstrating the manual reconstruction process.}
+
+The second step in creating an abundance map is to re-fold the $\mathbf{X}_{estimated}$ matrix back into the data cube, that is, one must reverse the process illustrated in Figure~\ref{DataCube}.  This is potentially a tedious process which can be made easier by using the functions in package \pkg{hyperSpec}.  These are illustrated in the next section.
 
 \section[Application: AVIRIS remote sensing data]{Application: AVIRIS remote sensing data}
 
 Much of the hyperspectral unmixing literature comes from the field of remote sensing where airborne platforms are employed to collect the data.  A frequently used example is the airborne visible/infrared imaging spectrometer (AVIRIS) study of the cuprite region in the state of Nevada, USA (\cite{Green1998}; the data is freely available \cite{Anon}).  This arid region is devoid of most vegetation and rich in geological formations which are well-documented (for further background see \cite{Clark1993}).  The spectroscopic data is collected from an altitude of 20,000 m, and consists of 224 bands covering the range 250 - 4000 nm.  On the ground, a typical scene covers about 45 x 10 km with a 20 m spatial resolution.
 
-For demonstration purposes, we'll look at 350 x 350 pixel subregion which is rich in geological features.  We will use the \pkg{hyperSpec} package since it was designed for the tasks at hand (\cite{hyperSpec}).  After reading the data in, we will remove several channels which are zeroed out in the data set because of scattering due to atmospheric water vapor.  After normalizing each spectrum, we arrive at Figure~\ref{Cup350}, which is drawn using $\lambda$ = 667 nm.  A full spectrum of a single pixel is shown in Figure~\ref{OnePix}.
+For demonstration purposes, we'll look at 350 x 350 pixel subregion which is rich in geological features.  We will use the \pkg{hyperSpec} package since it was designed for the tasks at hand (\cite{hyperSpec}).  After reading the data in, we will remove several channels which were set to zero in the data set because of scattering by atmospheric water vapor.  After normalizing each spectrum, we arrive at Figure~\ref{Cup350}, which is drawn using $\lambda$ = 667 nm.  A full spectrum of a single pixel is shown in Figure~\ref{OnePix}.
 
 << Cup350, fig.cap = "\\label{Cup350}Overview of the cuprite test data.  The black circle shows the approximate location of the pixel whose full spectrum is shown in Figure~\\ref{OnePix}." >>=
 Cup350 <- loadObject("Cuprite350x350.Rdata")
@@ -303,14 +310,59 @@ p1 <- p1 + layer(panel.xyplot(x = 286, y = 115, col = "black", cex = 2))
 print(p1)
 @
 
-<< OnePix, fig.cap = "\\label{OnePix}The reflectance spectrum of the bright pixel at the center of the circle in Figure~\\ref{Cup350} (water bands removed).", warning = FALSE >>=
+<< OnePix, fig.cap = "\\label{OnePix}The reflectance spectrum of the bright pixel at the center of the circle in Figure~\\ref{Cup350} (water bands removed).", warning = FALSE, fig.height =  4 >>=
 brightpix <- which((Cup350@data$x == 286) & (Cup350@data$y == 115)) # no easier way?
 plotspc(Cup350[brightpix,,], wl.range = keep, xoffset = c(0, 0))
 @
 
+Next we compute 20 endmembers:
+
+<< CupEM >>=
+CupEM <- vca(Cup350N, p = 20, method = "Lopez2012")
+str(CupEM)
+@
+
+Endmembers can conveniently plotted using the AEM function, which provides the endmembers as a hyperSpec object in list element "Endmembers".  AEM will also plot the abundance map if desired.  Two endmembers are shown in Figure~\ref{EM2}.
+
+<< EM2, fig.cap = "\\label{EM2}Selected endmembers from the cuprite data set.", warning = FALSE >>=
+EM2 <- AEM(Cup350N, CupEM, EMs = c(3, 15),
+  plotMap = FALSE, plotEM = TRUE, stacked = TRUE,
+  wl.range = keep, xoffset = c(0, 0))
+@
+
+The calculated endmembers can be compared against laboratory spectra in order to make an indentification (Figure~\ref{USGS}).
+
+<< USGS, fig.cap = "\\label{USGS}Laboratory spectra of the minerals alunite and muscovite" >>=
+usgs <- loadObject("USGS.Rdata")
+plotspc(usgs, stacked = TRUE)
+@
+
+We can put both in the same plot after combining them into the same hyperSpec object (Figures~\ref{Comp1} and \ref{Comp2}).
+
+<< Comp1, fig.cap = "\\label{Comp1}Comparison of endmember 15 with the laboratory spectrum of alunite." >>=
+usgs <- usgs[,,400~2500]
+em <- EM2[["Endmembers"]][,,400~2500]
+usgsem <- collapse(em, usgs)
+plotspc(usgsem[c(15, 21),,], col = c("red", "black")) # alt 10
+@
+
+<< Comp2, fig.cap = "\\label{Comp2}Comparison of endmember 3 with the laboratory spectrum of muscovite." >>=
+plotspc(usgsem[c(3, 22),,], col = c("red", "black")) # alt 13
+@
+
+Finally, we can examine an abundance map of these two endmembers (Figure~\ref{AbunMap}).:
+
+<< AbunMap, fig.cap = "\\label{AbunMap}Abundance map of two endmembers" >>=
+plotmap(EM2[["Map"]], col.regions = mypal,
+	scales = list(at = myticks, labels = myticks/50),
+	xlab = "km", ylab = "km",
+	main = "Two Endmembers")
+@
+
+
 \section[Performance]{Performance}
 
-The relative performance of the algorithms is presented in Figures~\ref{laserBenchmark} and \ref{Cup350Benchmark}.  These benchmarks were measured on a MacBook Pro (early 2015) with a 2.9 GHz Intel Core i5 processor and 16GB RAM, running R version 3.5.  \emph{Should we report the version of BLAS involved?}
+The relative performance of the algorithms is presented in Figures~\ref{laserBenchmark} and \ref{Cup350Benchmark}.  These benchmarks were measured on a MacBook Pro (early 2015) with a 2.9 GHz Intel Core i5 processor and 16GB RAM, running \Sexpr{Soft}.  The R version was \Sexpr{Rvers}.  \emph{CB: Should we report the version of BLAS and LAPACK involved?}
 
 \begin{figure}
   \begin{center}
@@ -322,7 +374,7 @@ The relative performance of the algorithms is presented in Figures~\ref{laserBen
 \begin{figure}
   \begin{center}
   \includegraphics{Cup350Benchmark.pdf}
-  \caption{\label{Cup350Benchmark}Relative perfomance of the algorithms on the cuprite data set. TEMPORARY FIGURE}
+  \caption{\label{Cup350Benchmark}Relative perfomance of the algorithms on the cuprite data set.}
   \end{center}
 \end{figure}
 
@@ -330,10 +382,10 @@ The relative performance of the algorithms is presented in Figures~\ref{laserBen
 
 We are grateful for support from the Google Summer of Code program to Conor McManus (2013) and Anton Belov (2016).
 
-\section*{Session Info (temporary?)}
+\section*{Session Info TEMPORARY}
 
-<< SessionInfo >>=
-sessionInfo()
+<< SessionInfo, echo = FALSE, results = "asis" >>=
+toLatex(sessionInfo(), locale = FALSE)
 @
 
 \bibliography{unmix}

@@ -2,7 +2,7 @@
 ##' 
 ##' Convenience function to take a \code{hyperSpec} object, and the results
 ##' of unmixing that object, and create an abundance map using the
-##' specified endmembers.  The map data and the individual endmembers are returned.
+##' specified endmembers.  The map data and the ALL endmembers are returned.
 ##' 
 ##' @param hS An object of class \code{hyperSpec}.
 ##'
@@ -13,12 +13,19 @@
 ##'
 ##' @param plotMap Logical.  Shall the abundance map be plotted?
 ##'
+##' @param plotEM Logical.  Shall the endmembers be plotted?
+##' You can add \code{stacked = TRUE} for example.
+##'
 ##' @param ... Additional parameters to be passed to levelplot/hyperSpec::plotmap.
+##'
+##' @section Details:
+##' If both \code{plotMap and plotEM = TRUE}, both will be plotted and the endmember
+##' plot will overwrite the abundance map in interactive use.
 ##' 
 ##' @return A list with two \code{hyperSpec} objects:
 ##'   \itemize{
-##'     \item \strong{Endmembers}: The endmembers
-##'     \item \strong{Map}: The map constructed from the specified endmembers.
+##'     \item \strong{Endmembers}: ALL of the endmembers that were present in \code{uM}.
+##'     \item \strong{Map}: The map constructed from the endmembers specified by \code{EMs}.
 ##'   }
 ##' 
 ##' @export
@@ -26,13 +33,13 @@
 ##'
 ##' @examples
 ##' unmix <- vca(chondro, p = 3, method = "Lopez2012")
-##' aem <- AEM(chondro, unmix, EMs = 1:3) # plot the map
-##' # Show the endmembers
-##' plotspc(aem[[1]], stacked = TRUE, col = c("red", "green", "blue"))
+##' aem1 <- AEM(chondro, unmix, EMs = 1:3) # plot the map
+##' aem2 <- AEM(chondro, unmix, EMs = 1:3, stacked = TRUE,
+##'   plotMap = FALSE, plotEM = TRUE) # plot the endmembers
 ##'
 
 
-AEM <- function(hS, uM, EMs = 1, plotMap = TRUE, ...) {
+AEM <- function(hS, uM, EMs = 1, plotMap = TRUE, plotEM = FALSE, ...) {
 
 
   if (length(EMs) > length(uM$indices)) {
@@ -57,12 +64,15 @@ AEM <- function(hS, uM, EMs = 1, plotMap = TRUE, ...) {
 	map <- abun[,EMs] %*% uM$data[uM$indices[EMs],, drop = FALSE]
 	MAP <- hS # make a copy to hold abundance map
 	MAP[[]] <- map
-	if (plotMap) p <- hyperSpec::plotmap(MAP, ...); print(p)	
   }
 
   if (class(uM) == "ice") {
   	stop("mapping ice objects not yet implemented")
   }
+
+  if (plotMap) {p <- hyperSpec::plotmap(MAP, ...); print(p)}
+#  if (plotEM) {p <- hyperSpec::plotspc(EM[EMs,,], ...); print(p)}
+  if (plotEM) {hyperSpec::plotspc(EM[EMs,,], ...)}
 
   ans <- list(Endmembers = EM, Map = MAP)
   invisible(ans)
