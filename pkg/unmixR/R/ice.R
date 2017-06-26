@@ -24,11 +24,12 @@
 ##' @return A list of class \code{ice} with elements:
 ##'   \itemize{
 ##'     \item \strong{endmembers}: The \code{p} endmembers.
-##'     \item \strong{abundance}: Abundance matrix.
+##'     \item \strong{weights}: Weights matrix.
 ##'     \item \strong{reduce}: How and if the data was reduced.
 ##'   }
-##'  \eqn{abundances * endmembers} gives an approximation of the original data matrix
-##'  if the data was reduced.
+##'  \eqn{weights * endmembers} gives an approximation of the original data matrix
+##'  (the approximation depends on how/whether the data was reduced, and the nummber
+##'   of endmembers requested).
 ##'
 ##' @references Berman et al. ICE: A New Method for the Multivariate Curve Resolution
 ##' of Hyperspectral Images, Journal of Chemometrics, vol. 29 pgs 101-116 (2009).
@@ -39,6 +40,9 @@
 ##' @importFrom limSolve lsei
 ##' @importFrom matrixcalc matrix.trace frobenius.norm
 ##' @importFrom spacetime mnf
+##' 
+##' @examples
+##' tst <- ice(laser, p = 3)
 ##' 
 ice <- function(data, p, mu = 0.01, tol = 0.9999, reduce = "MNF"){
 
@@ -107,14 +111,16 @@ ice <- function(data, p, mu = 0.01, tol = 0.9999, reduce = "MNF"){
                 break
             }
         }
-    }
+    } # end of while
     
-    # Reconstruct the original data dimensions but of reduced rank
     curEnd <- t(curEnd)
-    if (reduce) curEnd <- curEnd %*% t(red$rotation[,seq(p)]) +
-                          red$center # center = FALSE = 0 in mnf by the way
 
-    ans <- list(endmembers = curEnd, abundances = t(abund), reduce = reduced)
+    # If needed, reconstruct the original data dimensions but of reduced rank
+    if ((reduce == "MNF") | (reduce == "PCA")) {
+    	curEnd <- curEnd %*% t(red$rotation[,seq(p)]) + red$center # center = FALSE = 0 in mnf by the way
+	}
+	
+    ans <- list(endmembers = curEnd, weights = t(abund), reduce = reduced)
     class(ans) <- "ice"
     return(ans)
 }
@@ -134,11 +140,10 @@ ice <- function(data, p, mu = 0.01, tol = 0.9999, reduce = "MNF"){
 
   # Check correct answers
   # This is a pretty crude test!  hist(mean(M - as.matrix(laser))) shows the truth
-  
   test_that ("ice on laser w/o reduction returns original data matrix within reason", {
-    chk <- ice(laser, p = 3, reduce = FALSE)
-    M <- chk$abundances %*% chk$endmembers
-    expect_lt (mean(M - as.matrix(laser)), 1e-10)
+    chk <- ice(laser, p = 3, reduce = "no")
+    M <- chk$weights %*% chk$endmembers
+    expect_lt (mean(M - as.matrix(laser)), 1e-8)
   })
 
 }

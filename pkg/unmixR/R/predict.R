@@ -20,17 +20,17 @@
   	return(raw/rowSums(raw))
 }
 
-##' Predict Endmember Abundances
+##' Compute Weights Matrix
 ##'
-##' Predicts the abundance percentages of each endmember at all sample points
+##' Computes the weights matrix (fractions) of each endmember at all sample points
 ##' using the Non-Negative Least Squares method.
 ##'
 ##' @param object The N-FINDR/VCA structure returned by the
 ##'   \code{\link{nfindr}} or \code{\link{vca}} interface (note: \code{\link{ice}}
 ##'   intrinsically computes the abundances so this function isn't needed).
 ##'
-##' @param newdata If the data stored in the object is not the data that
-##'   should be checked for abundances, then this parameter allows for passing
+##' @param newdata If the data stored in the object is not the data to be used
+##'   for the calculation, then this parameter allows for passing
 ##'   in new data.
 ##
 ##' @param ... Allow for extra parameters to match the signature of the base
@@ -38,7 +38,7 @@
 ##'   as argument \code{newdata}.  By default, the data in \code{object}
 ##'   will be used.
 ##'
-##' @return A matrix where the abundances for an endmember are returned
+##' @return A matrix where the weights for an endmember are returned
 ##'   column-wise. Each value is in the range \code{[0 \dots 1]}.
 ##'
 ##' @name predict

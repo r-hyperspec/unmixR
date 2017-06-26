@@ -112,7 +112,7 @@ Notes for CB and BH (to be removed later):
   \item When all major pieces are drafted, we need to go through and make sure we define an acronym when we first use it (e.g. ICE) and also that 2D and 3D are two-dimensional or whatever, for consistency.
   \item Write the actual abstract.
   \item includegraphics[scale = whatever] is ignored by the jss style.  Use [height = 2 in, keepaspectratio] for example.
-  \item Cuprite data set is probably too large for CRAN.
+  \item Cuprite data set is too large for CRAN.  When we have everything the way we want, we'll have to set eval = FALSE for the code chunks and include static figures.
 \end{enumerate}
 
 \section[Introduction: Hyperspectral datasets]{Introduction: Hyperspectral datasets}
@@ -350,15 +350,23 @@ plotspc(usgsem[c(15, 21),,], col = c("red", "black")) # alt 10
 plotspc(usgsem[c(3, 22),,], col = c("red", "black")) # alt 13
 @
 
-Finally, we can examine an abundance map of these two endmembers (Figure~\ref{AbunMap}).:
+Finally, we can examine an abundance map of each of these endmembers (Figures~\ref{AbunMap1} and \ref{AbunMap2}).
 
-<< AbunMap, fig.cap = "\\label{AbunMap}Abundance map of two endmembers" >>=
-plotmap(EM2[["Map"]], col.regions = mypal,
+<< AbunMap1, fig.cap = "\\label{AbunMap1}Abundance map of first endember.", echo = FALSE >>=
+EM3 <- AEM(Cup350N, CupEM, EMs = 3, plotMap = FALSE, plotEM = FALSE)
+plotmap(EM3[["Map"]], col.regions = mypal,
 	scales = list(at = myticks, labels = myticks/50),
 	xlab = "km", ylab = "km",
-	main = "Two Endmembers")
+	main = "First Endmembers")
 @
 
+<< AbunMap2, fig.cap = "\\label{AbunMap2}Abundance map of second endember.", echo = FALSE >>=
+EM15 <- AEM(Cup350N, CupEM, EMs = 15, plotMap = FALSE, plotEM = FALSE)
+plotmap(EM15[["Map"]], col.regions = mypal,
+	scales = list(at = myticks, labels = myticks/50),
+	xlab = "km", ylab = "km",
+	main = "Second Endmembers")
+@
 
 \section[Performance]{Performance}
 

@@ -36,42 +36,54 @@
 ##' aem1 <- AEM(chondro, unmix, EMs = 1:3) # plot the map
 ##' aem2 <- AEM(chondro, unmix, EMs = 1:3, stacked = TRUE,
 ##'   plotMap = FALSE, plotEM = TRUE) # plot the endmembers
-##'
+##' 
 
 
 AEM <- function(hS, uM, EMs = 1, plotMap = TRUE, plotEM = FALSE, ...) {
 
-
-  if (length(EMs) > length(uM$indices)) {
-    msg <- "More endmembers requested than exist.\n\tCheck length(EMs) & the value of p used for unmixing." 
-    stop(msg) 	
-  }
+  # As written, I think this will fail if uM was returned using EMonly = TRUE
+  
   
   if ((class(uM) == "vca") | (class(uM) == "nfindr")) {
-  	
-    no.em <- length(uM$indices)
-    no.spc <- nrow(hS[])
-	EM <- hS # make a copy to hold endmembers
 
-	# Remove all the spectra except leave enough rows for the endmembers
-	EM <- EM[-c((no.em + 1):no.spc)]
-	EM[[]] <- endmembers(uM) # extract and insert endmembers
-	# Add extra info marking the endmembers to facilitate plot conditioning
-	EM$em <- as.factor(LETTERS[1:no.em])
-	
-	# Build abundance map data
-	abun <- .predict(uM)
-	map <- abun[,EMs] %*% uM$data[uM$indices[EMs],, drop = FALSE]
-	MAP <- hS # make a copy to hold abundance map
-	MAP[[]] <- map
+	  if (length(EMs) > length(uM$indices)) {
+	    msg <- "More endmembers requested than exist.\n\tCheck length(EMs) & the value of p used for unmixing." 
+	    stop(msg) 	
+	  }
+	  	
+	  EM <- new("hyperSpec", spc = endmembers(uM), wavelength = wl(hS),
+			label = list(spc = hS@label$spc, wavelength = hS@label$.wavelength))
+		
+	  weights <- .predict(uM)
+	  map <- weights[,EMs] %*% uM$data[uM$indices[EMs],, drop = FALSE]
   }
 
   if (class(uM) == "ice") {
-  	stop("mapping ice objects not yet implemented")
+
+    if (length(EMs) > nrow(uM[["endmembers"]])) {
+      msg <- "More endmembers requested than exist.\n\tCheck length(EMs) & the value of p used for unmixing." 
+      stop(msg) 	
+    }
+
+	EM <- new("hyperSpec", spc = uM[["endmembers"]], wavelength = wl(hS),
+		label = list(spc = hS@label$spc, wavelength = hS@label$.wavelength))
+
+	# Build abundance map data
+	map <- uM[["weights"]][,EMs] %*% uM[["endmembers"]][EMs,, drop = FALSE]
   }
 
-  if (plotMap) {p <- hyperSpec::plotmap(MAP, ...); print(p)}
-#  if (plotEM) {p <- hyperSpec::plotspc(EM[EMs,,], ...); print(p)}
+  # Make a copy to hold abundance map
+  # Need all the extra data and labels for the map
+  MAP <- hS
+  MAP[[]] <- map
+
+  if (plotMap) {
+  	if (!"x" %in% colnames(MAP)) stop("hyperSpec object does not have an x column, cannot make a map")
+  	if (!"y" %in% colnames(MAP)) stop("hyperSpec object does not have an y column, cannot make a map")
+  	p <- hyperSpec::plotmap(MAP, ...)
+  	print(p)
+  }
+  
   if (plotEM) {hyperSpec::plotspc(EM[EMs,,], ...)}
 
   ans <- list(Endmembers = EM, Map = MAP)
