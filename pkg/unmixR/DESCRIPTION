@@ -1,8 +1,8 @@
 Package: unmixR
 Type: Package
 Title: Hyperspectral Unmixing Methods
-Version: 0.2.743
-Date: 2017-06-25
+Version: 0.2.761
+Date: 2017-06-26
 Authors@R: c(person("Anton", "Belov", role = "aut"),
 	person("Conor", "McManus", role = "aut"),
 	person("Claudia", "Beleites", role = c("aut", "cre"),
@@ -29,7 +29,8 @@ Suggests:
     R.utils,
     viridis,
     latticeExtra,
-    plotrix
+    plotrix,
+    grid
 Imports:
     testthat,
     settings,

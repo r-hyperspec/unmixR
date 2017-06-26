@@ -41,7 +41,7 @@
 
 AEM <- function(hS, uM, EMs = 1, plotMap = TRUE, plotEM = FALSE, ...) {
 
-  # As written, I think this will fail if uM was returned using EMonly = TRUE
+  # As written, I think this will fail if uM was returned using EMonly = TRUE (vca/nfindr)
   
   
   if ((class(uM) == "vca") | (class(uM) == "nfindr")) {

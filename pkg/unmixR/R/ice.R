@@ -19,7 +19,8 @@
 ##' which is the recommended approach. However, using \code{"MNF"} is only possible if 
 ##' \code{nrow(data) > ncol(data)}.  When this is not the case, \code{"PCA"} is the next best
 ##' option. Set to \code{"no"} if you pre-process your data, or if you don't want data reduction.
-##' This last option will be impractical for large data sets.
+##' This last option will be impractical for large data sets.  If you pre-process your data,
+##' check your results with and without centering.  The code herein does not center.
 ##'
 ##' @return A list of class \code{ice} with elements:
 ##'   \itemize{
@@ -56,7 +57,7 @@ ice <- function(data, p, mu = 0.01, tol = 0.9999, reduce = "MNF"){
     if (reduce == "MNF") {
 	   if (.options ("debuglevel") >= 1L) cat("Using minimum noise fraction\n")
 	   if (!nrow(data) > ncol(data)) stop("Cannot use MNF unless nrow(data) > ncol(data)")
-	   red <- spacetime::mnf(data)
+	   red <- spacetime::mnf(data) # mnf does not center
 	   # Literature is a bit unclear as to the order of components.
 	   # Some say order is highest SNR to lowest, other the opposite.
 	   # This gives much better looking endmembers if the last components are used.
@@ -68,7 +69,7 @@ ice <- function(data, p, mu = 0.01, tol = 0.9999, reduce = "MNF"){
 	
     if (reduce == "PCA") {
       if (.options ("debuglevel") >= 1L) cat("Reducing via PCA\n")
-      red <- stats::prcomp(data)
+      red <- stats::prcomp(data, center = FALSE) # do not center, it leads to poor results
       data <- red[["x"]][, seq(p), drop = FALSE]
       reduced <- "PCA"
 	}
@@ -92,7 +93,7 @@ ice <- function(data, p, mu = 0.01, tol = 0.9999, reduce = "MNF"){
         })
         
         # Regularisation parameter
-        # BH: should this be dim(data)[2]?  data is transposed, no of samples is ncol(data)
+        # BH asks: should this be dim(data)[2]?  data is transposed, no of samples is ncol(data)
         # See eqn 14 in Berman2009
         # Also see a few lines below
         lambda <- dim(data)[1] * mu / ((p - 1)*(1 - mu))
@@ -115,9 +116,9 @@ ice <- function(data, p, mu = 0.01, tol = 0.9999, reduce = "MNF"){
     
     curEnd <- t(curEnd)
 
-    # If needed, reconstruct the original data dimensions but of reduced rank
+    # If data was reduced, reconstruct the original data dimensions but of reduced rank
     if ((reduce == "MNF") | (reduce == "PCA")) {
-    	curEnd <- curEnd %*% t(red$rotation[,seq(p)]) + red$center # center = FALSE = 0 in mnf by the way
+      curEnd <- curEnd %*% t(red$rotation[,seq(p)]) # data was not previously centered
 	}
 	
     ans <- list(endmembers = curEnd, weights = t(abund), reduce = reduced)

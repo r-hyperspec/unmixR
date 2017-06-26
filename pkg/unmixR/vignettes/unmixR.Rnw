@@ -90,6 +90,7 @@ suppressMessages(library("R.utils"))
 suppressMessages(library("viridis"))
 suppressMessages(library("latticeExtra"))
 suppressMessages(library("plotrix"))
+suppressMessages(library("grid"))
 
 # unmixR and R info
 desc <- packageDescription("unmixR")
@@ -286,12 +287,12 @@ The second step in creating an abundance map is to re-fold the $\mathbf{X}_{esti
 
 \section[Application: AVIRIS remote sensing data]{Application: AVIRIS remote sensing data}
 
-Much of the hyperspectral unmixing literature comes from the field of remote sensing where airborne platforms are employed to collect the data.  A frequently used example is the airborne visible/infrared imaging spectrometer (AVIRIS) study of the cuprite region in the state of Nevada, USA (\cite{Green1998}; the data is freely available \cite{Anon}).  This arid region is devoid of most vegetation and rich in geological formations which are well-documented (for further background see \cite{Clark1993}).  The spectroscopic data is collected from an altitude of 20,000 m, and consists of 224 bands covering the range 250 - 4000 nm.  On the ground, a typical scene covers about 45 x 10 km with a 20 m spatial resolution.
+Much of the hyperspectral unmixing literature comes from the field of remote sensing where airborne platforms are employed to collect the data.  A frequently used example is the airborne visible/infrared imaging spectrometer (AVIRIS) study of the cuprite region in the state of Nevada, USA (\cite{Green1998}; the data is freely available: \cite{Anon}).  This arid region is devoid of most vegetation and is rich in geological formations which are well-documented (for further background see \cite{Clark1993}).  The spectroscopic data is collected from an altitude of 20,000 m, and consists of 224 bands covering the range 250 - 4000 nm.  On the ground, a typical scene covers about 45 x 10 km with a 20 m spatial resolution.
 
-For demonstration purposes, we'll look at 350 x 350 pixel subregion which is rich in geological features.  We will use the \pkg{hyperSpec} package since it was designed for the tasks at hand (\cite{hyperSpec}).  After reading the data in, we will remove several channels which were set to zero in the data set because of scattering by atmospheric water vapor.  After normalizing each spectrum, we arrive at Figure~\ref{Cup350}, which is drawn using $\lambda$ = 667 nm.  A full spectrum of a single pixel is shown in Figure~\ref{OnePix}.
+For demonstration purposes, we'll look at 350 x 350 pixel subregion which is rich in geological features.  We will use the \pkg{hyperSpec} package since it was designed for the tasks at hand (\cite{hyperSpec}).  After reading the data in, we will remove several channels which were set to zero because of scattering by atmospheric water vapor.  After normalizing each spectrum, we arrive at Figure~\ref{Cup350}, which is drawn using $\lambda$ = 667 nm as follows:
 
 << Cup350, fig.cap = "\\label{Cup350}Overview of the cuprite test data.  The black circle shows the approximate location of the pixel whose full spectrum is shown in Figure~\\ref{OnePix}." >>=
-Cup350 <- loadObject("Cuprite350x350.Rdata")
+Cup350 <- loadObject("Cuprite350x350.Rdata") # a hyperSpec object
 # select bands of interest, omitting water vapor
 keep <- c(min~1345, 1430~1805, 1955~max)
 Cup350 <- Cup350[,,keep]
@@ -310,63 +311,57 @@ p1 <- p1 + layer(panel.xyplot(x = 286, y = 115, col = "black", cex = 2))
 print(p1)
 @
 
-<< OnePix, fig.cap = "\\label{OnePix}The reflectance spectrum of the bright pixel at the center of the circle in Figure~\\ref{Cup350} (water bands removed).", warning = FALSE, fig.height =  4 >>=
+The full spectrum of a single bright pixel (circled in Figure~\ref{Cup350}) is shown in Figure~\ref{OnePix}.
+
+<< OnePix, fig.cap = "\\label{OnePix}The reflectance spectrum of the bright pixel at the center of the circle in Figure~\\ref{Cup350} (gaps arise from removing water bands).  The entire image is composed of 122,500 of spectra such as this one.", warning = FALSE, fig.height =  4 >>=
 brightpix <- which((Cup350@data$x == 286) & (Cup350@data$y == 115)) # no easier way?
 plotspc(Cup350[brightpix,,], wl.range = keep, xoffset = c(0, 0))
 @
 
-Next we compute 20 endmembers:
+Next we compute 25 endmembers.  Experts believe that the correct number is between 19 and 22 endmembers.
 
 << CupEM >>=
-CupEM <- vca(Cup350N, p = 20, method = "Lopez2012")
-str(CupEM)
+CupEM <- vca(Cup350N, p = 25, method = "Lopez2012")
 @
 
-Endmembers can conveniently plotted using the AEM function, which provides the endmembers as a hyperSpec object in list element "Endmembers".  AEM will also plot the abundance map if desired.  Two endmembers are shown in Figure~\ref{EM2}.
+The convenience function AEM can extract the endmembers and compute the abundance map data, returning each as a hyperSpec object.  Preliminary inspection of abundance maps identified two endmembers which can be used to illustrate a typical analysis.  These are shown in Figures~\ref{AbunMap17} and \ref{AbunMap20}.  Endmember 20 is fairly broadly distributed in the region, with a number of rich deposits.  Endmember 17, in contrast, is rare in the region.
 
-<< EM2, fig.cap = "\\label{EM2}Selected endmembers from the cuprite data set.", warning = FALSE >>=
-EM2 <- AEM(Cup350N, CupEM, EMs = c(3, 15),
-  plotMap = FALSE, plotEM = TRUE, stacked = TRUE,
-  wl.range = keep, xoffset = c(0, 0))
+<< AbunMap17, fig.cap = "\\label{AbunMap17}Abundance map of endmember 17." >>=
+EM17 <- AEM(Cup350N, CupEM, EMs = 17, plotMap = FALSE, plotEM = FALSE)
+plotmap(EM17[["Map"]], col.regions = mypal,
+	scales = list(at = myticks, labels = myticks/50),
+	xlab = "km", ylab = "km")
 @
 
-The calculated endmembers can be compared against laboratory spectra in order to make an indentification (Figure~\ref{USGS}).
+<< AbunMap20, fig.cap = "\\label{AbunMap20}Abundance map of endmember 20. The white rectangle identifies the region where endmember 17 has high reflectance." >>=
+EM20 <- AEM(Cup350N, CupEM, EMs = 20, plotMap = FALSE, plotEM = FALSE)
+plotmap(EM20[["Map"]], col.regions = mypal,
+	scales = list(at = myticks, labels = myticks/50),
+	xlab = "km", ylab = "km")
+grid.rect(x = 0.55, y = 0.42, width = 0.02, height = 0.04, gp = gpar(col = "white"))
+@
 
-<< USGS, fig.cap = "\\label{USGS}Laboratory spectra of the minerals alunite and muscovite" >>=
+Now that we have identified two endmembers of interest, we can try to identify them by comparision to authentic laboratory spectra.  We will load a hyperSpec version of the authentic spectra, then merge it with the endmembers extracted by AEM.
+
+<< USGS >>=
 usgs <- loadObject("USGS.Rdata")
-plotspc(usgs, stacked = TRUE)
+usgs <- usgs[,,400~2500] # USGS data covers a wider wavelength range
+EM1720 <- AEM(Cup350N, CupEM, EMs = c(17, 20), plotMap = FALSE, plotEM = FALSE)
+em <- EM1720[["Endmembers"]][,,400~2500]
+usgsem <- collapse(em, usgs) # authentic spectra in last two rows (21 and 22)
 @
 
-We can put both in the same plot after combining them into the same hyperSpec object (Figures~\ref{Comp1} and \ref{Comp2}).
-
-<< Comp1, fig.cap = "\\label{Comp1}Comparison of endmember 15 with the laboratory spectrum of alunite." >>=
-usgs <- usgs[,,400~2500]
-em <- EM2[["Endmembers"]][,,400~2500]
-usgsem <- collapse(em, usgs)
-plotspc(usgsem[c(15, 21),,], col = c("red", "black")) # alt 10
+This workflow allows us to easily overlay the spectra for comparison (Figures~\ref{Comp1} and \ref{Comp2}).
+  
+<< Comp1, fig.cap = "\\label{Comp1}Comparison of endmember 17 (red) with the laboratory spectrum of alunite (black).", fig.height = 4 >>=
+plotspc(usgsem[c(17, 21),,], col = c("red", "black")) # alt 10
 @
 
-<< Comp2, fig.cap = "\\label{Comp2}Comparison of endmember 3 with the laboratory spectrum of muscovite." >>=
-plotspc(usgsem[c(3, 22),,], col = c("red", "black")) # alt 13
+<< Comp2, fig.cap = "\\label{Comp2}Comparison of endmember 20 (red) with the laboratory spectrum of muscovite (black).", fig.height = 4 >>=
+plotspc(usgsem[c(20, 22),,], col = c("red", "black")) # alt 13
 @
 
-Finally, we can examine an abundance map of each of these endmembers (Figures~\ref{AbunMap1} and \ref{AbunMap2}).
 
-<< AbunMap1, fig.cap = "\\label{AbunMap1}Abundance map of first endember.", echo = FALSE >>=
-EM3 <- AEM(Cup350N, CupEM, EMs = 3, plotMap = FALSE, plotEM = FALSE)
-plotmap(EM3[["Map"]], col.regions = mypal,
-	scales = list(at = myticks, labels = myticks/50),
-	xlab = "km", ylab = "km",
-	main = "First Endmembers")
-@
-
-<< AbunMap2, fig.cap = "\\label{AbunMap2}Abundance map of second endember.", echo = FALSE >>=
-EM15 <- AEM(Cup350N, CupEM, EMs = 15, plotMap = FALSE, plotEM = FALSE)
-plotmap(EM15[["Map"]], col.regions = mypal,
-	scales = list(at = myticks, labels = myticks/50),
-	xlab = "km", ylab = "km",
-	main = "Second Endmembers")
-@
 
 \section[Performance]{Performance}
 
