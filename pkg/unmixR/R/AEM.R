@@ -30,7 +30,8 @@
 ##' 
 ##' @export
 ##' @include unmixR-package.R
-##'
+##' @importFrom methods new
+##' 
 ##' @examples
 ##' unmix <- vca(chondro, p = 3, method = "Lopez2012")
 ##' aem1 <- AEM(chondro, unmix, EMs = 1:3) # plot the map
@@ -46,16 +47,16 @@ AEM <- function(hS, uM, EMs = 1, plotMap = TRUE, plotEM = FALSE, ...) {
   
   if ((class(uM) == "vca") | (class(uM) == "nfindr")) {
 
-	  if (length(EMs) > length(uM$indices)) {
+	  if (length(EMs) > length(uM[["indices"]])) {
 	    msg <- "More endmembers requested than exist.\n\tCheck length(EMs) & the value of p used for unmixing." 
 	    stop(msg) 	
 	  }
 	  	
 	  EM <- new("hyperSpec", spc = endmembers(uM), wavelength = wl(hS),
-			label = list(spc = hS@label$spc, wavelength = hS@label$.wavelength))
+			label = list(spc = hS@label[["spc"]], wavelength = hS@label[[".wavelength"]]))
 		
 	  weights <- .predict(uM)
-	  map <- weights[,EMs] %*% uM$data[uM$indices[EMs],, drop = FALSE]
+	  map <- weights[,EMs] %*% uM[["data"]][uM[["indices"]][EMs],, drop = FALSE]
   }
 
   if (class(uM) == "ice") {
@@ -66,7 +67,7 @@ AEM <- function(hS, uM, EMs = 1, plotMap = TRUE, plotEM = FALSE, ...) {
     }
 
 	EM <- new("hyperSpec", spc = uM[["endmembers"]], wavelength = wl(hS),
-		label = list(spc = hS@label$spc, wavelength = hS@label$.wavelength))
+		label = list(spc = hS@label[["spc"]], wavelength = hS@label[[".wavelength"]]))
 
 	# Build abundance map data
 	map <- uM[["weights"]][,EMs] %*% uM[["endmembers"]][EMs,, drop = FALSE]

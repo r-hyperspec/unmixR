@@ -34,7 +34,7 @@ nfindrBrute <- function(data, p, ...) {
   if (.options ("debuglevel") >= 1L) {
     volumes <- volumes / factorial (p - 1)   
     DF <- data.frame(ind = t(combos), volume = volumes)
-  	DF <- DF [order(DF$volume),]
+  	DF <- DF [order(DF[["volume"]]),]
 
   	if (.options ("debuglevel") == 1L) {
   		cat("\nTop endmember combinations & their volumes:\n")

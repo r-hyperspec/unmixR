@@ -118,7 +118,7 @@ ice <- function(data, p, mu = 0.01, tol = 0.9999, reduce = "MNF"){
 
     # If data was reduced, reconstruct the original data dimensions but of reduced rank
     if ((reduce == "MNF") | (reduce == "PCA")) {
-      curEnd <- curEnd %*% t(red$rotation[,seq(p)]) # data was not previously centered
+      curEnd <- curEnd %*% t(red[["rotation"]][,seq(p)]) # data was not previously centered
 	}
 	
     ans <- list(endmembers = curEnd, weights = t(abund), reduce = reduced)

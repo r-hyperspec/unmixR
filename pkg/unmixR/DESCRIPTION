@@ -1,8 +1,8 @@
 Package: unmixR
 Type: Package
 Title: Hyperspectral Unmixing Methods
-Version: 0.2.761
-Date: 2017-06-26
+Version: 0.2.774
+Date: 2017-06-27
 Authors@R: c(person("Anton", "Belov", role = "aut"),
 	person("Conor", "McManus", role = "aut"),
 	person("Claudia", "Beleites", role = c("aut", "cre"),
@@ -21,7 +21,8 @@ Depends:
     R (>= 3.0),
     hyperSpec,
     nnls,
-    MASS
+    MASS,
+    methods
 Suggests:
     knitr,
     microbenchmark,
