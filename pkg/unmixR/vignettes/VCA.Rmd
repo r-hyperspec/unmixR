@@ -16,11 +16,14 @@ output:
 suppressPackageStartupMessages(library("hyperSpec"))
 suppressPackageStartupMessages(library("unmixR"))
 suppressPackageStartupMessages(library("rgl"))
+suppressPackageStartupMessages(library("knitr"))
 
 desc <- packageDescription("unmixR")
 vers <- paste("version ", desc$Version, sep = "")
 
 options(rgl.useNULL = TRUE) # suppresses display during build/check
+
+knit_hooks$set(webgl = hook_webgl)
 
 # Notes:
 # 1. For this vig to build correctly you need a current version of
@@ -30,9 +33,11 @@ options(rgl.useNULL = TRUE) # suppresses display during build/check
 #    The first figure is there is there but only shows up if you move
 #    the mouse over it.  The other figures are missing.   However, all
 #    figures are present in the html code.  Turn off line 23 above and you
-#    can see the figures are drawn.  Not sure when this behavior
+#    can see the figures as they are drawn.  Not sure when this behavior
 #    crept in... still looking for cause.  Also not a browser issue,
 #    I see the problem in Firefox and Chrome.
+#
+# 3. To fix #2 for now, I reverted to the hook approach.
 #
 ```
 
@@ -139,16 +144,17 @@ We've done the reduction step separately here to illustrate the process, but it 
 
 We can now visualize this data directly in 3D; we'll display the original data in red and the processed data in green (click and drag the figure to rotate):
 
-```{r preprocessed1, eval = TRUE}
+```{r preprocessed1, eval = FALSE}
 plot3d(dM1$data, col = "red", expand = 1.2, aspect = "iso",
   xlab = "", ylab = "", zlab = "")
 points3d(dM2*100, col = "green")
 ```
 
-```{r preprocessed2, echo = TRUE}
-plot3d(dM1$data, col = "red", expand = 1.2, aspect = "iso")
+```{r preprocessed2, echo = FALSE, webgl = TRUE}
+plot3d(dM1$data, col = "red", expand = 1.2, aspect = "iso",
+  xlab = "", ylab = "", zlab = "")
 points3d(dM2*100, col = "green")
-rglwidget()
+#rglwidget()
 ```
 Note how the processed data has been projected onto a plane (flattened).
 
@@ -175,9 +181,7 @@ Next, we'll extract the endmembers using a modified version of `vca05`, the orig
 
 vca05mod <- function(data, p, SNR = estSNR(data, p)) {
 
-	# In this hacked version need to do reduction ourselves
-  force(SNR)
-  Y <- dimRed(data, p, SNR)
+	# Reduce data before sending here!
 
   Y <- t(data)
   indices <- rep(NA_integer_, p)
@@ -297,7 +301,7 @@ showVCAsteps <- function(input, rf, showAllEM = TRUE, ...) {
 	if (!showAllEM) points3d(data[indices[rf],, drop = FALSE], col = "blue", size = 10)
 	if (showAllEM) {
 		points3d(data[indices[rf],, drop = FALSE], col = "blue", size = 10)
-		show <- setdiff(indices, rf)
+		show <- setdiff(indices, indices[rf])
 		points3d(data[show,, drop = FALSE], col = "blue", size = 10, alpha = 0.35)
   }
 
@@ -335,47 +339,51 @@ unmixR.options(debuglevel = 0) # seems to be "on" by default, can't see why!
 
 ```{r getEMs}
 # Get the endmembers
-results1 <- vca05mod(dM1$data, p = 3)
+results1 <- vca05mod(dM2, p = 3)
 str(results1)
 
 ```
 
 #### The Steps of VCA Illustrated
 
-The following plots illustrate the process for the `dM1` synthetic data set. After initializing $\mathbf{E}$ with a dummy endmember, we draw the reference vector $f$ which is orthogonal to this endmember (the direction of the first reference vector is arbitrary). Then, each data point in $\mathbf{X}$ is projected onto $f$.  The data point whose projection onto $f$ is farthest from the origin is selected as the first (real) endmember and the dummy endmember is discarded.  The next plot shows the result after this first step.  Note that the reduced data is shown in red, and there is a small marker at the origin.  The most-recently-identified endmember is shown in blue, while the other end members are shown in a pale blue.  The blue line shows the reference vector and the normal from the current endmember to the reference vector.
+The following plots illustrate the process for the `dM1` synthetic data set. After initializing $\mathbf{E}$ with a dummy endmember, we draw a reference vector $f$ which is orthogonal to this endmember (the direction of the first reference vector is arbitrary). Then, each data point in $\mathbf{X}$ is projected onto $f$.  The data point whose projection onto $f$ is farthest from the origin is selected as the first (real) endmember and the dummy endmember is discarded.  The next plot shows the result after this first step.  Note that the reduced (and flattened) data is shown in red, and there is a small marker at the origin.  The most-recently-identified endmember is shown in blue, while the other end members are shown in a pale blue.  The reference vector and the normal from the current endmember to the reference vector are in blue.
 
-```{r 1stEM, echo = FALSE}
+```{r 1stEM, echo = FALSE, webgl = TRUE}
 showVCAsteps(results1, 1)
-rglwidget()
+#rglwidget()
 ```
 
 And after the second step:
 
-```{r 2ndEM, echo = FALSE, eval = TRUE}
+```{r 2ndEM, echo = FALSE, webgl = TRUE}
 showVCAsteps(results1, 2)
-rglwidget()
+#rglwidget()
 ```
 
 After one more iteration, all three endmembers have been identified:
 
-```{r 3rdEM, echo = FALSE, eval = TRUE}
+```{r 3rdEM, echo = FALSE, webgl = TRUE}
 showVCAsteps(results1, 3)
-rglwidget()
+#rglwidget()
 ```
 
 
 
 #### The Final Result
 
-At last all endmembers have been identified.
+At last all endmembers have been identified.  Clearly there are really only two dimensions here, and the data is contained within a 2-simplex (triangle) rather than a 3-simplex (tetrahedron). Because of the flattened nature of the data, we have expanded the X axis about 100-fold so that you can see what's going on.
 
-```{r finalResult, echo = FALSE}
+```{r finalResult, echo = FALSE, webgl = TRUE}
 M <- results1$data
 colnames(M) <- c("X", "Y", "Z")
 indx <- results1$indices
-plot3d(M, col = "red", expand = 1.2, aspect = "iso")
+# Adjust the X dimension which is basically flat for better viewing
+xR <- range(M[,"X"])
+xDelta <- diff(xR)*100
+limX <- xR + c(-xDelta, xDelta)
+plot3d(M, col = "red", expand = 1.2, aspect = "iso", xlim = limX)
 points3d(M[indx,], col = "blue", size = 10)
-rglwidget()
+#rglwidget()
 ```
 
 ### chondro Data Set
@@ -386,9 +394,9 @@ The chondro data set from package `hyperSpec` is composed of 875 Raman spectra c
 chondro
 ```
 
-Since there are 300 channels, we'll ask for three endmembers so we can visualize the results.  As described above, the data is flattened during pre-processing, which will be evident momentarily.  We'll plot the 3D data, and mark the three endmembers identified, but clearly there are really only two dimensions here, and the data is contained within a 2-simplex (triangle) rather than a 3-simplex (tetrahedron).
+Since there are 300 channels, we'll ask for three endmembers so we can visualize the results.  As above, we'll expand the X axis and the data is actually contained within a 2-simplex.
 
-```{r chondroEMs, echo = FALSE}
+```{r chondroEMs, echo = FALSE, webgl = TRUE}
 # Plot the reduced data set
 Ch <- chondro@data$spc # extract just the matrix of spectra
 ChR <- dimRed(Ch, 3)
@@ -400,15 +408,12 @@ ChR <- ChR*1e5
 xR <- range(ChR[,"X"])
 xDelta <- diff(xR)*100
 limX <- xR + c(-xDelta, xDelta)
-#plot3d(ChR, col = "red", expand = 1.2, aspect = "iso", xlim = limX)
-#plot3d(ChR, col = "red", expand = 1.2, aspect = "iso")
+plot3d(ChR, col = "red", expand = 1.2, aspect = "iso", xlim = limX)
 
 # Mark the endmembers
-#Chvca <- vca05mod(data = Ch, p = 3) # error: need to check why
 results2 <- vca05mod(data = ChR, p = 3)
 points3d(ChR[results2$indices,], col = "blue", size = 10)
-
-rglwidget()
+#rglwidget()
 ```
 
 ### Notes

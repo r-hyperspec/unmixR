@@ -109,11 +109,11 @@ Notes for CB and BH (to be removed later):
 \begin{enumerate}
   \item This vignette is a work in progress and is based on unmixR \Sexpr{vers}.
   \item The JSS header and footer can be removed via documentclass[nojss]{jss}
-  \item There are files in the vignettes folder which permit building the vignette by running make on the whole package, or just pointing to the directory and knitting (followed by typesetting).  The .bst and .cls files can eventually be removed as they are built-in to R.
-  \item When all major pieces are drafted, we need to go through and make sure we define an acronym when we first use it (e.g. ICE) and also that 2D and 3D are two-dimensional or whatever, for consistency.
+  \item When all major pieces are complete, we need to go through and make sure we define an acronym when we first use it (e.g. ICE) and also that 2D and 3D are two-dimensional or whatever, for consistency.
   \item Write the actual abstract.
   \item includegraphics[scale = whatever] is ignored by the jss style.  Use [height = 2 in, keepaspectratio] for example.
   \item Cuprite data set is too large for CRAN.  When we have everything the way we want, we'll have to set eval = FALSE for the code chunks and include static figures.
+  \item Do we want to cite our two previous posters on unmixR?
 \end{enumerate}
 
 \section[Introduction: Hyperspectral datasets]{Introduction: Hyperspectral datasets}
