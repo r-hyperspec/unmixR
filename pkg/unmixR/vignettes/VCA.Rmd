@@ -388,27 +388,27 @@ points3d(M[indx,], col = "blue", size = 10)
 
 ### chondro Data Set
 
-The chondro data set from package `hyperSpec` is composed of 875 Raman spectra collected on a grid in a tissue imaging experiment.  There are 300 channels.
+The chondro data set from package **hyperSpec** is composed of 875 Raman spectra collected on a grid in a tissue imaging experiment.  There are 300 channels. We'll clean the data up as described in the **hyperSpec** chondro vignette (the steps are baseline correction, normalization, background subtraction).
 
 ```{r chondro}
 chondro
 ```
 
-Since there are 300 channels, we'll ask for three endmembers so we can visualize the results.  As above, we'll expand the X axis and the data is actually contained within a 2-simplex.
+```{r clean_chondro, echo = FALSE, results = "hide"}
+cc <- chondro - spc.fit.poly.below (chondro)
+cc <- cc / rowMeans (cc)
+cc <- cc - quantile (cc, 0.05)
+cc <- cc [! is.na (cc$clusters)]
+```
+
+Since there are 300 channels, we'll ask for three endmembers so we can visualize the results.  As above, we'll expand the X axis as the data is actually contained within a 2-simplex.
 
 ```{r chondroEMs, echo = FALSE, webgl = TRUE}
-# Plot the reduced data set
-Ch <- chondro@data$spc # extract just the matrix of spectra
+Ch <- cc@data$spc # extract just the matrix of spectra
 ChR <- dimRed(Ch, 3)
 colnames(ChR) <- c("X", "Y", "Z")
-# The magnitude of ChR is quite small, scale up for better viewing
-# (i.e. small axis labels)
-ChR <- ChR*1e5
-# Adjust the X dimension which is basically flat for better viewing
-xR <- range(ChR[,"X"])
-xDelta <- diff(xR)*100
-limX <- xR + c(-xDelta, xDelta)
-plot3d(ChR, col = "red", expand = 1.2, aspect = "iso", xlim = limX)
+# Adjust the Z dimension which is basically flat for better viewing
+plot3d(ChR, col = "red", expand = 1.2, aspect = "iso", zlim = c(1.35, 2.35))
 
 # Mark the endmembers
 results2 <- vca05mod(data = ChR, p = 3)

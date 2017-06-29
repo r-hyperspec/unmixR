@@ -144,7 +144,7 @@ ice <- function(data, p, mu = 0.01, tol = 0.9999, reduce = "MNF"){
   test_that ("ice on laser w/o reduction returns original data matrix within reason", {
     chk <- ice(laser, p = 3, reduce = "no")
     M <- chk$weights %*% chk$endmembers
-    expect_lt (mean(M - as.matrix(laser)), 1e-8)
+    expect_lt (mean(M - as.matrix(laser)), 1e-6)
   })
 
 }

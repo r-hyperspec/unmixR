@@ -69,6 +69,7 @@ Functions implementing the N-FINDR, Iterated Constrained Endmembers (ICE) and Ve
 
 % declarations by BH, CB next
 \usepackage{amssymb}
+\usepackage[version = 3]{mhchem}
 
 \graphicspath{{./graphics/}}
 
@@ -109,11 +110,11 @@ Notes for CB and BH (to be removed later):
 \begin{enumerate}
   \item This vignette is a work in progress and is based on unmixR \Sexpr{vers}.
   \item The JSS header and footer can be removed via documentclass[nojss]{jss}
-  \item When all major pieces are complete, we need to go through and make sure we define an acronym when we first use it (e.g. ICE) and also that 2D and 3D are two-dimensional or whatever, for consistency.
   \item Write the actual abstract.
-  \item includegraphics[scale = whatever] is ignored by the jss style.  Use [height = 2 in, keepaspectratio] for example.
-  \item Cuprite data set is too large for CRAN.  When we have everything the way we want, we'll have to set eval = FALSE for the code chunks and include static figures.
+  \item includegraphics[scale = whatever] is ignored by the jss style.  Use [height = 2 in, keepaspectratio] instead.
   \item Do we want to cite our two previous posters on unmixR?
+  \item Cuprite data set is too large for CRAN.  When we have everything the way we want, we'll have to set eval = FALSE for the code chunks and include static figures.
+  \item There are extra scripts in the inst directory so you can see how I imported and pre-processed data.  These will be removed from the package eventually.
 \end{enumerate}
 
 \section[Introduction: Hyperspectral datasets]{Introduction: Hyperspectral datasets}
@@ -232,12 +233,12 @@ A number of algorithms to extract endmembers have been described in the literatu
 
 \subsection[N-FINDR]{N-FINDR}
 
-The N-FINDR method finds purest pixels in the scene, which are the vertices of the largest $p$-dimensional simplex that can be inscribed within the data.  An iterative inflation algorithm is used (\cite{Winter1999}).  This approach assumes that pure pixels are present in the scene, an assumption that doesn't always hold, but is not critical in practice.  In this algorithm, the data are first reduced using PCA.  Then $p$ pixels are chosen at random as a starting point, and the volume of the simplex is computed (Figure~\ref{NFINDR} shows the process in two-dimensions).  Each of the chosen pixels is replaced sequentially by each of the pixels not currently chosen, checking the volume at each replacement.  If the volume increases, the new pixel is retained, otherwise the original pixel is retained.  This is the first pass.  This interim answer serves as a new starting point, and the process is repeated up to a specified number of iterations, or until the simplex volume cannot be inflated any further.  At this point, the vertices of the simplex are the purest pixels in the scene.  A visual illustration of this process in 3D is available in the "N-FINDR Algorithm" vignette.
+The N-FINDR method finds purest pixels in the scene, which are the vertices of the largest $p$-dimensional simplex that can be inscribed within the data.  An iterative inflation algorithm is used (\cite{Winter1999}).  This approach assumes that pure pixels are present in the scene, an assumption that doesn't always hold, but is not critical in practice.  In this algorithm, the data are first reduced using PCA.  Then $p$ pixels are chosen at random as a starting point, and the volume of the simplex is computed (Figure~\ref{NFINDR} shows the process in two-dimensions).  Each of the chosen pixels is replaced sequentially by each of the pixels not currently chosen, checking the volume at each replacement.  If the volume increases, the new pixel is retained, otherwise the original pixel is retained.  This is the first pass.  This interim answer serves as a new starting point, and the process is repeated up to a specified number of iterations, or until the simplex volume cannot be inflated any further.  At this point, the vertices of the simplex are the purest pixels in the scene.  A visual illustration of this process in three dimensions is available in the "N-FINDR Algorithm" vignette.
 
 \begin{figure}
   \begin{center}
   \includegraphics[height = 4 in, keepaspectratio]{NFINDR.pdf}
-  \caption{\label{NFINDR}Finding endmembers using N-FINDR in 2D.  \textbf{A} An initial random 2-simplex is chosen. \textbf{B, C} Optimization and iteration. \textbf{D} The answer is the 2-simplex with the largest volume.}
+  \caption{\label{NFINDR}Finding endmembers using N-FINDR in two dimensions.  \textbf{A} An initial random 2-simplex is chosen. \textbf{B, C} Optimization and iteration. \textbf{D} The answer is the 2-simplex with the largest volume.}
   \end{center}
 \end{figure}
 
@@ -245,26 +246,26 @@ The N-FINDR method finds purest pixels in the scene, which are the vertices of t
 
 Dowler (\cite{Dowler2013}) describes two endmember extraction algorithms that are typically more computationally efficient.  Both address improvements in how the determinant of the simplex (i.e. the volume) is computed. \pkg{unmixR} provides implementations of Dowler's LDU-N-NFINDR algorithm as method "LDU" and his LDU-\emph{sequential} N-FINDR algorithm as method "SeqLDU".  In our benchmarking method "LDU" generally performs the best, though there is some dependency on the size of the data set.
 
-\subsection[Vertex component analysis]{Vertex component analysis}
+\subsection[Vertex component analysis]{Vertex component analysis (VCA)}
 
-Vertex component analysis (VCA) is an alternative geometric method of locating the endmembers, first described by Nascimento and Dias, with an improved algorithm reported by Lopez and colleagues (\cite{Nascimento2005, Lopez2012}).  In the VCA series of algorithms, the signal-to-noise ratio of the data (SNR), which depends on $p$, determines how the data is pre-processed.  However, \emph{the data is always projected} and \emph{always reduced} as explained in a moment.  In what follows, note the distinction between reduction and projection.
+VCA is an alternative geometric method of locating the endmembers, first described by Nascimento and Dias, with an improved algorithm reported by Lopez and colleagues (\cite{Nascimento2005, Lopez2012}).  In the VCA series of algorithms, the signal-to-noise ratio of the data (SNR), which depends on $p$, determines how the data is pre-processed.  However, \emph{the data is always projected} and \emph{always reduced} as explained in a moment.  In what follows, note the distinction between reduction and projection.
 
-If the SNR is above a certain threshold, the data is reduced to $p$ abstract wavelengths, where $p$ is the desired number of endmembers.  It is then projected onto a dimension of $p - 1$, but all $p$ abstract wavelengths are retained.  For example, if the reduced data is composed of random 3D points, the data will be projected onto a plane which resides in 3D space.  In a sense the data has become two-dimensional since every point lies in a plane, but the plane is positioned in 3D space.  One might call this "flattening".  Nascimento and Dias, in describing the VCA algorithm, use the phrase "projective projection".  The process just described is the one of the projection steps.  If the SNR is below the threshold, the data is first reduced to dimension $p - 1$ using SVD, thereby improving the SNR and "flattening" the data. Then a constant vector is added back so that the original dimension $p$ is restored.
+If the SNR is above a certain threshold, the data is reduced to $p$ abstract wavelengths, where $p$ is the desired number of endmembers.  It is then projected onto a dimension of $p - 1$, but all $p$ abstract wavelengths are retained.  For example, if the reduced data is composed of random three-dimensional points, the data will be projected onto a plane which resides in three-dimensional space.  In a sense the data has become two-dimensional since every point lies in a plane, but the plane is positioned in three-dimensional space.  One might call this "flattening".  Nascimento and Dias, in describing the VCA algorithm, use the phrase "projective projection".  The process just described is the one of the projection steps.  If the SNR is below the threshold, the data is first reduced to dimension $p - 1$ using SVD, thereby improving the SNR and "flattening" the data. Then a constant vector is added back so that the original dimension $p$ is restored.
 
 After these pre-processing steps, the endmembers are identified as follows.  An arbitrary reference vector is calculated which is orthogonal to the $p$-dimensional data, and each data point is projected onto this reference vector.  The data point whose projection onto the reference vector is farthest from the origin is selected as an endmember.  This is the second projection referred to in the phrase "projective projection."   This process is repeated until all $p$ endmembers have been selected.  Figure~\ref{VCA} shows the process in two-dimensions.
 
 \begin{figure}
   \begin{center}
   \includegraphics[height = 2 in, keepaspectratio]{VCA.pdf}
-  \caption{\label{VCA}Finding endmembers using VCA in 2D.  \textbf{A} An arbitrary reference vector passing through the origin is created, and the minimum and maximum projections onto it are the first two endmembers.  \textbf{B} A second reference vector is created which is orthogonal to the first, and the projection onto it gives the third endmember. }
+  \caption{\label{VCA}Finding endmembers using VCA in two dimensions.  \textbf{A} An arbitrary reference vector passing through the origin is created, and the minimum and maximum projections onto it are the first two endmembers.  \textbf{B} A second reference vector is created which is orthogonal to the first, and the projection onto it gives the third endmember. }
   \end{center}
 \end{figure}
 
 If the reduced data were three-dimensional, the process is somewhat like the shadow of a cloud falling on the surface of the earth.  The reference vector is analogous to a straight highway, and we can take the origin of the system to be a particular town. The endmember is found where the cloud's shadow intersects (i.e. projects onto) the highway farthest from the town.  Then the process is repeated using a different highway perpendicular to the first highway.  While a simplex is never invoked in the explanation nor the algorithm, what one in fact identifes using VCA is a simplex.  The process described above can be visualized step-by-step in the "VCA Algorithm" vignette.
 
-\subsection[Iterated constrained endmembers]{Iterated constrained endmembers}
+\subsection[Iterated constrained endmembers]{Iterated constrained endmembers (ICE)}
 
-The iterated constrained endmember (ICE) algorithm differs from N-FINDR and VCA in several significant ways (\cite{Berman2004, Berman2009}).  It begins (ideally) by reducing the data using the minimum noise fraction (MNF, \cite{Green1988}).  This is a variant of PCA which sorts the abstract components according to the SNR ratio (PCA sorts components by the amount of variance explained).  Computing the MNF is only possible when the number of observations ($n$) is greater than the number of channels ($p$).  When this is not true, the \pkg{unmixR} stops with a message.  In these cases one can employ PCA instead.  Luo \emph{et al.} discuss the applications of MNF versus PCA in hyperspectral unmixing and note that the performance depends upon the type of noise in the data set (\cite{Luo2016}).
+The ICE algorithm differs from N-FINDR and VCA in several significant ways (\cite{Berman2004, Berman2009}).  It begins (ideally) by reducing the data using the minimum noise fraction (MNF, \cite{Green1988}).  This is a variant of PCA which sorts the abstract components according to the SNR ratio (PCA sorts components by the amount of variance explained).  Computing the MNF is only possible when the number of observations ($n$) is greater than the number of channels ($p$).  When this is not true, the \pkg{unmixR} stops with a message.  In these cases one can employ PCA instead.  Luo \emph{et al.} discuss the applications of MNF versus PCA in hyperspectral unmixing and note that the performance depends upon the type of noise in the data set (\cite{Luo2016}).
 
 The N-FINDR and VCA algorithms approach the simplex using strategies based on geometry.  In contrast, ICE solves Equation~\ref{LinearCombo} using the alternating least squares method.  After estimating an initial value for $\mathbf{E}$,  $\mathbf{A}$ is computed and then $\mathbf{E}$ is updated.  A modified form of the residual sum of squares is computed as a convergence criterion (i.e, $\mathbf{X}_{observed}$ is compared to $\mathbf{X}_{predicted}$). If the criterion is not met, the algorithm continues iterating between updating $\mathbf{E}$ and $\mathbf{A}$ until the criterion is reached.  When the process is complete, estimates of $\mathbf{A}$ and $\mathbf{E}$ are returned directly.  Recall that N-FINDR and VCA return the indices of the endmembers in the original data set.  The endmembers returned by ICE do not necessarily correspond to a particular spectrum in the original data set.
 
@@ -287,9 +288,9 @@ The second step in creating an abundance map is to re-fold the $\mathbf{X}_{esti
 
 \section[Application: AVIRIS remote sensing data]{Application: AVIRIS remote sensing data}
 
-Much of the hyperspectral unmixing literature comes from the field of remote sensing where airborne platforms are employed to collect the data.  A frequently used example is the airborne visible/infrared imaging spectrometer (AVIRIS) study of the cuprite region in the state of Nevada, USA (\cite{Green1998}; the data is freely available: \cite{Anon}).  This arid region is devoid of most vegetation and is rich in geological formations which are well-documented (for further background see \cite{Clark1993}).  The spectroscopic data is collected from an altitude of 20,000 m, and consists of 224 bands covering the range 250 - 4000 nm.  On the ground, a typical scene covers about 45 x 10 km with a 20 m spatial resolution.
+Much of the hyperspectral unmixing literature comes from the field of remote sensing where airborne platforms are employed to collect the data.  A frequently used example is the airborne visible/infrared imaging spectrometer (AVIRIS) study of the cuprite region in the state of Nevada, USA (\cite{Green1998}; the data is freely available: \cite{JPL}).  This arid region is devoid of most vegetation and is rich in geological formations which are well-documented (for further background see \cite{Clark1993}).  The spectroscopic data is collected from an altitude of 20,000 m, and consists of 224 bands covering the range 250 - 4000 nm.  On the ground, a typical scene covers about 45 x 10 km with a 20 m spatial resolution.
 
-For demonstration purposes, we'll look at 350 x 350 pixel subregion which is rich in geological features.  We will use the \pkg{hyperSpec} package since it was designed for the tasks at hand (\cite{hyperSpec}).  After reading the data in, we will remove several channels which were set to zero because of scattering by atmospheric water vapor.  After normalizing each spectrum, we arrive at Figure~\ref{Cup350}, which is drawn using $\lambda$ = 667 nm as follows:
+For demonstration purposes, we'll look at 350 x 350 pixel subregion which is rich in geological features.  We will use the \pkg{hyperSpec} package since it was designed for the tasks at hand (\cite{hyperSpec}).  After reading the data in, we will remove several channels which were set to zero because of scattering by atmospheric water vapor.  After normalizing each spectrum, we arrive at Figure~\ref{Cup350}, which is drawn using $\lambda$ = 667 nm as follows.  This figure gives an good overview of the region.
 
 << Cup350, fig.cap = "\\label{Cup350}Overview of the cuprite test data.  The black circle shows the approximate location of the pixel whose full spectrum is shown in Figure~\\ref{OnePix}." >>=
 Cup350 <- loadObject("Cuprite350x350.Rdata") # a hyperSpec object
@@ -311,54 +312,56 @@ p1 <- p1 + layer(panel.xyplot(x = 286, y = 115, col = "black", cex = 2))
 print(p1)
 @
 
-The full spectrum of a single bright pixel (circled in Figure~\ref{Cup350}) is shown in Figure~\ref{OnePix}.
+The full spectrum of a single bright pixel (circled in Figure~\ref{Cup350}) is shown in Figure~\ref{OnePix}.  The entire image is composed of 122,500 of spectra such as this one.
 
-<< OnePix, fig.cap = "\\label{OnePix}The reflectance spectrum of the bright pixel at the center of the circle in Figure~\\ref{Cup350} (gaps arise from removing water bands).  The entire image is composed of 122,500 of spectra such as this one.", warning = FALSE, fig.height =  4 >>=
+<< OnePix, fig.cap = "\\label{OnePix}The reflectance spectrum of the bright pixel at the center of the circle in Figure~\\ref{Cup350} (gaps arise from removing water bands).", warning = FALSE, fig.height =  4 >>=
 brightpix <- which((Cup350@data$x == 286) & (Cup350@data$y == 115)) # no easier way?
-plotspc(Cup350[brightpix,,], wl.range = keep, xoffset = c(0, 0))
+plotspc(Cup350[brightpix,,], wl.range = keep, xoffset = c(0, 0),
+	lines.args = list (pch = 20, type = "p"))
 @
 
-Next we compute 25 endmembers.  Experts believe that the correct number is between 19 and 22 endmembers.
+The analysis of images such as these is easier if the wavelength range is restricted to regions of interest.  For this demonstration, we will limit the range to 2,000 - 2,400 nm, the range where minerals with hydroxide, carbonate and sulfate anions absorb.  Next we compute 25 endmembers.  Experts believe that the correct number is between 19 and 22 endmembers.
 
 << CupEM >>=
+Cup350N <- Cup350N[,, 2000~2400]
 CupEM <- vca(Cup350N, p = 25, method = "Lopez2012")
 @
 
-The convenience function AEM can extract the endmembers and compute the abundance map data, returning each as a hyperSpec object.  Preliminary inspection of abundance maps identified two endmembers which can be used to illustrate a typical analysis.  These are shown in Figures~\ref{AbunMap17} and \ref{AbunMap20}.  Endmember 20 is fairly broadly distributed in the region, with a number of rich deposits.  Endmember 17, in contrast, is rare in the region.
+The convenience function AEM can extract the endmembers and compute the abundance map data, returning each as a hyperSpec object.  Preliminary inspection of abundance maps identified two endmembers which can be used to illustrate the application of hyperspectral unmixing.  These are shown in Figures~\ref{AbunMap15} and \ref{AbunMap18}.  Endmember 15 is fairly broadly distributed in the region, with a number of rich deposits.  Endmember 18, in contrast, is rare in the region; its surface exposure is limited an area of just a few dozen square meters.
 
-<< AbunMap17, fig.cap = "\\label{AbunMap17}Abundance map of endmember 17." >>=
-EM17 <- AEM(Cup350N, CupEM, EMs = 17, plotMap = FALSE, plotEM = FALSE)
-plotmap(EM17[["Map"]], col.regions = mypal,
+<< AbunMap15, fig.cap = "\\label{AbunMap15}Abundance map of endmember 15. For reference, the white rectangle identifies the region where endmember 18 has high reflectance." >>=
+EM15 <- AEM(Cup350N, CupEM, EMs = 15, plotMap = FALSE, plotEM = FALSE)
+plotmap(EM15[["Map"]], col.regions = mypal,
+	scales = list(at = myticks, labels = myticks/50),
+	xlab = "km", ylab = "km")
+grid.rect(x = 0.55, y = 0.42, width = 0.02, height = 0.04,
+	gp = gpar(col = "white"))
+@
+
+<< AbunMap18, fig.cap = "\\label{AbunMap18}Abundance map of endmember 18." >>=
+EM18 <- AEM(Cup350N, CupEM, EMs = 18, plotMap = FALSE, plotEM = FALSE)
+plotmap(EM18[["Map"]], col.regions = mypal,
 	scales = list(at = myticks, labels = myticks/50),
 	xlab = "km", ylab = "km")
 @
 
-<< AbunMap20, fig.cap = "\\label{AbunMap20}Abundance map of endmember 20. The white rectangle identifies the region where endmember 17 has high reflectance." >>=
-EM20 <- AEM(Cup350N, CupEM, EMs = 20, plotMap = FALSE, plotEM = FALSE)
-plotmap(EM20[["Map"]], col.regions = mypal,
-	scales = list(at = myticks, labels = myticks/50),
-	xlab = "km", ylab = "km")
-grid.rect(x = 0.55, y = 0.42, width = 0.02, height = 0.04, gp = gpar(col = "white"))
-@
-
-Now that we have identified two endmembers of interest, we can try to identify them by comparision to authentic laboratory spectra.  We will load a hyperSpec version of the authentic spectra, then merge it with the endmembers extracted by AEM.
+Now that we have identified two endmembers of interest, we can try to identify them by comparision to authentic laboratory spectra.  We will load a hyperSpec version of the authentic spectra, then merge it with the endmembers extracted by AEM (authentic spectra available at \cite{USGS}).
 
 << USGS >>=
 usgs <- loadObject("USGS.Rdata")
-usgs <- usgs[,,400~2500] # USGS data covers a wider wavelength range
-EM1720 <- AEM(Cup350N, CupEM, EMs = c(17, 20), plotMap = FALSE, plotEM = FALSE)
-em <- EM1720[["Endmembers"]][,,400~2500]
-usgsem <- collapse(em, usgs) # authentic spectra in last two rows (21 and 22)
+usgs <- usgs[,,2000~2400] # USGS data covers a wider wavelength range
+EM1518 <- AEM(Cup350N, CupEM, EMs = c(15,18), plotMap = FALSE, plotEM = FALSE)
+usgsem <- collapse(EM1518[["Endmembers"]], usgs) # authentic spectra rows 3 & 4
 @
 
-This workflow allows us to easily overlay the spectra for comparison (Figures~\ref{Comp1} and \ref{Comp2}).
+This workflow allows us to easily overlay the spectra for comparison (Figures~\ref{Comp1} and \ref{Comp2}).  Endmember 15 matches well with alunite, \ce{NaAl3(SO4)2(OH)6}, while endmember 18 is a good match for buddingtonite, \ce{(NH4)AlSiO8*1/2 H2O}.
   
-<< Comp1, fig.cap = "\\label{Comp1}Comparison of endmember 17 (red) with the laboratory spectrum of alunite (black).", fig.height = 4 >>=
-plotspc(usgsem[c(17, 21),,], col = c("red", "black")) # alt 10
+<< Comp1, fig.cap = "\\label{Comp1}Comparison of endmember 15 (red) with the laboratory spectrum of alunite (black).", fig.height = 4 >>=
+plotspc(usgsem[c(1,3),,], col = c("red", "black"))
 @
 
-<< Comp2, fig.cap = "\\label{Comp2}Comparison of endmember 20 (red) with the laboratory spectrum of muscovite (black).", fig.height = 4 >>=
-plotspc(usgsem[c(20, 22),,], col = c("red", "black")) # alt 13
+<< Comp2, fig.cap = "\\label{Comp2}Comparison of endmember 18 (red) with the laboratory spectrum of buddingtonite (black).", fig.height = 4 >>=
+plotspc(usgsem[c(2,4),,], col = c("red", "black"))
 @
 
 

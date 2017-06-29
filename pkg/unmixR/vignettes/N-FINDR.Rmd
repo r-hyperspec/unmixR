@@ -88,7 +88,7 @@ rglwidget()
 
 #### Extract the Endmembers
 
-Next, we'll extract the endmembers using a modified version of `nfinder99`, the original algorithm by M. E. Winter.  This modified version includes optional dimensional reduction (normally handled by a separate function) but most importantly, it records the sequence of endmembers found as the algorithm iterates.  This allows us to inspect the process of locating the endmembers.  Because `dM1` is a low dimension data set, it does not need to be reduced.
+Next, we'll extract the endmembers using a modified version of `nfinder99`, the original algorithm by M. E. Winter.  This modified version records the sequence of endmembers found as the algorithm iterates.  This allows us to inspect the process of locating the endmembers.  Because `dM1` is a low dimension data set, it does not need to be reduced.
 
 ```{r nfindr99mod, echo = FALSE}
 ##' Michael E. Winter's 1999 N-FINDR Unmixing Algorithm
@@ -102,13 +102,15 @@ nfindr99mod <- function(data, p, indices, iters=3*p) {
 
   # Modified from nfindr99 to save results of the endmember search
 
-  # From nfindr.default
-  # reduce the dimensionality of the data using PCA
-  # do nothing if the data was passed in already reduced
-  if (ncol(data) != p - 1) {
-    data <- stats::prcomp(data)[["x"]][, sequence(p-1), drop=FALSE]
-    #cat("Reduced the data\n")
-  }
+  # Reduce data before sending here if desired!
+
+  # # From nfindr.default
+  # # reduce the dimensionality of the data using PCA
+  # # do nothing if the data was passed in already reduced
+  # if (ncol(data) != p - 1) {
+  #   data <- stats::prcomp(data)[["x"]][, sequence(p-1), drop=FALSE]
+  #   #cat("Reduced the data\n")
+  # }
 
   simplex <- .simplex(data, indices)
   nspectra <- nrow(data)
@@ -252,26 +254,29 @@ The chondro data set from package **hyperSpec** is composed of 875 Raman spectra
 chondro
 ```
 
-```{r clean_chondro, echo = FALSE, eval = FALSE}
-chondro <- chondro - spc.fit.poly.below (chondro)
-chondro <- chondro / rowMeans (chondro)
-chondro <- chondro - quantile (chondro, 0.05)
-chondro <- chondro [! is.na (chondro$clusters)]
+```{r clean_chondro, echo = FALSE, results = "hide"}
+cc <- chondro - spc.fit.poly.below (chondro)
+cc <- cc / rowMeans (cc)
+cc <- cc - quantile (cc, 0.05)
+cc <- cc [! is.na (cc$clusters)]
 ```
 
-Since there are 300 channels, in order to visualize the data we'll have to reduce it using PCA, and we'll keep just three principal components so we can plot as before (the reduction is automatically carried out by the modified function).  We'll ask for four endmembers so we can draw the simplex.
+Since there are 300 channels, in order to visualize the data we'll have to reduce it using PCA, and we'll keep just three principal components so we can plot as before.  We'll ask for four endmembers so we can draw the simplex.
 
 ```{r simplex_chondro, echo = FALSE}
 unmixR.options(debuglevel = 0)
-Ch <- chondro@data$spc # extract just the matrix of spectra
-results3 <- nfindr99mod(data = Ch, p = 4, indices = 1:4)
+Ch <- cc@data$spc # extract just the matrix of spectra
+ChR <- prcomp(Ch)[["x"]][,1:3]
+colnames(ChR) <- c("X", "Y", "Z")
+results3 <- nfindr99mod(data = ChR, p = 4, indices = 1:4)
 ChR <- results3$data # grab the reduced data for plotting
+its <- nrow(results3$EMs) # no. iterations - last row has the answer
 plot3d(ChR, col = "red", expand = 1.2) # looks better w/o aspect = "iso"
-spheres3d(ChR[results3$EMs[4,],], color = "blue", radius = 60)
-triangles3d(ChR[results3$EMs[4,1:3],], color = "blue", alpha = 0.15)
-triangles3d(ChR[results3$EMs[4,2:4],], color = "blue", alpha = 0.15)
-triangles3d(ChR[results3$EMs[4,c(1, 2, 4)],], color = "blue", alpha = 0.15)
-triangles3d(ChR[results3$EMs[4,c(1, 3, 4)],], color = "blue", alpha = 0.15)
+spheres3d(ChR[results3$EMs[its,],], color = "blue", radius = 0.05)
+triangles3d(ChR[results3$EMs[its,1:3],], color = "blue", alpha = 0.15)
+triangles3d(ChR[results3$EMs[its,2:4],], color = "blue", alpha = 0.15)
+triangles3d(ChR[results3$EMs[its,c(1, 2, 4)],], color = "blue", alpha = 0.15)
+triangles3d(ChR[results3$EMs[its,c(1, 3, 4)],], color = "blue", alpha = 0.15)
 rglwidget()
 ```
 
