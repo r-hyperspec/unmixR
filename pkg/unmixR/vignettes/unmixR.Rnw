@@ -25,7 +25,7 @@
 Functions implementing the N-FINDR, Iterated Constrained Endmembers (ICE) and Vertex Component Analysis (VCA) algorithms which can recover pure component spectra and their respective concentrations from a hyperspectral data set.
 }
 
-\Keywords{hyperspectral unmixing, vertex component analysis, VCA, NFINDR, N-FINDR, iterative constrained endmembers, ICE, spectroscopy, \proglang{R}, spectral mixture analysis, Raman, IR, NIR, NMR, MS, XRF}
+\Keywords{hyperspectral unmixing, vertex component analysis, VCA, NFINDR, N-FINDR, iterative constrained endmembers, ICE, spectroscopy, \proglang{R}, spectral mixture analysis, SMA, Raman, IR, NIR, NMR, MS, XRF}
 
 \Plainkeywords{hyperspectral unmixing, vertex component analysis, VCA, NFINDR, N-FINDR, iterative constrained endmembers, ICE, spectroscopy, R, spectral mixture analysis, Raman, IR, NIR, NMR, MS, XRF} %% without formatting
 
@@ -119,7 +119,7 @@ Notes for CB and BH (to be removed later):
 
 \section[Introduction: Hyperspectral datasets]{Introduction: Hyperspectral datasets}
 
-Hyperspectral data are spectroscopic data collected in a spatial or temporal context.  The spectra are typically collected in the visible or infrared range, or by Raman or X-ray fluorescence spectroscopy.  Each sample observation is a spectrum collected at a particular location or time.  Each spectrum is thus accompanied by meta-data which is needed to reconstruct images and for other types of analysis.  Figure~\ref{DataCube} illustrates the conceptual nature of a typical data set collected over a spatial ($x,y$) domain.
+Hyperspectral data are spectroscopic data sets collected in a spatial or temporal context.  The spectra are typically collected in the visible or infrared range (IR), or by Raman or X-ray fluorescence spectroscopy.  Each sample observation is a spectrum collected at a particular location or time.  Each spectrum is thus accompanied by meta-data which is needed to reconstruct images and for other types of analysis.  Figure~\ref{DataCube} illustrates the conceptual nature of a typical data set collected over a spatial ($x,y$) domain.
 
 
 \begin{figure}
@@ -133,35 +133,35 @@ Hyperspectral data sets are encountered in many disciplines, on scales from nano
 
 \begin{itemize}
 
-  \item Biomedical imaging: a series of Raman spectra are collected as a microscopic piece of tissue is scanned in an $x,y$ plane.  Such studies are of interest for real time imaging of surgical tissue samples.  Other types of spectroscopy can be employed, for instance mass spectrometry (\cite{Bergner2013, Hedegaard2011}).
+  \item Biomedical imaging: a series of Raman spectra are collected as a microscopic section of tissue is scanned in an $x,y$ plane.  Such studies are of interest for real time imaging of surgical tissue samples.  Other types of spectroscopy can be employed, for instance mass spectrometry (\cite{Bergner2013, Hedegaard2011}).
 
-  \item Airborne imaging/remote sensing: A satellite, plane or drone flies a pattern over land and collects reflectance spectra in the visible, UV or NIR range.  Such studies have been used to map mineral formations, to study the quality of forest canopies, and for assessing the severity of wildfires (\cite{Green1998, Jetz2016, Veraverbeke2014}).
+  \item Airborne imaging/remote sensing: A satellite, plane or drone flies a pattern over land and collects reflectance spectra in the visible, UV or near-IR (NIR) range.  Such studies have been used to map mineral formations, to study the quality of forest canopies, and for assessing the severity of wildfires (\cite{Green1998, Jetz2016, Veraverbeke2014, Bioucas-Dias2012}).
 
-  \item Art history:  A portion of a painting or manuscript is scanned by IR to examine the underlying pigments and perhaps reveal the presence of additional hidden images (\cite{Dooley2013, Catelli2017}).  Others have used x-ray fluorescence (XRF) to examine paintings (\cite{Alfeld2017}).
+  \item Art history:  A portion of a painting or manuscript is examined using IR spectroscopy to study the underlying pigments and perhaps reveal the presence of additional hidden images (\cite{Dooley2013, Catelli2017}).  X-ray fluorescence (XRF) is another suitable technique (\cite{Alfeld2017}).
   
   \item Quality control:  Pharmaceutical tablets are scanned using a hyperspectral camera during production to monitor coatings, active pharmaceutical ingredients and excipients (\cite{Kandpal2016, Franch-Lage2011}).
 
 \end{itemize}
 
-In this article we provide background and demonstrations of the \pkg{unmixR} package (\cite{unmixR}) which is written in the R language (\cite{R2017}).
+In this article we provide background and demonstrations of the \pkg{unmixR} package (\cite{unmixR}) which is written in the \proglang{R} language (\cite{R2017}).
 
 
 \section[Hyperspectral unmixing]{Hyperspectral unmixing}
 
-Unmixing is the process of processing a data set such as those described above to extract the pure spectra that make up the data.  For instance, a mineral-rich landscape may have regions that consist of pure minerals and regions where minerals are mixed due to erosion and movement of materials.  Pure minerals have characteristic IR spectra.  Spectra collected as part of an airborne imaging study of the region would be expected to consist of many spectral mixtures as well as some pure or nearly pure spectra.
+Unmixing is the processing of a data set such as those described above to extract the pure spectra that make up the data.  For instance, a mineral-rich landscape may have regions that consist of pure minerals and regions where minerals are mixed due to erosion and movement of materials.  Pure minerals have characteristic IR spectra.  Spectra collected as part of an airborne imaging study of the region would be expected to consist of many spectral mixtures as well as some pure or nearly pure spectra.
 
 In applications which involve collecting data over a $x,y$ grid, the complete data set is often referred to as an image or "scene".  This scene is often said to be composed of "pixels" which would correspond to the sample spectra (in other words, a spectrum collected at a particular value of $x,y$).  The pure component spectra which are extracted by unmixing are typically referred to as "endmembers,"  but sometimes simply as "components."  These can be compared to databases or analyzed using the appropriate domain knowledge to determine their chemical identity.  Once the endmembers have been obtained, they can be used to calculate the abundances of each endmember at each point in the scene, resulting in an abundance map.  In the mineral-rich landscape example, this could be a map of a particular mineral of interest.  In a biomedical application, this map could identify cancerous from non-cancerous regions of a tissue sample.
 
 \subsection[Algebraic description of the data]{Algebraic description of the data}
 In the following discussion, lower-case bold letters represent vectors (matrices with a single row or column), e.g. $\mathbf{x}$.  The corresponding upper-case letter, $\mathbf{X}$,  is a matrix.  Since hyperspectral data sets are typically stored with samples in rows and wavelengths in columns, $\mathbf{x}$ would be a particular row of $\mathbf{X}$.
 
-For hyperspectral data measured at $p$ wavelengths, and assuming $m$ endmembers are present, the data in a hyperspectral study can be represented in several ways.  A single sample observation is a spectrum at a location (pixel) or time point.  It can be represented as linear mixing model
+For hyperspectral data measured at $p$ wavelengths, and assuming $m$ endmembers are present, the data in a hyperspectral study can be represented in several ways.  A single sample observation is a spectrum at a location (pixel) or time point.  It can be represented as a linear mixing model
 
 \begin{equation}
 \mathbf{x}^{(1 \ \times \ p)} = \mathbf{a}^{(1 \ \times \ m)} \times \mathbf{E}^{(m \ \times \ p)} + \epsilon
 \end{equation}
 
-where $\mathbf{x}$ is the spectrum composed of $p$ wavelengths or channels, $\mathbf{a}$ gives the fraction of each endmember present at that particular pixel, and $\mathbf{E}$ is a matrix of the endmembers, the pure component spectra. $\epsilon$ is a noise term which is assumed to be a normally distributed.  $\mathbf{E}$ can be thought of as a library of reference spectra which is unknown before the unmixing process. In other words, a given spectrum is the sum of the product of each abundance times the corresponding reference spectrum, plus noise.
+where $\mathbf{x}$ is the spectrum composed of $p$ wavelengths or channels, $\mathbf{a}$ gives the fraction of each endmember present at that particular pixel, and $\mathbf{E}$ is a matrix of the endmembers, the pure component spectra. $\epsilon$ is a noise term which is assumed to be normally distributed.  $\mathbf{E}$ can be thought of as a library of reference spectra which is unknown before the unmixing process. In other words, a given spectrum is the sum of the product of each abundance times the corresponding reference spectrum, plus noise.
 
 If we scale this up to a real data set containing $n$ samples, the equation above becomes
 
@@ -169,20 +169,20 @@ If we scale this up to a real data set containing $n$ samples, the equation abov
 \mathbf{X}^{(n \ \times \ p)} = \mathbf{A}^{(n \ \times \ m)} \times \mathbf{E}^{(m \ \times \ p)} + \epsilon
 \end{equation}
 
-where $\mathbf{X}$ is a matrix of the raw data and $\mathbf{A}$ is a matrix giving the abundances of each endmember in each sample ($\mathbf{E}$ and $\epsilon$ as before).  Dropping the dimensional superscripts, the above can be written
+where $\mathbf{X}$ is a matrix of the raw data and $\mathbf{A}$ is a matrix giving the fractions of each endmember in each sample ($\mathbf{E}$ and $\epsilon$ as before).  Dropping the dimensional superscripts, the above can be written
 
 \begin{equation}
 \label{LinearCombo}
 \mathbf{X} = \mathbf{A}\mathbf{E} + \epsilon
 \end{equation}
 
-for simplicity.  If instead we scale down to a single wavelength in a single spectrum, the equation becomes
+for simplicity.  If instead we consider a single wavelength in a single spectrum, the equation becomes
 
 \begin{equation}
-\mathbf{x}_k = \mathbf{a} \times \mathbf{e}_k
+\mathbf{x}_k = \mathbf{A} \times \mathbf{e}_k
 \end{equation}
 
-where $k$ is one of the $p$ wavelengths ($\mathbf{e}_k$ is one wavelength selected from the reference library $\mathbf{E}$).  The system is subject to several constraints.  The abundances must be positive, and they must sum to one.
+where $k$ is one of the $p$ wavelengths ($\mathbf{e}_k$ is one wavelength selected from the reference library $\mathbf{E}$).  The system is subject to several constraints.  The abundances must be positive (the abundance non-negativity constraint or ANC), and they must sum to one (the abundance sum constraint or ASC).
 
 \begin{equation}
 0 \leqq \mathbf{a}_i \leqq 1
@@ -196,7 +196,7 @@ where $i$ is one of the $m$ endmembers of the system.
 
 \subsection[Data pre-processing]{Data pre-processing}
 
-All hyperspectral unmixing algorithms begin with some sort of data pre-processing step.  The details vary, but usually the data is reduced to lower dimensionality using some variation of principal components analysis (PCA).  PCA is a widely used method which converts raw data into uncorrelated abstract components which can stand in for the data.  The advantage is that one doesn't need all the components to represent the data, because some or even many of them are merely noise, or redundant.  In the spectral context, this is equivalent to saying that some wavelengths are not informative, so we can discard them with little change to our analysis.  PCA is a dimensional reduction method because instead of having $p$ wavelengths, we now have many fewer abstract components to deal with.  Hence PCA not only removes noise but makes the problem computationally much faster by lowering the dimensionality of the problem.
+All hyperspectral unmixing algorithms begin with some sort of data pre-processing step.  The details vary, but usually the data is reduced to lower dimensionality using some variation of principal components analysis (PCA).  PCA is a widely used method which converts raw data into uncorrelated abstract components which can stand in for the data.  The advantage is that one doesn't need all the components to represent the data, because some or even many of them are merely noise, or redundant.  In the spectral context, this is equivalent to saying that some wavelengths are not informative, so we can discard them with little change to our analysis.  PCA is a dimensional reduction method because instead of having $p$ wavelengths, we now have many fewer abstract components to deal with.  Hence PCA not only removes noise, but makes the problem computationally much faster by lowering the dimensionality of the problem.
 
 After PCA (or a similar technique), the equation describing the system would be:
 
@@ -210,7 +210,7 @@ where $\epsilon$ has effectively been eliminated.  However, at this stage $\math
 \mathbf{X}^{(n \ \times \ p')}_{reduced} = \mathbf{A}^{(n \ \times \ p')}_{reduced} \times \mathbf{E}^{(p' \ \times \ p')}_{reduced}
 \end{equation}
 
-and we are now in an abstract space of $p'$ dimensions.  However, for consistency with the literature we will continue to use the original symbols.
+and we are now working in an abstract space of $p'$ dimensions.  However, for consistency with the literature we will continue to use the original symbols.
 
 \subsection[The role of the simplex]{The role of the simplex}
 
@@ -225,15 +225,15 @@ A key concept common to unmixing algorithms is that of a simplex.  A simplex is 
 
 The simplex is a useful concept in unmixing because its vertices are the endmembers.  In the two-dimensional example, the three vertices correspond theoretically to pure components.  Every other point inside the simplex can be thought of as a weighted average or mixture of each of the endmembers.
 
-If one has spectra composed of $p$ wavelengths, the data exists as a point cloud in $p$-dimensions. For $p = 2$ as in Figure~\ref{Simplex}, the cloud of data can be captured in a 2-simplex or triangle.  For $p = 3$, a tetrahedron would be needed to contain the data.  For $p > 3$ there is no simple visual analog to the container, but it would have $p + 1$ edges.  Typical data sets might have hundreds or even thousands of wavelengths.  Simplices of this size are hard to imagine and would be computationally intractable regardless.  Recall however that prior to the unmixing process we reduce the data using PCA or a similar technique.  Thus, a data set of perhaps hundreds of wavelengths can be reduced to a much smaller dimensionality.  In practice, an appropriate value of $p$ is chosen (or perhaps we should say "guessed") by the researcher using the relevant domain knowledge.  The unmixing process then seeks to find these $p$ endmembers from which all the data can be reconstructed.
+If one has spectra composed of $p$ wavelengths, the data exists as a point cloud in $p$-dimensions. For $p = 2$ as in Figure~\ref{Simplex}, the cloud of data can be captured in a 2-simplex or triangle.  For $p = 3$, a tetrahedron would be needed to contain the data.  For $p > 3$ there is no simple visual analog to the container, but it would have $p$ vertices and $p + 1$ edges.  Typical data sets might have hundreds or even thousands of wavelengths.  Simplices of this size are hard to imagine and would be computationally intractable regardless.  Recall however that prior to the unmixing process we reduce the data using PCA or a similar technique.  Thus, a data set of perhaps hundreds of wavelengths can be reduced to a much smaller dimensionality.  In practice, an appropriate value of $p$ is chosen (or perhaps we should say "guessed") by the researcher using the relevant domain knowledge.  The unmixing process then seeks to find these $p$ endmembers from which all the data can be reconstructed.
 
 \section[Algorithms]{Algorithms}
 
-A number of algorithms to extract endmembers have been described in the literature.  The chief difference between them is the method of finding the relevant simplex, which in turn identifies the endmembers.  In \pkg{unmixR}, there are variations of the N-FINDR, vertex component analysis (VCA) and iterated constrained endmembers (ICE) algorithms.  Once the endmembers are identified, the actual unmixing can be done to generate an abundance map.  These steps are discussed in the next sections.
+A number of algorithms to extract endmembers have been described in the literature.  The chief difference between them is the method of finding the relevant simplex, which in turn identifies the endmembers in the original data set.  In \pkg{unmixR}, there are variations of the N-FINDR, vertex component analysis (VCA) and iterated constrained endmembers (ICE) algorithms.  Once the endmembers are identified, the actual unmixing can be done to generate an abundance map.  These steps are discussed in the next sections.
 
 \subsection[N-FINDR]{N-FINDR}
 
-The N-FINDR method finds purest pixels in the scene, which are the vertices of the largest $p$-dimensional simplex that can be inscribed within the data.  An iterative inflation algorithm is used (\cite{Winter1999}).  This approach assumes that pure pixels are present in the scene, an assumption that doesn't always hold, but is not critical in practice.  In this algorithm, the data are first reduced using PCA.  Then $p$ pixels are chosen at random as a starting point, and the volume of the simplex is computed (Figure~\ref{NFINDR} shows the process in two-dimensions).  Each of the chosen pixels is replaced sequentially by each of the pixels not currently chosen, checking the volume at each replacement.  If the volume increases, the new pixel is retained, otherwise the original pixel is retained.  This is the first pass.  This interim answer serves as a new starting point, and the process is repeated up to a specified number of iterations, or until the simplex volume cannot be inflated any further.  At this point, the vertices of the simplex are the purest pixels in the scene.  A visual illustration of this process in three dimensions is available in the "N-FINDR Algorithm" vignette.
+The N-FINDR method finds purest pixels in the scene, which are the vertices of the largest $p$-dimensional simplex that can be inscribed within the data.  An iterative inflation algorithm is used (\cite{Winter1999}).  This approach assumes that pure pixels are present in the scene, an assumption that doesn't always hold, but is not critical in practice.  In this algorithm, the data are first reduced using PCA.  Then $p$ pixels are chosen at random as a starting point, and the volume of the simplex is computed (Figure~\ref{NFINDR} shows the process in two-dimensions).  Each of the chosen pixels is replaced sequentially by each of the pixels not currently chosen, checking the volume at each replacement.  If the volume increases, the new pixel is retained, otherwise the original pixel is retained.  This is the first pass.  This interim answer serves as a new starting point, and the process is repeated up to a specified number of iterations, or until the simplex volume cannot be inflated any further.  At this point, the vertices of the simplex represent the purest pixels in the scene.  The indices of the simplex vertices in the PCA space can then be used to extract the endmembers from the original data set.  A visual illustration of this process in three dimensions is available in the "N-FINDR Algorithm" vignette.
 
 \begin{figure}
   \begin{center}
@@ -242,9 +242,9 @@ The N-FINDR method finds purest pixels in the scene, which are the vertices of t
   \end{center}
 \end{figure}
 
-\pkg{unmixR} includes several variants of this approach.  For testing purposes, the "Brute" method computes all possible simplices.  This will naturally be quite slow for all but trivial data sets.  Method "99" implements Winter's original algorithm (\cite{Winter1999} described above.  The iterative approach is necessary in the event that there are no pure pixels in the data set, as local maxima may be found rather than the global maximum.  Even so, the algorithm is not guaranteed to conduct an exhaustive search of all possible combinations of endmembers, and there is some sensitivity to the randomly chosen initial pixels (\cite{Plaza2005, Dowler2013}).
+\pkg{unmixR} includes several variants of this approach.  For testing purposes, the "Brute" method computes all possible simplices.  This will naturally be quite slow for all but trivial data sets.  Method "99" implements Winter's original algorithm (\cite{Winter1999}) described above.  The iterative approach is necessary in the event that there are no pure pixels in the data set, as local maxima may be found rather than the global maximum.  Even so, the algorithm is not guaranteed to conduct an exhaustive search of all possible combinations of endmembers, and there is some sensitivity to the randomly chosen initial pixels (\cite{Plaza2005, Dowler2013}).
 
-Dowler (\cite{Dowler2013}) describes two endmember extraction algorithms that are typically more computationally efficient.  Both address improvements in how the determinant of the simplex (i.e. the volume) is computed. \pkg{unmixR} provides implementations of Dowler's LDU-N-NFINDR algorithm as method "LDU" and his LDU-\emph{sequential} N-FINDR algorithm as method "SeqLDU".  In our benchmarking method "LDU" generally performs the best, though there is some dependency on the size of the data set.
+Dowler (\cite{Dowler2013}) describes two endmember extraction algorithms that are typically more computationally efficient.  Both address improvements in how the determinant of the simplex (i.e. the volume) is computed. \pkg{unmixR} provides implementations of Dowler's LDU-N-NFINDR algorithm as method "LDU" and his LDU-\emph{sequential} N-FINDR algorithm as method "SeqLDU".
 
 \subsection[Vertex component analysis]{Vertex component analysis (VCA)}
 
@@ -252,7 +252,7 @@ VCA is an alternative geometric method of locating the endmembers, first describ
 
 If the SNR is above a certain threshold, the data is reduced to $p$ abstract wavelengths, where $p$ is the desired number of endmembers.  It is then projected onto a dimension of $p - 1$, but all $p$ abstract wavelengths are retained.  For example, if the reduced data is composed of random three-dimensional points, the data will be projected onto a plane which resides in three-dimensional space.  In a sense the data has become two-dimensional since every point lies in a plane, but the plane is positioned in three-dimensional space.  One might call this "flattening".  Nascimento and Dias, in describing the VCA algorithm, use the phrase "projective projection".  The process just described is the one of the projection steps.  If the SNR is below the threshold, the data is first reduced to dimension $p - 1$ using SVD, thereby improving the SNR and "flattening" the data. Then a constant vector is added back so that the original dimension $p$ is restored.
 
-After these pre-processing steps, the endmembers are identified as follows.  An arbitrary reference vector is calculated which is orthogonal to the $p$-dimensional data, and each data point is projected onto this reference vector.  The data point whose projection onto the reference vector is farthest from the origin is selected as an endmember.  This is the second projection referred to in the phrase "projective projection."   This process is repeated until all $p$ endmembers have been selected.  Figure~\ref{VCA} shows the process in two-dimensions.
+After these pre-processing steps, the endmembers are identified as follows.  An arbitrary reference vector is calculated which is orthogonal to the $p$-dimensional data, and each data point is projected onto this reference vector.  The data point whose projection onto the reference vector is farthest from the origin is selected as an endmember.  This is the second projection referred to in the phrase "projective projection."   This process is repeated until all $p$ endmembers have been selected.  As in the N-FINDR algorithm, what has actually been found are the indices of the endmembers in the reduced space; these are then used to extract the actual endmembers from the original data set.  Figure~\ref{VCA} shows the process in two-dimensions.
 
 \begin{figure}
   \begin{center}
@@ -267,7 +267,7 @@ If the reduced data were three-dimensional, the process is somewhat like the sha
 
 The ICE algorithm differs from N-FINDR and VCA in several significant ways (\cite{Berman2004, Berman2009}).  It begins (ideally) by reducing the data using the minimum noise fraction (MNF, \cite{Green1988}).  This is a variant of PCA which sorts the abstract components according to the SNR ratio (PCA sorts components by the amount of variance explained).  Computing the MNF is only possible when the number of observations ($n$) is greater than the number of channels ($p$).  When this is not true, the \pkg{unmixR} stops with a message.  In these cases one can employ PCA instead.  Luo \emph{et al.} discuss the applications of MNF versus PCA in hyperspectral unmixing and note that the performance depends upon the type of noise in the data set (\cite{Luo2016}).
 
-The N-FINDR and VCA algorithms approach the simplex using strategies based on geometry.  In contrast, ICE solves Equation~\ref{LinearCombo} using the alternating least squares method.  After estimating an initial value for $\mathbf{E}$,  $\mathbf{A}$ is computed and then $\mathbf{E}$ is updated.  A modified form of the residual sum of squares is computed as a convergence criterion (i.e, $\mathbf{X}_{observed}$ is compared to $\mathbf{X}_{predicted}$). If the criterion is not met, the algorithm continues iterating between updating $\mathbf{E}$ and $\mathbf{A}$ until the criterion is reached.  When the process is complete, estimates of $\mathbf{A}$ and $\mathbf{E}$ are returned directly.  Recall that N-FINDR and VCA return the indices of the endmembers in the original data set.  The endmembers returned by ICE do not necessarily correspond to a particular spectrum in the original data set.
+The N-FINDR and VCA algorithms approach the simplex using strategies based on geometry.  In contrast, ICE uses a statistical approach, solving Equation~\ref{LinearCombo} using the alternating least squares method.  After estimating an initial value for $\mathbf{E}$,  $\mathbf{A}$ is computed and then $\mathbf{E}$ is updated.  A modified form of the residual sum of squares is computed as a convergence criterion (i.e, $\mathbf{X}_{observed}$ is compared to $\mathbf{X}_{predicted}$). If the criterion is not met, the algorithm continues iterating between updating $\mathbf{E}$ and $\mathbf{A}$ until the criterion is reached.  When the process is complete, estimates of $\mathbf{A}$ and $\mathbf{E}$ are returned directly.  Recall that N-FINDR and VCA return the indices of the endmembers in the original data set.  The endmembers returned by ICE do not necessarily correspond to a particular spectrum in the original data set.
 
 \subsection[Abundance maps]{Abundance maps}
 
@@ -292,7 +292,7 @@ Much of the hyperspectral unmixing literature comes from the field of remote sen
 
 For demonstration purposes, we'll look at 350 x 350 pixel subregion which is rich in geological features.  We will use the \pkg{hyperSpec} package since it was designed for the tasks at hand (\cite{hyperSpec}).  After reading the data in, we will remove several channels which were set to zero because of scattering by atmospheric water vapor.  After normalizing each spectrum, we arrive at Figure~\ref{Cup350}, which is drawn using $\lambda$ = 667 nm as follows.  This figure gives an good overview of the region.
 
-<< Cup350, fig.cap = "\\label{Cup350}Overview of the cuprite test data.  The black circle shows the approximate location of the pixel whose full spectrum is shown in Figure~\\ref{OnePix}." >>=
+<< Cup350, fig.cap = "\\label{Cup350}Overview of the cuprite test data, as seen using $\\lambda$ = 667 nm.  The black circle shows the approximate location of the pixel whose full spectrum is shown in Figure~\\ref{OnePix}." >>=
 Cup350 <- loadObject("Cuprite350x350.Rdata") # a hyperSpec object
 # select bands of interest, omitting water vapor
 keep <- c(min~1345, 1430~1805, 1955~max)
@@ -305,14 +305,13 @@ myticks <- seq(50, 300, 50) # native plot dimensions are pixels, want km
 mypal <- inferno(20) # palette to use
 p1 <- plotmap(Cup350N[,, wl], col.regions = mypal,
 	scales = list(at = myticks, labels = myticks/50),
-	xlab = "km", ylab = "km",
-	main = bquote("Cuprite, Nevada" ~ lambda == .(wl) ~ "nm"))
+	xlab = "km", ylab = "km")
 # add circle marking location of full spectrum in the next figure
 p1 <- p1 + layer(panel.xyplot(x = 286, y = 115, col = "black", cex = 2))
 print(p1)
 @
 
-The full spectrum of a single bright pixel (circled in Figure~\ref{Cup350}) is shown in Figure~\ref{OnePix}.  The entire image is composed of 122,500 of spectra such as this one.
+The full spectrum of a single bright pixel (circled in Figure~\ref{Cup350}) is shown in Figure~\ref{OnePix}.  The entire data set is composed of 122,500 of spectra such as this one.
 
 << OnePix, fig.cap = "\\label{OnePix}The reflectance spectrum of the bright pixel at the center of the circle in Figure~\\ref{Cup350} (gaps arise from removing water bands).", warning = FALSE, fig.height =  4 >>=
 brightpix <- which((Cup350@data$x == 286) & (Cup350@data$y == 115)) # no easier way?
@@ -327,7 +326,7 @@ Cup350N <- Cup350N[,, 2000~2400]
 CupEM <- vca(Cup350N, p = 25, method = "Lopez2012")
 @
 
-The convenience function AEM can extract the endmembers and compute the abundance map data, returning each as a hyperSpec object.  Preliminary inspection of abundance maps identified two endmembers which can be used to illustrate the application of hyperspectral unmixing.  These are shown in Figures~\ref{AbunMap15} and \ref{AbunMap18}.  Endmember 15 is fairly broadly distributed in the region, with a number of rich deposits.  Endmember 18, in contrast, is rare in the region; its surface exposure is limited an area of just a few dozen square meters.
+The convenience function AEM can extract the endmembers and compute the abundance map data, returning each as a hyperSpec object.  Preliminary inspection of abundance maps identified two endmembers which can be used to illustrate the application of hyperspectral unmixing.  Endmember 15 (Figure~\ref{AbunMap15}) is fairly broadly distributed in the region, with a number of rich deposits.  Endmember 18 (Figure~\ref{AbunMap18}), in contrast, is rare in the region; its surface exposure is limited an area of just a few dozen square meters.
 
 << AbunMap15, fig.cap = "\\label{AbunMap15}Abundance map of endmember 15. For reference, the white rectangle identifies the region where endmember 18 has high reflectance." >>=
 EM15 <- AEM(Cup350N, CupEM, EMs = 15, plotMap = FALSE, plotEM = FALSE)
@@ -335,7 +334,7 @@ plotmap(EM15[["Map"]], col.regions = mypal,
 	scales = list(at = myticks, labels = myticks/50),
 	xlab = "km", ylab = "km")
 grid.rect(x = 0.55, y = 0.42, width = 0.02, height = 0.04,
-	gp = gpar(col = "white"))
+	gp = gpar(col = "white")) # mark region of next figure
 @
 
 << AbunMap18, fig.cap = "\\label{AbunMap18}Abundance map of endmember 18." >>=
@@ -345,13 +344,14 @@ plotmap(EM18[["Map"]], col.regions = mypal,
 	xlab = "km", ylab = "km")
 @
 
-Now that we have identified two endmembers of interest, we can try to identify them by comparision to authentic laboratory spectra.  We will load a hyperSpec version of the authentic spectra, then merge it with the endmembers extracted by AEM (authentic spectra available at \cite{USGS}).
+Now that we have identified two endmembers of interest, we can try to identify them by comparision to authentic laboratory spectra.  We will load a hyperSpec version of the authentic spectra, then merge it with the endmembers extracted by AEM (authentic spectra are available free at \cite{USGS}).
 
 << USGS >>=
 usgs <- loadObject("USGS.Rdata")
 usgs <- usgs[,,2000~2400] # USGS data covers a wider wavelength range
 EM1518 <- AEM(Cup350N, CupEM, EMs = c(15,18), plotMap = FALSE, plotEM = FALSE)
-usgsem <- collapse(EM1518[["Endmembers"]], usgs) # authentic spectra rows 3 & 4
+usgsem <- collapse(EM1518[["Endmembers"]], usgs)
+# reference spectra are in rows 3 & 4
 @
 
 This workflow allows us to easily overlay the spectra for comparison (Figures~\ref{Comp1} and \ref{Comp2}).  Endmember 15 matches well with alunite, \ce{NaAl3(SO4)2(OH)6}, while endmember 18 is a good match for buddingtonite, \ce{(NH4)AlSiO8*1/2 H2O}.
@@ -368,7 +368,7 @@ plotspc(usgsem[c(2,4),,], col = c("red", "black"))
 
 \section[Performance]{Performance}
 
-The relative performance of the algorithms is presented in Figures~\ref{laserBenchmark} and \ref{Cup350Benchmark}.  These benchmarks were measured on a MacBook Pro (early 2015) with a 2.9 GHz Intel Core i5 processor and 16GB RAM, running \Sexpr{Soft}.  The R version was \Sexpr{Rvers}.  \emph{CB: Should we report the version of BLAS and LAPACK involved?}
+The relative performance of the algorithms is presented in Figures~\ref{laserBenchmark} and \ref{Cup350Benchmark}.  These benchmarks were measured on a MacBook Pro (early 2015) with a 2.9 GHz Intel Core i5 processor and 16GB RAM, running \Sexpr{Soft}.  The \proglang{R} version was \Sexpr{Rvers}.  \emph{CB: Should we report the version of BLAS and LAPACK involved?}
 
 \begin{figure}
   \begin{center}

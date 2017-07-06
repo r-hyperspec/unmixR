@@ -89,7 +89,7 @@ ice <- function(data, p, mu = 0.01, tol = 0.9999, reduce = "MNF"){
         nIter <- nIter + 1
         # Acquiring abundances with nonnegativity and sum-to-one constraints via quadratic programming
         abund <- apply(data, 2, function(spectrum){
-            lsei(A = curEnd, B = spectrum, E = rep(1, p), F = 1, diag(1, p), rep(0, p))[["X"]]
+			lsei(A = curEnd, B = spectrum, E = rep(1, p), F = 1, G = diag(1, p), H = rep(0, p))[["X"]]
         })
         
         # Regularisation parameter
