@@ -8,7 +8,7 @@
 ##' Google is greatly appreciated.
 ##'
 ##' @name unmixR-package
-##' @title Hyperspectral Unmixing Methods
+##' @title Hyperspectral Unmixing Tools
 ##' @docType package
 ##'
 ##' @author Anton Belov, Conor McManus, Claudia Beleites, Bryan A. Hanson, Simon Fuller.

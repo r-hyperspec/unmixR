@@ -1,8 +1,8 @@
 Package: unmixR
 Type: Package
-Title: Hyperspectral Unmixing Methods
-Version: 0.2.814
-Date: 2017-07-06
+Title: Hyperspectral Unmixing Tools
+Version: 0.2.818
+Date: 2017-07-14
 Authors@R: c(person("Anton", "Belov", role = "aut"),
 	person("Conor", "McManus", role = "aut"),
 	person("Claudia", "Beleites", role = c("aut", "cre"),
@@ -22,7 +22,8 @@ Depends:
     hyperSpec,
     nnls,
     MASS,
-    methods
+    methods,
+    amap
 Suggests:
     knitr,
     microbenchmark,
@@ -48,6 +49,7 @@ Collate:
     'estSNR.R'
     'getimplementations.R'
     'ice.R'
+    'matchEM.R'
     'nfindr.R'
     'nfindr.default.R'
     'nfindr.formula.R'
