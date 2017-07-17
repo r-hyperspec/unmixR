@@ -30,7 +30,8 @@
 ##'   }
 ##'  \eqn{weights * endmembers} gives an approximation of the original data matrix
 ##'  (the approximation depends on how/whether the data was reduced, and the nummber
-##'   of endmembers requested).
+##'   of endmembers requested). \code{\link{matchEM}} will match the returned 
+##'  endmembers against the raw data, and returns the indices of the best match.
 ##'
 ##' @references Berman et al. ICE: A New Method for the Multivariate Curve Resolution
 ##' of Hyperspectral Images, Journal of Chemometrics, vol. 29 pgs 101-116 (2009).

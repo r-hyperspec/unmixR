@@ -19,6 +19,8 @@
 ##' @export
 ##'
 ##' @importFrom stats rnorm
+##' @importFrom MASS ginv
+##'
 
 vca05 <- function(data, p) {
     Y <- t(data)
@@ -32,7 +34,7 @@ vca05 <- function(data, p) {
     	
         # Get vector f orthonormal to the space spanned by A
         w <- stats::rnorm(p, sd = 1)
-        f <- (diag(p) - A %*% ginv(A)) %*% w
+        f <- (diag(p) - A %*% MASS::ginv(A)) %*% w
         f <- f / sqrt(sum(f^2))
         
         # Project data onto f

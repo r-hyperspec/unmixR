@@ -198,7 +198,7 @@ vca05mod <- function(data, p, SNR = estSNR(data, p)) {
       # Get vector f orthonormal to the space spanned by A
       # A is updated at each iteration
       w <- stats::rnorm(p, sd = 1)
-      f <- (diag(p) - A %*% ginv(A)) %*% w
+      f <- (diag(p) - A %*% MASS::ginv(A)) %*% w
       f <- f / sqrt(sum(f^2))
 
       myf[i,] <- f

@@ -1,8 +1,8 @@
 Package: unmixR
 Type: Package
 Title: Hyperspectral Unmixing Tools
-Version: 0.2.818
-Date: 2017-07-14
+Version: 0.2.826
+Date: 2017-07-17
 Authors@R: c(person("Anton", "Belov", role = "aut"),
 	person("Conor", "McManus", role = "aut"),
 	person("Claudia", "Beleites", role = c("aut", "cre"),
@@ -19,11 +19,17 @@ License: GPL (>= 3)
 ByteCompile: TRUE
 Depends:
     R (>= 3.0),
-    hyperSpec,
+    hyperSpec
+Imports:
+    testthat,
+    settings,
+    limSolve,
+    matrixcalc,
+    spacetime,
     nnls,
+    amap,
     MASS,
-    methods,
-    amap
+    methods
 Suggests:
     knitr,
     microbenchmark,
@@ -33,12 +39,6 @@ Suggests:
     latticeExtra,
     plotrix,
     grid
-Imports:
-    testthat,
-    settings,
-    limSolve,
-    matrixcalc,
-    spacetime
 VignetteBuilder: knitr
 Collate: 
     'unmixR-package.R'
