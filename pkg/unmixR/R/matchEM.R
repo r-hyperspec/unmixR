@@ -93,7 +93,7 @@ matchEM <- function(ice, data, method) {
 	
 	# Now the real work in one line!
 	for (i in 1:length(indices)) indices[i] <- which.min(emDist(EMs[i,], data))
-	return(indices)
+	return(sort(indices))
 	}
 
 .test(matchEM) <- function() {

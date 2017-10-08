@@ -25,6 +25,8 @@ nfindrBrute <- function(data, p, ...) {
   n <- ncol(combos)
 
   # generate the volumes of all the simplexes using the indices
+  # BH: just for the record, in other places where we calc the volume
+  # we use rbind and t(data) but the answer is the same eithe way
   volumes <- sapply(1:n, function(i) {
     idx <- combos[,i]
     simplex <- cbind (rep(1, p), data [idx,])
@@ -33,17 +35,18 @@ nfindrBrute <- function(data, p, ...) {
 
   if (.options ("debuglevel") >= 1L) {
     volumes <- volumes / factorial (p - 1)   
-    DF <- data.frame(ind = t(combos), volume = volumes)
-  	DF <- DF [order(DF[["volume"]]),]
-
+    DF <- data.frame(volRank = NA_integer_, ind = t(combos), volume = volumes)
+  	DF <- DF [order(DF[["volume"]], decreasing = TRUE),]
+	DF$volRank <- 1:nrow(DF)
+	
   	if (.options ("debuglevel") == 1L) {
-  		cat("\nTop endmember combinations & their volumes:\n")
-    	print (tail (DF), row.names = FALSE)
+  		cat("\nTop 25 endmember combinations & their volumes:\n")
+    	print (DF[1:25,], row.names = FALSE)
   	}
   	
    	if (.options ("debuglevel") > 1L) {
-  		cat("\nAll endmember combinations & their volumes:\n")
-    	print (DF, row.names = FALSE)
+  		cat("\nTop 1000 endmember combinations & their volumes:\n")
+    	print (DF[1:1000,], row.names = FALSE)
   	}
  	
   }

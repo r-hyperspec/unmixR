@@ -21,6 +21,9 @@ unmixR.unittest <- function () {
     return(NA)
   }
   
+  # if (! "package:testthat" %in% search ())
+    # attachNamespace("testthat")
+
   tests <- eapply(env = getNamespace ("unmixR"), FUN = get.test, all.names=TRUE)
   tests <- tests [! sapply (tests, is.null)]
   
