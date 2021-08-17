@@ -79,7 +79,7 @@ vcaLopez2012 <- function(data, p, SNR = estSNR(data, p)) {
           ## grows with each iteration
           inds <- indices[1:i] # limit to non-zero indices
           red_data <- stats::prcomp(data)[["x"]][, sequence(length(inds)-1), drop=FALSE]
-          simplex <- .simplex(red_data, length(inds), inds)
+          simplex <- .simplex_E(red_data, inds)
           vol <- abs(det(simplex))
           cat("\tvolume:", vol,  "\n")
           cat ("\tmax:", which.max (v), "\t min:", which.min (v), "\n")

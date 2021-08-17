@@ -32,7 +32,7 @@ nfindrLDU <- function (data, p, indices, ..., debuglevel = unmixR.options("debug
   
   if (debuglevel >= 2L) print (indices)
   
-  simplex <- .simplex (data, p, indices)
+  simplex <- .simplex_E (data, indices)
   nspectra <- nrow (data)
   pm1 <- sequence (p - 1) # create a range from 1 to p minus 1
 
