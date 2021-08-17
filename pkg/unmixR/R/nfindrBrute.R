@@ -32,7 +32,7 @@ nfindrBrute <- function(data, p, ..., debuglevel = .options ("debuglevel")) {
   volumes <- sapply(1:n, function(i) {
     idx <- combos[,i]
 
-    ## calling simplex.volume takes approx 2.5x as long, so leave it this way
+    ## calling simplex_volume takes approx 2.5x as long, so leave it this way
     simplex <- cbind (rep(1, p), data [idx,])
     abs (det (simplex))
   })
