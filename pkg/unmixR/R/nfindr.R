@@ -91,6 +91,7 @@ nfindr <- function (...) {
 
   ## test that at least the implementations provided by unmixR are available
   implementations <- get.implementations("nfindr")
+  print(implementations)
   test_that ("Implementations available", {
     expect_true (all (c ("99", "Brute", "LDU", "SeqLDU") %in% implementations))
   })

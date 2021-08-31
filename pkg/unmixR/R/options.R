@@ -36,10 +36,11 @@ unmixR.options <- function (...) {
   .options (...)
 }
 
+#TODO: Add tolerance as an option
 .options <- settings::options_manager (
   debuglevel = 0L,
   implementation.search = "package:unmixR"
-  )
+)
 
 .test (unmixR.options) <- function (){
 
