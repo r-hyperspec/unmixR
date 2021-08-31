@@ -103,7 +103,7 @@ simplex_volume <- function(data, indices = seq_len(nrow(data)), factorial = TRUE
     # Provide indices
     expect_equal(simplex_volume(triangle_2d, indices = 1:3, factorial = TRUE), area_2d)
     # Without factorial
-    expect_equal(simplex_volume(triangle_2d, factorial = FALSE), area_2d)
+    expect_equal(simplex_volume(triangle_2d, factorial = FALSE), 2*area_2d)
     # Moving the triangle should not change the area
     expect_equal(simplex_volume(shifted_triangle_2d, factorial = TRUE), area_2d)
   })
