@@ -43,8 +43,6 @@
     expect_equal(dim(estimates), c(1, p))
     expect_equal(V * estimates, .correct_volume_changes[m, , drop = F])
   })
-  
-  #TODO: Test invariant
 }
 
 

@@ -45,10 +45,12 @@ Collate:
     'nfindr.R'
     'nfindr.default.R'
     'nfindr.formula.R'
-    'nfindr99.R'
     'nfindrBrute.R'
-    'nfindrLDU.R'
-    'nfindrSeqLDU.R'
+    'nfindr_cofactor.R'
+    'nfindr_cramer.R'
+    'nfindr_height.R'
+    'nfindr_ldu.R'
+    'nfindr_volume.R'
     'options.R'
     'predict.R'
     'simplex.R'
@@ -58,4 +60,4 @@ Collate:
     'vca.formula.R'
     'vca05.R'
     'vcaLopez2012.R'
-RoxygenNote: 5.0.1
+RoxygenNote: 7.1.2

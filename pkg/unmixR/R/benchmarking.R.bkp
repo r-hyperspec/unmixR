@@ -1,0 +1,33 @@
+# library(bench)
+# 
+# set.seed(723)
+# 
+# # load("C:/Users/gulievrustam/Documents/Max/RData/preprocessing/batches_all.RData")
+# # spc <- batches_all
+# # rm(batches_all)
+# # spc <- spc[,,400~1800]
+# # pca <- prcomp(spc$spc, center=TRUE)
+# # X <- pca$x
+# # X <- X[,1:50]
+# # rm(pca, spc)
+# # gc()
+# #save(X, file = "~/unmixR/benchmarkdata.RData")
+# load("~/unmixR/benchmarkdata.RData")
+# 
+# results <- bench::press(
+#   iterator = c("endmembers", "points", "both"),
+#   size = c(1e2, 1e3, 1e4, 1e5),
+#   p = c(3,5,7,9,11,13,15),
+#   {
+#     data <- X[sample(nrow(X),size), seq_len(p-1), drop = FALSE]
+#     indices <- sample(nrow(data), p)
+#     bench::mark(
+#       min_iterations = 60,
+#       max_iterations = 80,
+#       time_unit = 'ms',mo
+#       # volume = nfindr_rustam(data, p, indices = indices, iter = iterator, estimator = "volume"),
+#       height = nfindr_rustam(data, p, indices = indices, iter = iterator, estimator = "height"),
+#       cramer = nfindr_rustam(data, p, indices = indices, iter = iterator, estimator = "Cramer")
+#     )
+#   }
+# )

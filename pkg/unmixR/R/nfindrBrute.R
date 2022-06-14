@@ -55,7 +55,7 @@ nfindrBrute <- function(data, p, ..., debuglevel = .options ("debuglevel")) {
   ## return the indices that formed the largest simplex
   col <- which.max (volumes)
   
-  indices <- combos [, col]
+  indices <- sort(combos [, col])
   indices
 }
 
@@ -65,12 +65,7 @@ nfindrBrute <- function(data, p, ..., debuglevel = .options ("debuglevel")) {
   expect_true (require (hyperSpec))
   
   test_that("correct output for triangle", {
-    expect_equal(nfindr (.testdata$x, "Brute", p = 3)$indices, .correct)
-    expect_equal(nfindr (.testdata$x, "Brute", p = 3, debuglevel = 1)$indices, .correct)
+    expect_equal(nfindrBrute(.testdata$x[,1:2], p = 3), .correct)
+    expect_equal(nfindrBrute(.testdata$x[,1:2], p = 3, debuglevel = 1), .correct)
   })
-
-  test_that("correct output for laser data", {
-    expect_equal(nfindr (laser, "Brute", p = 2)$indices, .correct.laser)
-  })
-  
 }
