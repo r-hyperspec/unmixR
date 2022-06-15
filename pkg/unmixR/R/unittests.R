@@ -12,7 +12,7 @@
 ##' @keywords programming utilities
 ##' @export
 ##' @include unmixR-package.R
-##' @importFrom testthat SummaryReporter ListReporter MultiReporter get_reporter
+##' @importFrom testthat SummaryReporter ListReporter MultiReporter get_reporter with_reporter
 ##' 
 
 unmixR.unittest <- function () {
@@ -34,7 +34,7 @@ unmixR.unittest <- function () {
       lister$start_file(names (tests [t]))
       tests [[t]] ()
     }
-    get_reporter()$.end_context()
+    get_reporter()$end_context()
   })
 
 
