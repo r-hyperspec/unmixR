@@ -71,7 +71,7 @@ for(i in 1:nrow(.points_2d)) {
   for(j in 1:p) {
     inx <- 1:p
     inx[j] <- i
-    .correct_volume_changes[i,j] <- simplex.volume(.points_2d, inx)
+    .correct_volume_changes[i,j] <- simplex_volume(.points_2d, inx)
   }
 }
 rm(inx,p,i,j)

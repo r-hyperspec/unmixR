@@ -6,7 +6,7 @@
 .estimate_volume_change_by_cramer <- function(data, indices, endmembers, new_indices, Einv = NULL) {
   if (is.null(Einv)) {
     p <- length(indices)
-    E <- .simplex(data, length(indices), indices)
+    E <- .simplex_E(data, indices)
     Einv <- solve(E)
   }
   
@@ -57,7 +57,7 @@
   if (debug.level > 1) {
     replacements <- matrix(indices_best, nrow=1)
   }
-  Einv <- solve(.simplex(data, length(indices_best), indices_best))
+  Einv <- solve(.simplex_E(data, indices_best))
   
   while ((k<iter_max) && is_replacement) {
     k <- k + 1
@@ -69,7 +69,7 @@
         # Update current simplex vertices
         j <- which.max(estimates)
         indices_best[j] <- i
-        Einv <- solve(.simplex(data, length(indices_best), indices_best))
+        Einv <- solve(.simplex_E(data, indices_best))
         # Mark that a replacement took place
         is_replacement <- TRUE
         # For debugging
@@ -107,7 +107,7 @@
   if (debug.level > 1) {
     replacements <- matrix(indices_best, nrow=1)
   }
-  Einv <- solve(.simplex(data, length(indices_best), indices_best))
+  Einv <- solve(.simplex_E(data, indices_best))
 
   
   while ((k<iter_max) && is_replacement) {
@@ -120,7 +120,7 @@
         # Update current simplex vertices
         i <- which.max(estimates)
         indices_best[j] <- i
-        Einv <- solve(.simplex(data, length(indices_best), indices_best))
+        Einv <- solve(.simplex_E(data, indices_best))
         # Mark that a replacement took place
         is_replacement <- TRUE
         # For debugging
@@ -158,7 +158,7 @@
   if (debug.level > 1) {
     replacements <- matrix(indices_best, nrow=1)
   }
-  Einv <- solve(.simplex(data, length(indices_best), indices_best))
+  Einv <- solve(.simplex_E(data, indices_best))
 
   
   while ((k<iter_max) && is_replacement) {
@@ -170,7 +170,7 @@
       # Update current simplex vertices
       max_ij <- arrayInd(which.max(estimates), dim(estimates))
       indices_best[max_ij[2]] <- max_ij[1]
-      Einv <- solve(.simplex(data, length(indices_best), indices_best))
+      Einv <- solve(.simplex_E(data, indices_best))
       # Mark that a replacement took place
       is_replacement <- TRUE
       # For debugging

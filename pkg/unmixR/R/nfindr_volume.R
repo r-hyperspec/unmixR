@@ -12,7 +12,7 @@
     for (j in sequence(n_endmembers)) {
       candidate_indices <- indices
       candidate_indices[endmembers[j]] <- new_indices[i]
-      V[i, j] <- simplex.volume(
+      V[i, j] <- simplex_volume(
         data,
         indices = candidate_indices, factorial = FALSE
       )
@@ -57,7 +57,7 @@
   if (debug.level > 1) {
     replacements <- matrix(indices_best, nrow=1)
   }
-  volume_best  <- simplex.volume(data, indices, factorial = FALSE)
+  volume_best  <- simplex_volume(data, indices, factorial = FALSE)
 
   
   while ((k<iter_max) && is_replacement) {
@@ -105,7 +105,7 @@
   n_replacements <- 0
   is_replacement <- TRUE
   indices_best <- indices
-  volume_best  <- simplex.volume(data, indices, factorial = FALSE)
+  volume_best  <- simplex_volume(data, indices, factorial = FALSE)
   if (debug.level > 1) {
     replacements <- matrix(indices_best, nrow=1)
   }
@@ -157,7 +157,7 @@
   n_replacements <- 0
   is_replacement <- TRUE
   indices_best <- indices
-  volume_best  <- simplex.volume(data, indices, factorial = FALSE)
+  volume_best  <- simplex_volume(data, indices, factorial = FALSE)
   if (debug.level > 1) {
     replacements <- matrix(indices_best, nrow=1)
   }

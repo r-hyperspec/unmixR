@@ -1,7 +1,7 @@
 .get_cofactor_invariants <- function(data, indices, endmembers = seq_along(indices)) {
   p <- length(indices)
   n_endmembers <- length(endmembers)
-  E <- .simplex(data, p, indices)
+  E <- .simplex_E(data, indices)
   
   # Calculate cofactor matrices
   cofactors <- matrix(NA_real_, nrow=p, ncol=n_endmembers)
@@ -21,7 +21,7 @@
 .test(.get_cofactor_invariants) <- function() {
   data <- .points_2d
   p <- 3
-  correct_volume <- simplex.volume(data,1:p,factorial=F)
+  correct_volume <- simplex_volume(data,1:p,factorial=F)
   test_that("One endmember", {
     for (j in 1:p) {
       inv <- .get_cofactor_invariants(data, 1:p, j)
@@ -130,7 +130,7 @@
   if (debug.level > 1) {
     replacements <- matrix(indices_best, nrow=1)
   }
-  volume_best  <- simplex.volume(data, indices, factorial = FALSE)
+  volume_best  <- simplex_volume(data, indices, factorial = FALSE)
   invariants <- .get_cofactor_invariants(data, indices, 1:p)
 
   while ((k < iter_max) && is_replacement) {
@@ -186,7 +186,7 @@
   if (debug.level > 1) {
     replacements <- matrix(indices_best, nrow=1)
   }
-  volume_best  <- simplex.volume(data, indices, factorial = FALSE)
+  volume_best  <- simplex_volume(data, indices, factorial = FALSE)
 
   while ((k < iter_max) && is_replacement) {
     k <- k + 1
@@ -240,7 +240,7 @@
   if (debug.level > 1) {
     replacements <- matrix(indices_best, nrow=1)
   }
-  volume_best  <- simplex.volume(data, indices, factorial = FALSE)
+  volume_best  <- simplex_volume(data, indices, factorial = FALSE)
   invariants <- .get_cofactor_invariants(data, indices, 1:p)
 
   while ((k < iter_max) && is_replacement) {
