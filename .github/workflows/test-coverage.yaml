@@ -30,6 +30,9 @@ name: Test coverage
 jobs:
   test-coverage:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./app
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
@@ -44,7 +47,6 @@ jobs:
       - uses: r-lib/actions/setup-pandoc@master
 
       - uses: r-lib/actions/setup-r-dependencies@v2
-        working-directory: ./pkg/unmixR
         with:
           extra-packages: any::covr
           needs: |
