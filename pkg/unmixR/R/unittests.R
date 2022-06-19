@@ -1,9 +1,9 @@
 ##' Run the Unit Tests
 ##'
 ##' Run the unit tests for the package and output with the given testthat reporter.
-##' 
+##'
 ##  COMMENTED OUT @param reporter name of a testthat reporter. Defaults to \code{\link[testthat]{SummaryReporter}}.
-##' 
+##'
 ##' @return Invisibly returns a data frame with the test results
 ##'
 ##' @author Claudia Beleites
@@ -13,7 +13,7 @@
 ##' @export
 ##' @include unmixR-package.R
 ##' @importFrom testthat SummaryReporter ListReporter MultiReporter get_reporter
-##' 
+##'
 
 unmixR.unittest <- function () {
 
@@ -21,10 +21,10 @@ unmixR.unittest <- function () {
     warning("testthat required to run the unit tests.")
     return(NA)
   }
-  
+
   tests <- eapply(env = getNamespace ("unmixR"), FUN = get.test, all.names=TRUE)
   tests <- tests [! sapply (tests, is.null)]
-  
+
   reporter <- SummaryReporter$new()
   lister <- ListReporter$new()
   reporter <- MultiReporter$new(reporters = list(reporter, lister))
