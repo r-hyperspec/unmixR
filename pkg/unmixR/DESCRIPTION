@@ -24,6 +24,7 @@ Depends:
     nnls
 Suggests:
     knitr,
+    markdown,
     plot3D,
     scatterplot3d,
     ggplot2,
