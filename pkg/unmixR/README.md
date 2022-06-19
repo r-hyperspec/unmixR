@@ -1,4 +1,10 @@
+```
+
+```
+
+
 # `unmixR`: An R Package for Unmixing of Hyperspectral Images
+
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/r-hyperspec/unmixR/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/r-hyperspec/unmixR/actions/workflows/R-CMD-check.yaml)
@@ -9,12 +15,11 @@
 [![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
 <!-- badges: end -->
 
-
-
 <center>
 `unmixR` is **WORK IN PROGRESS**.
 </center>
 <br>
+
 
 The fundamental structures & behavior may change.
 For the time being, use at your own risk.
@@ -30,8 +35,8 @@ The spectra are often visible, infrared, near-infrared, raman spectra or mass sp
 **Installation:** works easiest using `remotes::install_git()`:
 
 ```r
-require("remotes")
-install_git("https://gitlab.com/chemometrics/unmixR.git", subdir = "pkg/unmixR")
+library("remotes")
+remotes::install_github("r-hyperspec/unmixR", subdir = "pkg/unmixR")
 ```
 
 ## Acknoledgements
