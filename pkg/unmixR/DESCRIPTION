@@ -30,7 +30,8 @@ Suggests:
     plot3D,
     scatterplot3d,
     ggplot2,
-    rbenchmark
+    rbenchmark,
+    covr
 Imports:
     testthat,
     settings,
