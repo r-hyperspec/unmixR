@@ -13,7 +13,6 @@ on:
       - main
       - master
       - develop
-      - "32-make-gha-for-ci"
 
       # - auto-update
       - auto-update-test
