@@ -71,10 +71,10 @@ vca.default <- function(data, p, method = c("05", "Lopez2012"), seed = NULL, SNR
   # test correct calculations for the available methods
   implementations <- get.implementations("vca")
 
-  # FIXME: Fix the tests below ASAP
-  skip("Skip tests to implement GHA infrastructure. Fix the tests ASAP")
-
   test_that("correct results for all available methods: triangle data", {
+    # FIXME: Fix the tests below ASAP
+    skip("Skip tests to implement GHA infrastructure. Fix the tests ASAP")
+
     for (i in implementations) {
       expect_equal (vca (.testdata$x, p = 3, method = i)$indices, .correct)
 
@@ -102,11 +102,12 @@ vca.default <- function(data, p, method = c("05", "Lopez2012"), seed = NULL, SNR
     }
   })
 
-  # FIXME: Fix the tests below ASAP
-  skip("Skip tests to implement GHA infrastructure. Fix the tests ASAP")
 
   ## all 3 components should be recovered, vca output is sorted.
   test_that("vca output is sorted", {
+    # FIXME: Fix the tests below ASAP
+    skip("Skip tests to implement GHA infrastructure. Fix the tests ASAP")
+
     indices <- vca (.testdata$x, p = 3)$indices
     expect_equal(indices, sort (indices))
   })
