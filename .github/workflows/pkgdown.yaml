@@ -46,6 +46,8 @@ jobs:
           working-directory: ./pkg/unmixR
           extra-packages: any::pkgdown, local::., any::devtools
           needs: website
+          needs: website
+
 
       - name: Roxygenize
         working-directory: ./pkg/unmixR
@@ -55,8 +57,7 @@ jobs:
         shell: Rscript {0}
 
       - name: Install package
-        working-directory: ./pkg/unmixR
-        run: R CMD INSTALL .
+        run: R CMD INSTALL ./pkg/unmixR
 
       - name: Deploy package
         working-directory: ./pkg/unmixR
