@@ -1,17 +1,21 @@
+# `unmixR`: An R Package for Unmixing of Hyperspectral Images
+
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/r-hyperspec/unmixR/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/r-hyperspec/unmixR/actions/workflows/R-CMD-check.yaml)
 [![Test coverage](https://github.com/r-hyperspec/unmixR/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/r-hyperspec/unmixR/actions/workflows/test-coverage.yaml)
 [![Codecov test coverage](https://codecov.io/gh/r-hyperspec/unmixR/branch/develop/graph/badge.svg)](https://app.codecov.io/gh/r-hyperspec/unmixR?branch=develop)
 [![Website (pkgdown)](https://github.com/r-hyperspec/unmixR/actions/workflows/pkgdown.yaml/badge.svg)](https://github.com/r-hyperspec/unmixR/actions/workflows/pkgdown.yaml)
+[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+[![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
 <!-- badges: end -->
 
-
-# `unmixR`: An R Package for Unmixing of Hyperspectral Images
-
 <center>
+
 This `README` is for GitHub only. `pkgdown` website currently has a separate `README`.
+<br>
 
 `unmixR` is **WORK IN PROGRESS**.
+
 </center>
 <br>
 
