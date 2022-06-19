@@ -14,8 +14,11 @@ Description: Functions implementing the N-FINDR, Iterated Constrained
     Endmembers (ICE) and Vertex Component Analysis (VCA) algorithms which can
     recover pure component spectra and their respective concentrations from a
     hyperspectral data set.
-URL: https://gitlab.com/chemometrics/unmixR
-BugReports: https://gitlab.com/chemometrics/unmixR/issues
+URL: 
+    https://r-hyperspec.github.io/unmixr/,
+    https://github.com/r-hyperspec/unmixR,
+    https://gitlab.com/chemometrics/unmixR
+BugReports: https://github.com/r-hyperspec/unmixR/issues
 License: GPL (>= 3)
 ByteCompile: TRUE
 Encoding: UTF-8
