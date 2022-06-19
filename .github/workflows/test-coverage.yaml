@@ -49,8 +49,8 @@ jobs:
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           working-directory: ./pkg/unmixR
-          extra-packages: any::covr
           extra-packages: |
+           any::covr
            roxygen2
            devtools
           needs: |
