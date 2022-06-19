@@ -9,6 +9,8 @@
 # `unmixR`: An R Package for Unmixing of Hyperspectral Images
 
 <center>
+This `README` is for GitHub only. `pkgdown` website currently has a separate `README`.
+
 `unmixR` is **WORK IN PROGRESS**.
 </center>
 <br>
