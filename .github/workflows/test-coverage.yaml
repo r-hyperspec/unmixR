@@ -30,6 +30,7 @@ name: Test coverage
 jobs:
   test-coverage:
     runs-on: ubuntu-latest
+
     defaults:
       run:
         working-directory: ./pkg/unmixR
