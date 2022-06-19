@@ -50,10 +50,11 @@ jobs:
         with:
           working-directory: ./pkg/unmixR
           extra-packages: any::covr
-          needs: |
-           coverage
+          extra-packages: |
            roxygen2
            devtools
+          needs: |
+           coverage
 
       - name: Roxygenize
         working-directory: ./pkg/unmixR
