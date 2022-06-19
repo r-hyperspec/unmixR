@@ -34,7 +34,7 @@ unmixR.unittest <- function () {
       lister$start_file(names (tests [t]))
       tests [[t]] ()
     }
-    get_reporter()$.end_context()
+    get_reporter()
   })
 
 
