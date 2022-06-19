@@ -17,6 +17,7 @@ URL: https://gitlab.com/chemometrics/unmixR
 BugReports: https://gitlab.com/chemometrics/unmixR/issues
 License: GPL (>= 3)
 ByteCompile: TRUE
+Encoding: UTF-8
 Depends:
     R (>= 3.0),
     hyperSpec,
