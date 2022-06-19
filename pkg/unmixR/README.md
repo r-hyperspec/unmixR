@@ -1,3 +1,5 @@
+# `unmixR`: An R Package for Unmixing of Hyperspectral Images
+
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/r-hyperspec/unmixR/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/r-hyperspec/unmixR/actions/workflows/R-CMD-check.yaml)
 [![Test coverage](https://github.com/r-hyperspec/unmixR/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/r-hyperspec/unmixR/actions/workflows/test-coverage.yaml)
@@ -6,7 +8,6 @@
 <!-- badges: end -->
 
 
-# `unmixR`: An R Package for Unmixing of Hyperspectral Images
 
 <center>
 `unmixR` is **WORK IN PROGRESS**.
