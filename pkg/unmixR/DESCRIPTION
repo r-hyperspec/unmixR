@@ -29,7 +29,8 @@ Suggests:
     plot3D,
     scatterplot3d,
     ggplot2,
-    rbenchmark
+    rbenchmark,
+    rmarkdown
 Imports:
     testthat,
     settings,
