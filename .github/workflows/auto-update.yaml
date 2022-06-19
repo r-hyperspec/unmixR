@@ -1,0 +1,185 @@
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Workflow to update selected repos in r-hyperspec/... with selected files
+# from r-hyperspec/pkg-skeleton when pkg-skeleton is updated by pushing.
+# pkg-skeleton branch auto-update will deploy to develop branch in other repos.
+#
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Each "- name:" task below starts from the same directory, which is:
+# /home/runner/work/${{ REPOSITORY_NAME }}/${{ REPOSITORY_NAME }}
+# e.g.:
+# /home/runner/work/hyperSpec/hyperSpec
+# Each task is run in its own shell starting from this directory.
+# This means you have to navigate to the desired directory for each task.
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+on:
+  push:
+    branches:
+      - release
+      - main
+      - master
+      - develop
+
+      - auto-update
+
+name: Update files across repos
+# name: Update selected files in selected repos
+
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    env:
+      REPO: ${{ github.event.repository.name }}
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+
+      # DEST_BRANCH: auto-update-test
+      DEST_BRANCH: develop
+
+      FILES_REQUIRED: |
+        .github/.gitignore
+        .github/workflows/drat--insert-package.yaml
+        .github/workflows/pkgdown.yaml
+        .github/workflows/R-CMD-check.yaml
+        .gitignore
+        .Rbuildignore
+        pkgdown/extra.css
+        project.Rproj
+# FILES_TO_SKIP are REPO + PATH_TO_FILE in the repo.
+# These files are skipped ONLY in section "Copy Required Non-Vig Files":
+      FILES_TO_SKIP: |
+        r-hyperspec/hyperSpec/.github/workflows/R-CMD-check.yaml
+
+      FILES_IF_PRESENT: |
+        codecov.yml
+        .github/workflows/test-coverage.yaml
+
+#       VIG_FILES: |
+#         vignettes/.gitignore
+#         vignettes/.install_extras
+#         vignettes/elsevier-with-titles.csl
+#         vignettes/list-of-vignettes.md
+#         vignettes/style.css
+#         vignettes/vignette-default-settings.R
+#         vignettes/vignette-functions.R
+#         vignettes/vignette.css
+
+
+    strategy:
+      fail-fast: false
+      matrix:
+        pkgs:
+          - r-hyperspec/hyperSpec
+          - r-hyperspec/hySpc.chondro
+          - r-hyperspec/hySpc.dplyr
+          - r-hyperspec/hySpc.ggplot2
+          - r-hyperspec/hySpc.read.ENVI
+          - r-hyperspec/hySpc.read.jdx
+          - r-hyperspec/hySpc.read.mat
+          - r-hyperspec/hySpc.read.spc
+          - r-hyperspec/hySpc.read.spe
+          - r-hyperspec/hySpc.read.txt
+          - r-hyperspec/hySpc.testthat
+
+    steps:
+      - uses: actions/checkout@v2 # checks out current repo
+
+      - name: Configure git
+        # The following configure step is from
+        # https://stackoverflow.com/a/60548651/633251
+        env:
+          TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+        run: |
+          git config --global url."https://${TOKEN}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
+
+          git config --global user.email "$actions@github.com"
+          git config --global user.name "${REPO} Deploy Bot"
+
+      - name: Clone Package's Repo
+        if: success()
+        run: |
+          echo "Cloning ${{ matrix.pkgs }} repo"
+          echo "branch $DEST_BRANCH"
+          rm -rf tmp-repo-dir
+          git clone 'https://github.com/${{ matrix.pkgs }}.git' tmp-repo-dir
+          cd tmp-repo-dir
+          git checkout $DEST_BRANCH
+          # echo Successfully cloned ${{ matrix.pkgs }}
+
+      - name: Copy Required Non-Vig Files
+        if: success()
+        run: |
+          for f in $FILES_REQUIRED
+          do
+            CURRENT_FILE="${{ matrix.pkgs }}/$f" # repo + path to file
+
+            count_skips=()
+            for TO_SKIP in $FILES_TO_SKIP;
+            do
+              if [[ "$CURRENT_FILE" == "$TO_SKIP" ]];
+              then count_skips+=(1);
+              else count_skips+=(0);
+              fi
+            done
+
+            n_to_skip=()
+            n_to_skip=$(( ${count_skips[@]/%/ +} 0)) # sum values
+
+            if [[ "$n_to_skip" == 0 ]];
+            then
+              echo "---- DO ----"
+              echo "- [v] Sync file:   $f"
+              rsync -Rrtpgov $f tmp-repo-dir/
+              echo ""
+
+            else
+              echo "--- SKIP ---"
+              echo "- [x] Skip file:  $f"
+              echo ""
+            fi
+          done
+
+      - name: Conditionally Copy Optional Non-Vig Files
+        if: success()
+        run: |
+          for f in $FILES_IF_PRESENT
+          do
+            if [ -f "tmp-repo-dir/$f" ]
+            then
+              echo "---- DO ----"
+              echo "- [v] Sync file:   $f"
+              rsync -Rrtpgov $f tmp-repo-dir/
+              echo ""
+            else
+              echo "--- SKIP ---"
+              echo "- [x] Skip file:  $f"
+              echo ""
+            fi
+          done
+
+      # - name: Conditionally Copy Vignette Files
+      #   if: success()
+      #   run: |
+      #     if [ -d "tmp-repo-dir/vignettes" ]
+      #     then
+      #       for f in $VIG_FILES
+      #       do
+      #         echo "---- DO ----"
+      #         echo "- [v] Syncing file:   $f"
+      #         rsync -Rrtpgov $f tmp-repo-dir/
+      #         echo ""
+      #       done
+      #     fi
+
+      - name: Commit and Push
+        if: success()
+        run: |
+          cd tmp-repo-dir
+          if [ -n "$(git status --porcelain)" ]; then
+            git status
+            git add .
+            git commit -m 'Automated file update from pkg-skeleton'
+            git push origin $DEST_BRANCH
+          else
+            echo "Nothing to commit";
+          fi
