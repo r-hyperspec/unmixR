@@ -4,11 +4,12 @@ Title: Hyperspectral Unmixing Methods
 Version: 0.2.339
 Date: 2016-08-28
 Authors@R: c(person("Anton", "Belov", role = "aut"),
-	person("Conor", "McManus", role = "aut"),
-	person("Claudia", "Beleites", role = c("aut", "cre"),
-		email ="chemometrie@beleites.de"),
-	person("Bryan A.", "Hanson", role = "aut"),
-	person("Simon", "Fuller", role = "aut"))
+  person("Conor", "McManus", role = "aut"),
+  person("Claudia", "Beleites", role = c("aut", "cre"),
+    email = "chemometrie@beleites.de"
+  ),
+  person("Bryan A.", "Hanson", role = "aut"),
+  person("Simon", "Fuller", role = "aut"))
 Description: Functions implementing the N-FINDR, Iterated Constrained
     Endmembers (ICE) and Vertex Component Analysis (VCA) algorithms which can
     recover pure component spectra and their respective concentrations from a
