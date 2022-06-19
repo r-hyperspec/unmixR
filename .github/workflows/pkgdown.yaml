@@ -46,8 +46,6 @@ jobs:
           working-directory: ./pkg/unmixR
           extra-packages: any::pkgdown, local::., any::devtools
           needs: website
-          needs: website
-
 
       - name: Roxygenize
         working-directory: ./pkg/unmixR
