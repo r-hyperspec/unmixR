@@ -1,17 +1,35 @@
-<!--
-%\VignetteEngine{knitr::knitr}
-%\VignetteIndexEntry{ICE with unmixR}
-%\VignetteKeywords{hyperspectral unmixing, iterative constrained endmembers, ICE}
-%\VignetteDepends{rbenchmark}
- -->
+---
+title: "ICE with unmixR"
+author: Anton Belov
+date: July 25, 2016
+output:
+  rmarkdown::html_vignette:
+    toc: yes
+    toc_depth: 2
+    fig_caption: yes
+    number_sections: true
+vignette: >
+  %\VignetteIndexEntry{ICE with unmixR}
+  %\VignetteKeywords{hyperspectral unmixing, iterative constrained endmembers, ICE}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteDepends{rbenchmark}
+  %\VignetteEncoding{UTF-8}
+---
 
+<style>img{max-width: 100%;}</style>
 
-ICE with unmixR
-===============
+```{r setup, include=FALSE}
+# Chunk options
+knitr::opts_chunk$set(
+  echo       = TRUE, # Should blocks with program code be shown in knitted documents?
+  eval       = TRUE, # Should program code be evaluated?
+  fig.height = 4, # Default height for plots.
+  fig.width  = 8, # Default width for plots.
+  fig.align  = "center" # Default alignment for plots in knitted documents.
+)
+```
 
-Anton Belov, July 25, 2016
-
-## Algorithm Description
+# Algorithm Description
 
 Iterative constrained endmembers is an iterative cyclic descent algorithm which converges to an optimal solution for the endmembers. Unlike many other algorithms it does not require pure pixels to be present in the scene. The algorithm makes three steps:
 
@@ -19,7 +37,7 @@ Iterative constrained endmembers is an iterative cyclic descent algorithm which 
 2. Estimate endmembers
 3. Check for convergence
 
-## Abundances Estimation
+# Abundances Estimation
 
 The abundances are calculated via quadratic programing. There are two possible situations. First one is that the assumption is correct. In this case vertices inside the simplex are convex combinations of simplex vertices.
 
@@ -50,7 +68,7 @@ Where $a$ is a vector of abundances. The last line constrains a sum of coordinat
 
 But if there are no pure pixels for each of the endmembers then it is possible that a point $r$ will be outside of the simplex. The barycentric coordinates sum to one but they are not necessarily non-negative. Here are some examples.
 
-#### Point Inside a Simplex
+### Point Inside a Simplex
 
 ```{r}
 # vertices of a simplex
@@ -58,8 +76,8 @@ a <- c(1, 1)
 b <- c(5, 5)
 c <- c(6, 2)
 m <- cbind(a, b, c)
-plot(x = m[1,], y = m[2,])
-polygon(x = m[1,], y = m[2,])
+plot(x = m[1, ], y = m[2, ])
+polygon(x = m[1, ], y = m[2, ])
 # point inside a simplex
 p <- c(5, 3)
 points(x = p[1], y = p[2])
@@ -87,12 +105,12 @@ limSolve::lsei(A = m, B = p, verbose = FALSE)$X
 
 All methods find the same solution. But what will happen if the point is not inside the simplex?
 
-#### Point Outside a Simplex
+### Point Outside a Simplex
 
 ```{r}
 m <- cbind(a, b, c)
-plot(x = m[1,], y = m[2,])
-polygon(x = m[1,], y = m[2,])
+plot(x = m[1, ], y = m[2, ])
+polygon(x = m[1, ], y = m[2, ])
 p <- c(1, 3)
 points(x = p[1], y = p[2])
 ```
@@ -144,25 +162,27 @@ a_{n}
 \end{pmatrix}$$
 
 ```{r}
-E = rep(1, ncol(m))
-G = diag(ncol(m))
-H = rep(0, ncol(m))
+E <- rep(1, ncol(m))
+G <- diag(ncol(m))
+H <- rep(0, ncol(m))
 limSolve::lsei(A = m, B = p, E = E, F = 1, G = G, H = H, verbose = FALSE)$X
 ```
 
 The resulting point is the closest point to `p` from the simplex. In our case it is (2, 2).
 
 ```{r}
-c(sum(m[1,]*nnls::nnls(m1, p1)$x),
-sum(m[2,]*nnls::nnls(m1, p1)$x))
+c(
+  sum(m[1, ] * nnls::nnls(m1, p1)$x),
+  sum(m[2, ] * nnls::nnls(m1, p1)$x)
+)
 ```
 
 In this case the function `solve` is not able to find correct answer, but the two other methods are successful. Let's consider another point outside a simplex.
 
 ```{r}
 m <- cbind(a, b, c)
-plot(x = m[1,], y = m[2,])
-polygon(x = m[1,], y = m[2,])
+plot(x = m[1, ], y = m[2, ])
+polygon(x = m[1, ], y = m[2, ])
 p <- c(6, 5)
 points(x = p[1], y = p[2])
 ```
@@ -178,9 +198,9 @@ nnls::nnls(m1, p1)$x
 ```
 
 ```{r}
-E = rep(1, ncol(m))
-G = diag(ncol(m))
-H = rep(0, ncol(m))
+E <- rep(1, ncol(m))
+G <- diag(ncol(m))
+H <- rep(0, ncol(m))
 abundances <- limSolve::lsei(A = m, B = p, E = E, F = 1, G = G, H = H, verbose = FALSE)$X
 abundances
 ```
@@ -193,7 +213,7 @@ m %*% abundances
 
 Only the last method gives the correct answer.
 
-## Endmember Estimation
+# Endmember Estimation
 
 We assume that pixels are linear combinations of endmembers.
 
@@ -215,116 +235,127 @@ To make the model more resistant to noise in data a regularization parameter is 
 
 $$M^{T} =(AA^{T} + \lambda (I - \frac{11^{T}}{m}))^{-1}AY^{T}$$
 
-## Laser Dataset Example
+# Laser Dataset Example
 
 ```{r}
-    library(hyperSpec, quietly = TRUE)
-    library(ggplot2)
-    library(unmixR)
-    d <- as.matrix(laser)
-    Ud <- svd(crossprod(d), nu = 2)$u
-    reducedData <- d %*% Ud
-    base::colnames(reducedData) <- c("x", "y")
-    qplot(data =  as.data.frame(reducedData), x = x, y = y,
-      geom = "point", main = "laser data reduced to dimensionality of 2")
+library(hyperSpec, quietly = TRUE)
+library(ggplot2)
+library(unmixR)
+d <- as.matrix(laser)
+Ud <- svd(crossprod(d), nu = 2)$u
+reducedData <- d %*% Ud
+base::colnames(reducedData) <- c("x", "y")
+qplot(
+  data = as.data.frame(reducedData), x = x, y = y,
+  geom = "point", main = "laser data reduced to dimensionality of 2"
+)
 ```
 
 ```{r}
-    set.seed(1234)
-    res <- ice(laser, 3)
-    endm <- res$endmembers
-    reducedEndmembers <- endm %*% Ud
-    base::colnames(reducedEndmembers) <- c("x", "y")
-    ggplot() +
-      geom_point(data =  as.data.frame(reducedData), mapping = aes(x = x, y = y)) +
-      geom_polygon(data = as.data.frame(reducedEndmembers), mapping = aes(x = x, y = y),
-        alpha = 0.05, color = "red") +
-      ggtitle("Ice simplex")
+set.seed(1234)
+res <- ice(laser, 3)
+endm <- res$endmembers
+reducedEndmembers <- endm %*% Ud
+base::colnames(reducedEndmembers) <- c("x", "y")
+ggplot() +
+  geom_point(data = as.data.frame(reducedData), mapping = aes(x = x, y = y)) +
+  geom_polygon(
+    data = as.data.frame(reducedEndmembers), mapping = aes(x = x, y = y),
+    alpha = 0.05, color = "red"
+  ) +
+  ggtitle("Ice simplex")
 ```
 
-## Parameters
+# Parameters
 
-### Regularization Parameter
+## Regularization Parameter
 
 This parameter penalizes the model for the simplex size. The regularization technique makes the model less affected by noise in data. The higher the value the bigger the penalty so when it is equal to 1 the simplex shrinks to a single point.
 
 ```{r}
-    m <- 10^(-1:-5)
-    m <- c(m, 0)
-    simplices <- as.data.frame(matrix(ncol = 4))
-    names(simplices) <- c("x", "y", "muValue")
-    simplices <- simplices[-1,]
-    for (i in m) {
-        res <- ice(laser, 3, mu = i)$endmembers
-        reducedEndmembers <- as.data.frame(res %*% Ud)
-        reducedEndmembers <- cbind(reducedEndmembers, rep(i, nrow(reducedEndmembers)))
-        names(reducedEndmembers) <- c("x", "y", "muValue")
-        simplices <- rbind(simplices, reducedEndmembers)
-    }
+m <- 10^(-1:-5)
+m <- c(m, 0)
+simplices <- as.data.frame(matrix(ncol = 4))
+names(simplices) <- c("x", "y", "muValue")
+simplices <- simplices[-1, ]
+for (i in m) {
+  res <- ice(laser, 3, mu = i)$endmembers
+  reducedEndmembers <- as.data.frame(res %*% Ud)
+  reducedEndmembers <- cbind(reducedEndmembers, rep(i, nrow(reducedEndmembers)))
+  names(reducedEndmembers) <- c("x", "y", "muValue")
+  simplices <- rbind(simplices, reducedEndmembers)
+}
 ```
 
 The dependence of the simplex size on the regularization parameter can be seen on the following picture. Since the value is usually very small we consider values equal to powers of 10.
 
 ```{r}
-    ggplot() +
-      geom_point(data = as.data.frame(reducedData), mapping = aes(x = x, y = y)) +
-      geom_polygon(data = head(simplices, -3),
-        mapping = aes(x = x, y = y, colour = muValue, group = muValue),
-        alpha = 0.05) +
-      scale_color_gradientn(colours = rainbow(length(m)), trans = "log10") +
-      ggtitle("Dependence on mu")
+ggplot() +
+  geom_point(data = as.data.frame(reducedData), mapping = aes(x = x, y = y)) +
+  geom_polygon(
+    data = head(simplices, -3),
+    mapping = aes(x = x, y = y, colour = muValue, group = muValue),
+    alpha = 0.05
+  ) +
+  scale_color_gradientn(colours = rainbow(length(m)), trans = "log10") +
+  ggtitle("Dependence on mu")
 ```
 
 As it was already, stated a very small value is enough to prevent the simplex from being unreasonably large. Here the grey triangle corresponds to a simplex computed without the penalty (mu = 0).
 
 ```{r}
-    ggplot() +
-      geom_point(data = as.data.frame(reducedData), mapping = aes(x = x, y = y)) +
-      geom_polygon(data = simplices,
-        mapping = aes(x = x, y = y, colour = muValue, group = muValue),
-        alpha = 0.05) +
-      scale_color_gradientn(colours = rainbow(length(m)), trans = "log10") +
-      ggtitle("Dependence on mu")
+ggplot() +
+  geom_point(data = as.data.frame(reducedData), mapping = aes(x = x, y = y)) +
+  geom_polygon(
+    data = simplices,
+    mapping = aes(x = x, y = y, colour = muValue, group = muValue),
+    alpha = 0.05
+  ) +
+  scale_color_gradientn(colours = rainbow(length(m)), trans = "log10") +
+  ggtitle("Dependence on mu")
 ```
 
-### Tolerance Ratio
+## Tolerance Ratio
 
 The tolerance ratio determines the number of iterations. The algorithm asymptotically approaches the solution and higher values of the parameter mean that the result will be closer to the optimal one and will require more iterations.
 
 ```{r}
-    t <- c(0.9, 0.99, 0.999, 0.9999, 0.99999)
-    simplices <- as.data.frame(matrix(ncol = 4))
-    names(simplices) <- c("x", "y", "tauValue")
-    simplices <- simplices[-1,]
-    for (i in t) {
-        res <- ice(laser, 3, t = i)$endmembers
-        reducedEndmembers <- as.data.frame(res %*% Ud)
-        reducedEndmembers <- cbind(reducedEndmembers, rep(i, nrow(reducedEndmembers)))
-        names(reducedEndmembers) <- c("x", "y", "tauValue")
-        simplices <- rbind(simplices, reducedEndmembers)
-    }
+t <- c(0.9, 0.99, 0.999, 0.9999, 0.99999)
+simplices <- as.data.frame(matrix(ncol = 4))
+names(simplices) <- c("x", "y", "tauValue")
+simplices <- simplices[-1, ]
+for (i in t) {
+  res <- ice(laser, 3, t = i)$endmembers
+  reducedEndmembers <- as.data.frame(res %*% Ud)
+  reducedEndmembers <- cbind(reducedEndmembers, rep(i, nrow(reducedEndmembers)))
+  names(reducedEndmembers) <- c("x", "y", "tauValue")
+  simplices <- rbind(simplices, reducedEndmembers)
+}
 ```
 
 The value of tau is usually extremely close to 1 and the following plot shows it very well. Four simplices corresponding to lower values differ very much. Simplices which correspond to 0.9999 and 0.99999 differ very little. That means that the algorithm finds the optimal solution having the value of tau not less than 0.999.
 
 ```{r}
-    ggplot() +
-      geom_point(data = as.data.frame(reducedData), mapping = aes(x = x, y = y)) +
-      geom_polygon(data = simplices,
-        mapping = aes(x = x, y = y, colour = tauValue, group = tauValue),
-        alpha = 0.05) +
-      scale_color_gradientn(colours = rainbow(3), values = t) +
-      ggtitle("Dependence on tau")
+ggplot() +
+  geom_point(data = as.data.frame(reducedData), mapping = aes(x = x, y = y)) +
+  geom_polygon(
+    data = simplices,
+    mapping = aes(x = x, y = y, colour = tauValue, group = tauValue),
+    alpha = 0.05
+  ) +
+  scale_color_gradientn(colours = rainbow(3), values = t) +
+  ggtitle("Dependence on tau")
 ```
 
 As the number of iterations grows so does the calculation time.
 
 ```{r}
-    tst <- rbenchmark::benchmark(
-      ice(laser, 3, t = 0.9),
-      ice(laser, 3, t = 0.99),
-      ice(laser, 3, t = 0.999),
-      ice(laser, 3, t = 0.9999),
-      ice(laser, 3, t = 0.99999))
-    tst[,1:5]
+tst <- rbenchmark::benchmark(
+  ice(laser, 3, t = 0.9),
+  ice(laser, 3, t = 0.99),
+  ice(laser, 3, t = 0.999),
+  ice(laser, 3, t = 0.9999),
+  ice(laser, 3, t = 0.99999)
+)
+tst[, 1:5]
 ```
