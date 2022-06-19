@@ -32,7 +32,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./app
+        working-directory: ./pkg/unmixR
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
@@ -51,8 +51,8 @@ jobs:
           working-directory: ./pkg/unmixR
           extra-packages: |
            any::covr
-           roxygen2
-           devtools
+           any::roxygen2
+           any::devtools
           needs: |
            coverage
 
