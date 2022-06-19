@@ -45,7 +45,6 @@ jobs:
         working-directory: ./pkg/unmixR
 
       - uses: r-lib/actions/setup-r-dependencies@v2
-        working-directory: ./pkg/unmixR
         with:
           extra-packages: any::covr
           needs: |
