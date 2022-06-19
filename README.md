@@ -33,8 +33,8 @@ The spectra are often visible, infrared, near-infrared, raman spectra or mass sp
 **Installation:** works easiest using `remotes::install_git()`:
 
 ```r
-require("remotes")
-install_git("https://gitlab.com/chemometrics/unmixR.git", subdir = "pkg/unmixR")
+library("remotes")
+remotes::install_github("r-hyperspec/unmixR", subdir = "pkg/unmixR")
 ```
 
 ## Acknoledgements
