@@ -29,11 +29,13 @@ Depends:
     nnls
 Suggests:
     knitr,
+    markdown,
+    rmarkdown,
     plot3D,
     scatterplot3d,
     ggplot2,
     rbenchmark,
-    rmarkdown
+    covr
 Imports:
     testthat,
     settings,

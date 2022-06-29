@@ -1,0 +1,25 @@
+url: https://r-hyperspec.github.io/unmixR/
+template:
+  # bootstrap: 5
+  bootswatch: sandstone
+  theme: breeze-light
+  params:
+    noindex: false
+    bootswatch: sandstone
+
+# -------------------------------------------------------------------------
+
+development:
+  mode: auto
+
+# -------------------------------------------------------------------------
+
+figures:
+  dev: grDevices::png
+  dpi: 96
+  dev.args: []
+  fig.ext: png
+  fig.width: 4.854
+  fig.height: 3
+  fig.retina: 2
+  fig.asp: 1.618

@@ -1,0 +1,89 @@
+# READ-ONLY FILE
+#
+# Original file resides in r-hyperspec/pkg-skelton.
+# DO NOT EDIT in any other repo as these changes will be overwritten.
+# Edit at r-hyperspec/pkg-skelton, then push there and
+# this file will be deployed to the other repos.
+#
+on:
+  push:
+    branches:
+      - release
+      - main
+      - master
+      - develop
+
+      # - auto-update
+      - auto-update-test
+
+  pull_request:
+    branches:
+      - release
+      - main
+      - master
+      - develop
+
+name: R-CMD-check
+
+jobs:
+  R-CMD-check:
+    runs-on: ${{ matrix.config.os }}
+
+    name: ${{ matrix.config.os }} (R-${{ matrix.config.r }})
+
+    defaults:
+      run:
+        working-directory: ./pkg/unmixR
+
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {os: macOS-latest,   r: 'release'}
+
+          - {os: windows-latest, r: 'release'}
+
+
+          - {os: ubuntu-latest,  r: 'devel', http-user-agent: 'release'}
+          - {os: ubuntu-latest,  r: 'release'}
+          - {os: ubuntu-latest,  r: 'oldrel'}
+
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      R_KEEP_PKG_SOURCE: yes
+      CACHE_VERSION: 1
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: r-lib/actions/setup-pandoc@v2
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: ${{ matrix.config.r }}
+          http-user-agent: ${{ matrix.config.http-user-agent }}
+          use-public-rspm: true
+
+      - name: Install XQuartz on macOS
+        if: runner.os == 'macOS'
+        run: brew install --cask xquartz
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          working-directory: ./pkg/unmixR
+          extra-packages: |
+              any::rcmdcheck
+              any::devtools
+          needs: check
+
+      - name: Roxygenize
+        working-directory: ./pkg/unmixR
+        run: |
+          devtools::document()
+        shell: Rscript {0}
+
+      - uses: r-lib/actions/check-r-package@v2
+        with:
+          working-directory: ./pkg/unmixR
+          upload-snapshots: true
+
