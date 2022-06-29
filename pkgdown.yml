@@ -1,12 +1,12 @@
 pandoc: 2.14.2
-pkgdown: 2.0.4
+pkgdown: 2.0.5
 pkgdown_sha: ~
 articles:
   IntroUnmixR: IntroUnmixR.html
   ice: ice.html
   unmixUnittests: unmixUnittests.html
   vca: vca.html
-last_built: 2022-06-19T14:41Z
+last_built: 2022-06-29T16:14Z
 urls:
   reference: https://r-hyperspec.github.io/unmixR/reference
   article: https://r-hyperspec.github.io/unmixR/articles

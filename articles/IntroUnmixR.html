@@ -4,106 +4,115 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="description" content="unmixR">
-<title> • unmixR</title>
-<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.1.0/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.1.0/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Introduction to unmixR • unmixR</title>
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/sandstone/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
-<!-- bootstrap-toc --><script src="https://cdn.rawgit.com/afeld/bootstrap-toc/v1.0.1/dist/bootstrap-toc.min.js"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
+<script src="../pkgdown.js"></script><meta property="og:title" content="Introduction to unmixR">
 <meta property="og:description" content="unmixR">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
 </head>
-<body>
-    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
+<body data-spy="scroll" data-target="#toc">
     
 
-    <nav class="navbar fixed-top navbar-dark navbar-expand-lg bg-primary"><div class="container">
-    
-    <a class="navbar-brand me-2" href="../index.html">unmixR</a>
+    <div class="container template-article">
+      <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <span class="navbar-brand">
+        <a class="navbar-link" href="../index.html">unmixR</a>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.339</span>
+      </span>
+    </div>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.339</small>
-
-    
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-
-    <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto">
-<li class="nav-item">
-  <a class="nav-link" href="../reference/index.html">Reference</a>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+<li>
+  <a href="../reference/index.html">Reference</a>
 </li>
-<li class="active nav-item dropdown">
-  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
-  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/IntroUnmixR.html">UNKNOWN TITLE</a>
-    <a class="dropdown-item" href="../articles/ice.html">UNKNOWN TITLE</a>
-    <a class="dropdown-item" href="../articles/unmixUnittests.html">UNKNOWN TITLE</a>
-    <a class="dropdown-item" href="../articles/vca.html">UNKNOWN TITLE</a>
-  </div>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+<li>
+      <a href="../articles/IntroUnmixR.html">Introduction to unmixR</a>
+    </li>
+    <li>
+      <a href="../articles/ice.html">ICE with unmixR</a>
+    </li>
+    <li>
+      <a href="../articles/unmixUnittests.html">Report of Unittests for unmixR</a>
+    </li>
+    <li>
+      <a href="../articles/vca.html">VCA with unmixR</a>
+    </li>
+  </ul>
 </li>
       </ul>
-<form class="form-inline my-2 my-lg-0" role="search">
-        <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off">
-</form>
-
-      <ul class="navbar-nav">
-<li class="nav-item">
-  <a class="external-link nav-link" href="https://github.com/r-hyperspec/unmixR/" aria-label="github">
-    <span class="fab fa fab fa-github fa-lg"></span>
+<ul class="nav navbar-nav navbar-right">
+<li>
+  <a href="https://github.com/r-hyperspec/unmixR/" class="external-link">
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
       </ul>
 </div>
-
-    
+<!--/.nav-collapse -->
   </div>
-</nav><div class="container template-article">
+<!--/.container -->
+</div>
+<!--/.navbar -->
 
+      
 
-
-
-<div class="row">
-  <main id="main" class="col-md-9"><div class="page-header">
-      <img src="" class="logo" alt=""><h1></h1>
+      </header><div class="row">
+  <div class="col-md-9 contents">
+    <div class="page-header toc-ignore">
+      <h1 data-toc-skip>Introduction to unmixR</h1>
+            <h3 data-toc-skip class="subtitle">Hyperspectral Unmixing</h3>
+                        <h4 data-toc-skip class="author">Bryan A. Hanson</h4>
             
+            <h4 data-toc-skip class="date">July 29, 2016</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/r-hyperspec/unmixR/blob/HEAD/vignettes/IntroUnmixR.Rmd" class="external-link"><code>vignettes/IntroUnmixR.Rmd</code></a></small>
-      <div class="d-none name"><code>IntroUnmixR.Rmd</code></div>
+      <div class="hidden name"><code>IntroUnmixR.Rmd</code></div>
+
     </div>
 
     
     
-<!--
-%\VignetteEngine{knitr::knitr}
-%\VignetteIndexEntry{Introduction to unmixR}
-%\VignetteKeywords{hyperspectral unmixing, vertex component analysis, VCA, NFINDR, N-FINDR, iterative constrained endmembers, ICE, spectroscopy}
- -->
-<div class="section level2">
-<h2 id="hyperspectral-unmixing">Hyperspectral Unmixing<a class="anchor" aria-label="anchor" href="#hyperspectral-unmixing"></a>
-</h2>
-<p>Bryan A. Hanson, July 29, 2016</p>
+<style>img{max-width: 100%;}</style>
 <p>This vignette provides a general background on hyperspectral unmixing. The <code>unmixR</code> package provides several other vignettes that detail each of the main algorithms available in the package. You can access them as follows:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://r-hyperspec.github.io/unmixr/" class="external-link">"unmixR"</a></span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/browseVignettes.html" class="external-link">browseVignettes</a></span><span class="op">(</span><span class="st">"unmixR"</span><span class="op">)</span></code></pre></div>
-<div class="section level3">
-<h3 id="what-are-hyperspectral-data">What are Hyperspectral Data?<a class="anchor" aria-label="anchor" href="#what-are-hyperspectral-data"></a>
-</h3>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://r-hyperspec.github.io/unmixr/" class="external-link">"unmixR"</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/browseVignettes.html" class="external-link">browseVignettes</a></span><span class="op">(</span><span class="st">"unmixR"</span><span class="op">)</span></span></code></pre></div>
+<div class="section level2">
+<h2 id="what-are-hyperspectral-data">What are Hyperspectral Data?<a class="anchor" aria-label="anchor" href="#what-are-hyperspectral-data"></a>
+</h2>
 <p>Hyperspectral data are spectroscopic data collected in a spatial or temporal context. Each sample is a spectrum collected at a particular location or time. Each spectrum is thus accompanied by meta-data giving this information, which is needed to reconstruct images and for other types of analysis. The following figure illustrates the nature of a typical data set. Note that while data is often collected on an <span class="math inline">\(x,y\)</span> grid, it need not be.</p>
 <div class="figure">
 <img src="DataCube.png" alt=""><p class="caption">DataCube</p>
 </div>
 </div>
-<div class="section level3">
-<h3 id="examples-of-hyperspectral-data-sets">Examples of Hyperspectral Data Sets<a class="anchor" aria-label="anchor" href="#examples-of-hyperspectral-data-sets"></a>
-</h3>
+<div class="section level2">
+<h2 id="examples-of-hyperspectral-data-sets">Examples of Hyperspectral Data Sets<a class="anchor" aria-label="anchor" href="#examples-of-hyperspectral-data-sets"></a>
+</h2>
 <p>Hyperspectral data sets are encountered in many disciplines. Here are some examples of hyperspectral data sets.</p>
 <ul>
 <li><p>Biomedical imaging: a series of Raman spectra are collected as a microscopic piece of tissue is scanned in an <span class="math inline">\(x,y\)</span> plane. Such studies are of interest for real time imaging of surgical tissue samples. Other types of spectroscopy can be employed, for instance mass spectrometry.<sup id="a1"><a href="#fn1">1</a></sup>  <sup id="a2"><a href="#fn2">2</a></sup></p></li>
@@ -111,23 +120,23 @@
 <li><p>Art history: A painting is scanned to examine the underlying pigments and perhaps reveal the presence of additional hidden images.<sup id="a5"><a href="#fn5">5</a></sup></p></li>
 </ul>
 </div>
-<div class="section level3">
-<h3 id="what-is-meant-by-unmixing">What is Meant by Unmixing?<a class="anchor" aria-label="anchor" href="#what-is-meant-by-unmixing"></a>
-</h3>
+<div class="section level2">
+<h2 id="what-is-meant-by-unmixing">What is Meant by Unmixing?<a class="anchor" aria-label="anchor" href="#what-is-meant-by-unmixing"></a>
+</h2>
 <p>Unmixing is the process of taking a data set such as those described above and extracting the pure spectra that make up the data. For instance, a mineral-rich landscape may have regions that consist of pure minerals and regions where minerals are mixed due to erosion and movement of materials. Pure minerals have characteristic IR spectra. Spectra collected as part of an airborne imaging study of the region would be expected to consist of many spectral mixtures as well as some pure or nearly pure spectra.</p>
 <p>Terminology: Since so many applications involve collecting data over a <span class="math inline">\(x,y\)</span> grid, this is often referred to as an image or “scene”. This scene is often said to be composed to “pixels” which would correspond to the sample spectra. The pure component spectra are typically referred to as “endmembers.” Sometimes they are simply called components.</p>
 </div>
-<div class="section level3">
-<h3 id="what-information-can-be-obtained">What Information Can Be Obtained?<a class="anchor" aria-label="anchor" href="#what-information-can-be-obtained"></a>
-</h3>
+<div class="section level2">
+<h2 id="what-information-can-be-obtained">What Information Can Be Obtained?<a class="anchor" aria-label="anchor" href="#what-information-can-be-obtained"></a>
+</h2>
 <ul>
 <li><p>Endmembers: The pure spectra of the components of the scene. These can be compared to databases or analyzed using the appropriate domain knowledge to determine their identity.</p></li>
 <li><p>Abundances: Once the endmembers have been obtained, they can be used to calculate the abundances of each endmember at each point in the scene. From this, one can make an abundance map. In the mineral-rich landscape example, this could be a map of a particular mineral of interest.</p></li>
 </ul>
 </div>
-<div class="section level3">
-<h3 id="an-example">An Example<a class="anchor" aria-label="anchor" href="#an-example"></a>
-</h3>
+<div class="section level2">
+<h2 id="an-example">An Example<a class="anchor" aria-label="anchor" href="#an-example"></a>
+</h2>
 <p>Much of the hyperspectral unmixing literature comes from the field of remote sensing where airborne platforms are employed to collect the data. The mineral-rich landscape example above is not an abstraction. A frequently used example is the AVIRIS study of the cuprite region in the state of Nevada, USA. This region is devoid of most vegetation and rich in geological formations.<sup id="a6"><a href="#fn6">6</a></sup></p>
 <p>The following results are based on unmixing a small portion of the cuprite data set. The first figure shows two of the endmembers (careful work and comparison to ground-based geological studies suggest that there are at least 19 distinct mineral entities present). Using the appropriate domain knowledge these endmembers can be identified.</p>
 <div class="figure">
@@ -138,12 +147,12 @@
 <img src="map.png" alt=""><p class="caption">abundance map</p>
 </div>
 </div>
+<div class="section level2">
+<h2 id="the-unmixing-process">The Unmixing Process<a class="anchor" aria-label="anchor" href="#the-unmixing-process"></a>
+</h2>
 <div class="section level3">
-<h3 id="the-unmixing-process">The Unmixing Process<a class="anchor" aria-label="anchor" href="#the-unmixing-process"></a>
+<h3 id="algebraic-description-of-the-data">Algebraic Description of the Data<a class="anchor" aria-label="anchor" href="#algebraic-description-of-the-data"></a>
 </h3>
-<div class="section level4">
-<h4 id="algebraic-description-of-the-data">Algebraic Description of the Data<a class="anchor" aria-label="anchor" href="#algebraic-description-of-the-data"></a>
-</h4>
 <p>In the following, lower-case bold letters represent vectors (matrices with a single row or column), e.g. <span class="math inline">\(\mathbf{x}\)</span>. The corresponding upper-case letter, <span class="math inline">\(\mathbf{X}\)</span>, represents the same conceptual quantity, but scaled up so that each dimension is greater than 1. Since hyperspectral data sets are typically stored with samples in rows and wavelengths in columns, <span class="math inline">\(\mathbf{x}\)</span> would be a particular row of <span class="math inline">\(\mathbf{X}\)</span>.</p>
 <p>For hyperspectral data measured at <span class="math inline">\(p\)</span> wavelengths, and assuming <span class="math inline">\(m\)</span> endmembers are present, the data in a hyperspectral study can be represented in several ways. A single sample is a spectrum at location (pixel) or time point. It can be represented as</p>
 <p><span class="math display">\[ \mathbf{x}^{(1 \ \times \ p)} = \mathbf{a}^{(1 \ \times \ m)} \times \mathbf{E}^{(m \ \times \ p)} + \epsilon \]</span></p>
@@ -162,17 +171,17 @@
 <p><span class="math display">\[ \sum_{i=1}^{m} a_i = 1 \]</span></p>
 <p>where <span class="math inline">\(i\)</span> is one of the <span class="math inline">\(m\)</span> endmembers of the system.</p>
 </div>
-<div class="section level4">
-<h4 id="data-reduction">Data Reduction<a class="anchor" aria-label="anchor" href="#data-reduction"></a>
-</h4>
+<div class="section level3">
+<h3 id="data-reduction">Data Reduction<a class="anchor" aria-label="anchor" href="#data-reduction"></a>
+</h3>
 <p>All hyperspectral unmixing algorithms begin with some sort of data reduction step. There are several possibilities, but the most familiar will be PCA or principal components analysis. PCA is a widely used method which converts raw data into uncorrelated abstract components which can stand in for the data. The advantage to this is that you don’t need all the components to represent the data, because some or even many of them are merely noise. In the spectral context, this is equivalent to saying that some wavelengths are not informative, so we can discard them with little change to our analysis. PCA is a dimensional reduction method because instead of having <span class="math inline">\(p\)</span> wavelengths, we now have many fewer abstract components to deal with. Hence PCA not only removes noise but makes the problem computationally much faster.</p>
 <p>After PCA (or a similar technique), the equation describing the system would be:</p>
 <p><span class="math display">\[ \mathbf{X} = \mathbf{A}\mathbf{E} \]</span></p>
 <p>where <span class="math inline">\(\epsilon\)</span> has effectively been eliminated. However, and this is important, <span class="math inline">\(\mathbf{X}\)</span> is no longer the original data, but rather the abstract components. Its dimensions are still <span class="math inline">\(n \ \times \ p\)</span>, but <span class="math inline">\(p\)</span> is no longer <span class="math inline">\(p\)</span>, it is much smaller than the original number of wavelengths. Perhaps it should be called something different, like <span class="math inline">\(p'\)</span>, but the habit in the literature is to ignore that <span class="math inline">\(\mathbf{X}\)</span> and <span class="math inline">\(p\)</span> are no longer what they were originally. The subsequent steps apply either way, but after dimension reduction they are computationally tractable.</p>
 </div>
-<div class="section level4">
-<h4 id="the-role-of-the-simplex">The Role of the Simplex<a class="anchor" aria-label="anchor" href="#the-role-of-the-simplex"></a>
-</h4>
+<div class="section level3">
+<h3 id="the-role-of-the-simplex">The Role of the Simplex<a class="anchor" aria-label="anchor" href="#the-role-of-the-simplex"></a>
+</h3>
 <p>A key concept common to unmixing algorithms is that of a simplex. A simplex is a container that holds the data points. For two-dimensional data (measurements at two wavelengths), such as that illustrated below, several kinds of containers can be imagined. The “convex hull” is a container that is shrink-wrapped around the cloud of data points. A simplex for two-dimensional data is a scalene triangle of the smallest possible size.</p>
 <div class="figure">
 <img src="Simplex2small.png" alt=""><p class="caption">2-Simplex</p>
@@ -180,20 +189,20 @@
 <p>The reason a simplex is of interest is that for unmixing purposes, the vertices of the simplex are the locations of the endmembers. Sticking with the two-dimensional example, the three vertices correspond theoretically to pure components. Every other point inside the simplex can be thought of as a weighted average of each of the endmembers.</p>
 <p>If one has spectra composed of <span class="math inline">\(p\)</span> wavelengths, the data exists as a point cloud in <span class="math inline">\(p\)</span>-dimensions. If <span class="math inline">\(p = 2\)</span> as in the figure above, the cloud of data can be captured in a 2-simplex or triangle. For <span class="math inline">\(p = 3\)</span>, a tetrahedron would be needed to contain the data. For <span class="math inline">\(p &gt; 3\)</span> there is no simple visual analog to the container, but we know that it would have <span class="math inline">\(p + 1\)</span> edges. Typical data sets might have hundreds or even thousands of wavelengths. Simplices of this size are hard to imagine and would be computationally intractable regardless. Recall from the section above however, that prior to the unmixing process, we reduce the data (remember that <span class="math inline">\(p\)</span> is not really <span class="math inline">\(p\)</span> any longer). Thus, a data set of perhaps hundreds of wavelengths can be reduced to a much smaller dimensionality. In practice, <span class="math inline">\(p\)</span> is chosen (or perhaps we should say “guessed at”) by the researcher using the relevant domain knowledge. The unmixing process then seeks to find these <span class="math inline">\(p\)</span> endmembers from which all the data can be reconstructed.</p>
 </div>
-<div class="section level4">
-<h4 id="algorithm-options">Algorithm Options<a class="anchor" aria-label="anchor" href="#algorithm-options"></a>
-</h4>
+<div class="section level3">
+<h3 id="algorithm-options">Algorithm Options<a class="anchor" aria-label="anchor" href="#algorithm-options"></a>
+</h3>
 <p>With this background in mind, you should be ready to read the vignettes on individual algorithms. A number of unmixing algorithms have been described in the literature. The chief difference between them is how they go about finding the relevant simplex. In <code>unmixR</code>, there are variations of the NFINDR, VCA and ICE algorithms. See <code><a href="../reference/nfindr.html">?nfindr</a></code>, <code><a href="../reference/vca.html">?vca</a></code>, <code><a href="../reference/ice.html">?ice</a></code> or <code>browseVignettes("unmixR")</code> for additional information.</p>
 </div>
 </div>
-<div class="section level3">
-<h3 id="project-history">Project History<a class="anchor" aria-label="anchor" href="#project-history"></a>
-</h3>
+<div class="section level2">
+<h2 id="project-history">Project History<a class="anchor" aria-label="anchor" href="#project-history"></a>
+</h2>
 <p>The development of <code>unmixR</code> was initiated by Claudia Beleites. Most of the code was written by Conor McManus (2013) and Anton Belov (2016). Conor and Anton were participants in the Google Summer of Code program. Additional code was written by Claudia and Bryan A. Hanson. Claudia, Bryan and Simon Fuller were the mentors in the GSOC program.</p>
 </div>
-<div class="section level3">
-<h3 id="notes">Notes<a class="anchor" aria-label="anchor" href="#notes"></a>
-</h3>
+<div class="section level2">
+<h2 id="notes">Notes<a class="anchor" aria-label="anchor" href="#notes"></a>
+</h2>
 <p><b id="fn1">1</b> Bergner et. al. “Hyperspectral unmixing of Raman micro-images for assessment of morphological and chemical parameters in non-dried brain tumor specimens” Anal. Bioanalytical Chemistry vol. 405 no. 27 pp. 8719-8728 (2013).<a href="#a1">↵</a></p>
 <p><b id="fn2">2</b> Hedegaard et. al. “Spectral unmixing and clustering algorithms for assessment of single cells by Raman microscopic imaging” Theoretical Chemistry Accounts vol. 130 no. 4-6 pp. 1249-1260 (2011).<a href="#a2">↵</a></p>
 <p><b id="fn3">3</b> Green et. al. “Imaging spectroscopy and the Airborne Visible Infrared Imaging Spectrometer (AVIRIS)” Remote Sensing Environment vol. 65 no. 3 pp. 227-248 (1998).<a href="#a3">↵</a></p>
@@ -204,27 +213,33 @@
 <img src="GSoC2016Logo.png" alt=""><p class="caption">GSOC Logo</p>
 </div>
 </div>
+  </div>
+
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+
+        <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
+    </nav>
 </div>
-  </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
-    </nav></aside>
+
 </div>
 
 
 
-    <footer><div class="pkgdown-footer-left">
+      <footer><div class="copyright">
   <p></p>
 <p>Developed by Anton Belov, Conor McManus, Claudia Beleites, Bryan A. Hanson, Simon Fuller.</p>
 </div>
 
-<div class="pkgdown-footer-right">
+<div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
-    </footer>
+      </footer>
 </div>
 
   
+
 
   
 
