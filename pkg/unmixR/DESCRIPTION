@@ -30,6 +30,7 @@ Depends:
 Suggests:
     knitr,
     markdown,
+    rmarkdown,
     plot3D,
     scatterplot3d,
     ggplot2,
