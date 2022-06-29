@@ -1,14 +1,26 @@
-<!--
-%\VignetteEngine{knitr::knitr}
-%\VignetteIndexEntry{Report of unittests for unmixR}
- -->
-unmixR unit test report
-========================================================
+---
+title: "Report of Unittests for unmixR"
+output:
+  rmarkdown::html_vignette:
+    toc: yes
+    toc_depth: 2
+    fig_caption: yes
+    number_sections: true
+vignette: >
+  %\VignetteIndexEntry{Report of Unittests for unmixR}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+<style>img{max-width: 100%;}</style>
 
 This vignette runs the unit tests at build time.
 
+```{r setup, message=FALSE, warning=FALSE, results='hide'}
+library(unmixR)
+library(testthat)
+```
+
 ```{r}
-require ("unmixR")
-require ("testthat")
-unmixR.unittest ()
+unmixR.unittest()
 ```
