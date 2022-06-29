@@ -102,9 +102,6 @@ simplex_volume <- function(data, indices = seq_len(nrow(data)), factorial = TRUE
     expect_equal(simplex_volume(triangle_2d, factorial = TRUE), area_2d)
     # Provide indices
     expect_equal(simplex_volume(triangle_2d, indices = 1:3, factorial = TRUE), area_2d)
-    # FIXME: Fix the tests below ASAP
-    skip("Skip tests to implement GHA infrastructure. Fix the tests ASAP")
-
     # Without factorial
     expect_equal(simplex_volume(triangle_2d, factorial = FALSE), 2*area_2d)
     # Moving the triangle should not change the area
