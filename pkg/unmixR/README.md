@@ -1,4 +1,10 @@
+```
+
+```
+
+
 # `unmixR`: An R Package for Unmixing of Hyperspectral Images
+
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/r-hyperspec/unmixR/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/r-hyperspec/unmixR/actions/workflows/R-CMD-check.yaml)
@@ -10,14 +16,10 @@
 <!-- badges: end -->
 
 <center>
-
-This `README` is for GitHub only. `pkgdown` website currently has a separate `README`.
-<br>
-
 `unmixR` is **WORK IN PROGRESS**.
-
 </center>
 <br>
+
 
 The fundamental structures & behavior may change.
 For the time being, use at your own risk.

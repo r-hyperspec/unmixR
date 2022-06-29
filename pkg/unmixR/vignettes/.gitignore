@@ -1,0 +1,10 @@
+*.html
+*.R
+resources/
+!resources/*.R
+!vignette-functions.R
+!vignette-default-settings.R
+old/
+*_cache/
+*_files/
+rawdata/
