@@ -3,7 +3,7 @@
 ##' @include vca.R
 ##' @export
 
-vca.default <- function(data, p, method = c("05", "Lopez2012"), seed = NULL, SNR = estSNR(data, p), ..., EMonly = FALSE) {
+vca.default <- function(data, p, method = c("05", "Lopez2012"), seed = 1L, SNR = estSNR(data, p), ..., EMonly = FALSE) {
 
   # check if the method passed in is valid
   method <- match.arg (method)
@@ -17,9 +17,7 @@ vca.default <- function(data, p, method = c("05", "Lopez2012"), seed = NULL, SNR
   }
 
   # set the random number generator seed if supplied
-  if (!is.null(seed)) {
-    set.seed(seed)
-  }
+  set.seed(seed)
   
   force(SNR)
   reducedData <- dimensionalityReduction(data, p, SNR)
