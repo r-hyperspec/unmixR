@@ -3,46 +3,61 @@
 ##' @include nfindr.R
 ##' @export
 ##' @importFrom stats prcomp
+nfindr.default <- function(x, p, indices=sample(nrow(data), p),
+                          iter = c("points", "endmembers", "both"),
+                          estimator = c("Cramer", "volume", "height", "cofactor", "LDU"),
+                          iter_max = 10,
+                          keep_data=TRUE,
+                          debug.level = 0, ...) {
 
-nfindr.default <- function(data, p,
-                           method="99", indices=sample(nrow(data), p), ...,
-                           EMonly=FALSE) {
+  ## Parse and validate function arguments -----
+  iter <- tolower(match.arg(iter))
+  estimator <- tolower(match.arg(estimator))
 
-  ## get the selected nfindr method
-  nfindrFunc <- get0 (paste0 ("nfindr", method), mode = "function")
-
-  # check if the method passed in was found
-  if (is.null (nfindrFunc)) {
-    stop ('Invalid option for method parameter (', method ,') try: ', 
-          paste (get.implementations ("nfindr"), collapse = ", "))
+  # get the selected nfindr method
+  nfindr_func <- get0(
+    paste(".nfindr", estimator, iter, sep = "_"),
+    mode = "function"
+  )
+  if (is.null(nfindr_func)) {
+    stop("Invalid options iter and/or estimator parameters")
   }
 
-  ## check for p being with the valid range, >= 2
+  # check for p being with the valid range, >= 2
   if (!is.numeric(p) || p < 2) {
     stop("p must be a positive integer >= 2")
   }
 
-
-  # keep original data
-  orig <- data
-
-  # transform the input into a matrix
-  data <- as.matrix (data)
-
-  # reduce the dimensionality of the data using PCA
-  # do nothing if the data was passed in already reduced
-  if (ncol(data) != p - 1) {
-    data <- stats::prcomp(data)[["x"]][, sequence(p-1), drop=FALSE]
+  # for "both" type iteration increase the number of iteration
+  # to approximately similar amount that "points" estimator would have
+  if (iter == "both") {
+    iter_max <- iter_max * p
   }
 
-  # call the function to get the indices of the endmembers
-  indices <- nfindrFunc(data, p, indices, ...)
-  
-  # sort the indices to normalise the order between runs
-  indices <- sort (indices) 
+  # transform the input into a matrix
+  data <- as.matrix(x)
+  m <- nrow(data)
+  n <- ncol(data)
 
-  res <- list(data = if (!EMonly) orig else orig[indices,],
-              indices = if (!EMonly) indices else 1:p)
-  class(res) <- "nfindr"
-  return(res)
+  ## Reduce dimension, if required ----
+  # reduce the dimension of the data using PCA
+  # do nothing if the data was passed in already reduced
+  if (n != p - 1) {
+    data <- stats::prcomp(data)[["x"]][, sequence(p - 1), drop = FALSE]
+  }
+
+  ## Do N-FINDR -----
+  result <- nfindr_func(data, indices, iter_max = iter_max, debug.level = debug.level)
+  
+  # Keep original data in the object
+  if (keep_data) {
+    result$data <- data
+  }
+  
+  # sort the indices to normalize the order between runs
+  result$indices <- sort(result$indices)
+  
+  class(result) <- "nfindr"
+  
+  return(result)
 }
