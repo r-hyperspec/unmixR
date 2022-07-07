@@ -1,3 +1,7 @@
+##' @param formula A formula object without a response term
+##' @param frame A data frame containing the variables in the model
+##' @param ... Parameters to be passed to nfindr.default
+##'
 ##' @name nfindr
 ##' @rdname nfindr
 ##' @export
@@ -23,13 +27,17 @@ nfindr.formula <- function(formula, frame, ...) {
   
   expect_true (require(hyperSpec))
   
+  set.seed(32)
+  formula_nfindr <- nfindr(~ x, .testdata, p = 3)
+  
   test_that("error on response term in formula", {
     expect_error(nfindr (x ~ ., .testdata, p = 2))
   })
   
   test_that ("same results with formula interface", {
-    expect_equal(nfindr (~ x, .testdata, p = 3)$indices,
-                 nfindr (.testdata$x, p = 3)$indices)
+    set.seed(32)
+    default_nfindr <- nfindr (.testdata$x, p = 3)$indices
+    expect_equal(formula_nfindr$indices, default_nfindr)
   })  
   
   test_that ("check conversion of classes", {
@@ -37,11 +45,12 @@ nfindr.formula <- function(formula, frame, ...) {
   })
   
   test_that ("Formula Interface", {
-    expect_equal(nfindr (~ x, .testdata, p = 3)$indices, .correct)  
+    expect_equal(formula_nfindr$indices, .correct)
+    set.seed(32)
     expect_equal(nfindr (~ ., as.data.frame (.testdata$x), p = 3)$indices, .correct)  
   })
   
   test_that ("Formula Interface does not produce offset term", {
-    expect_false("(Intercept)" %in% colnames (nfindr (~ x, .testdata, p = 3)$data))
+    expect_false("(Intercept)" %in% colnames (formula_nfindr$data))
   })
 }

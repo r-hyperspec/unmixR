@@ -5,7 +5,7 @@
 ##' pixels is larger than any other volume formed from any other combination
 ##' of pixels.
 ##'
-##' @param data Data to unmix. It will be converted to a matrix using
+##' @param x Data to unmix. It will be converted to a matrix using
 ##'   as.matrix. The matrix should contain a spectrum per row. If the dimension
 ##'   of the data is larger than `p-1` then it will be dimensionally reduced
 ##'   using PCA. If you want to reduce the data using some other method then
@@ -83,7 +83,7 @@
 ##' @export
 ##' @include unmixR-package.R
 
-nfindr <- function (...) {
+nfindr <- function (x, ...) {
   UseMethod("nfindr")
 }
 

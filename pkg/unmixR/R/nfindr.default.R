@@ -3,13 +3,12 @@
 ##' @include nfindr.R
 ##' @export
 ##' @importFrom stats prcomp
-
-nfindr.default <- function(data, p, indices=sample(nrow(data), p),
+nfindr.default <- function(x, p, indices=sample(nrow(data), p),
                           iter = c("points", "endmembers", "both"),
                           estimator = c("Cramer", "volume", "height", "cofactor", "LDU"),
                           iter_max = 10,
                           keep_data=TRUE,
-                          debug.level = 0) {
+                          debug.level = 0, ...) {
 
   ## Parse and validate function arguments -----
   iter <- tolower(match.arg(iter))
@@ -36,7 +35,7 @@ nfindr.default <- function(data, p, indices=sample(nrow(data), p),
   }
 
   # transform the input into a matrix
-  data <- as.matrix(data)
+  data <- as.matrix(x)
   m <- nrow(data)
   n <- ncol(data)
 
