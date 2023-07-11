@@ -85,8 +85,10 @@
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Introduction to unmixR</h1>
-            <h3 data-toc-skip class="subtitle">Hyperspectral Unmixing</h3>
-                        <h4 data-toc-skip class="author">Bryan A. Hanson</h4>
+            <h3 data-toc-skip class="subtitle">Hyperspectral
+Unmixing</h3>
+                        <h4 data-toc-skip class="author">Bryan A.
+Hanson</h4>
             
             <h4 data-toc-skip class="date">July 29, 2016</h4>
       
@@ -98,14 +100,22 @@
     
     
 <style>img{max-width: 100%;}</style>
-<p>This vignette provides a general background on hyperspectral unmixing. The <code>unmixR</code> package provides several other vignettes that detail each of the main algorithms available in the package. You can access them as follows:</p>
+<p>This vignette provides a general background on hyperspectral
+unmixing. The <code>unmixR</code> package provides several other
+vignettes that detail each of the main algorithms available in the
+package. You can access them as follows:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://r-hyperspec.github.io/unmixr/" class="external-link">"unmixR"</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/browseVignettes.html" class="external-link">browseVignettes</a></span><span class="op">(</span><span class="st">"unmixR"</span><span class="op">)</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="what-are-hyperspectral-data">What are Hyperspectral Data?<a class="anchor" aria-label="anchor" href="#what-are-hyperspectral-data"></a>
 </h2>
-<p>Hyperspectral data are spectroscopic data collected in a spatial or temporal context. Each sample is a spectrum collected at a particular location or time. Each spectrum is thus accompanied by meta-data giving this information, which is needed to reconstruct images and for other types of analysis. The following figure illustrates the nature of a typical data set. Note that while data is often collected on an <span class="math inline">\(x,y\)</span> grid, it need not be.</p>
+<p>Hyperspectral data are spectroscopic data collected in a spatial or
+temporal context. Each sample is a spectrum collected at a particular
+location or time. Each spectrum is thus accompanied by meta-data giving
+this information, which is needed to reconstruct images and for other
+types of analysis. The following figure illustrates the nature of a
+typical data set. Note that while data is often collected on an <span class="math inline">\(x,y\)</span> grid, it need not be.</p>
 <div class="figure">
 <img src="DataCube.png" alt=""><p class="caption">DataCube</p>
 </div>
@@ -113,36 +123,75 @@
 <div class="section level2">
 <h2 id="examples-of-hyperspectral-data-sets">Examples of Hyperspectral Data Sets<a class="anchor" aria-label="anchor" href="#examples-of-hyperspectral-data-sets"></a>
 </h2>
-<p>Hyperspectral data sets are encountered in many disciplines. Here are some examples of hyperspectral data sets.</p>
+<p>Hyperspectral data sets are encountered in many disciplines. Here are
+some examples of hyperspectral data sets.</p>
 <ul>
-<li><p>Biomedical imaging: a series of Raman spectra are collected as a microscopic piece of tissue is scanned in an <span class="math inline">\(x,y\)</span> plane. Such studies are of interest for real time imaging of surgical tissue samples. Other types of spectroscopy can be employed, for instance mass spectrometry.<sup id="a1"><a href="#fn1">1</a></sup>  <sup id="a2"><a href="#fn2">2</a></sup></p></li>
-<li><p>Airborne imaging: A satellite, plane or drone flies a pattern over land and collects spectra in the visible, UV or NIR range. Such studies have been used to map mineral formations and to study the quality of forest canopies.<sup id="a3"><a href="#fn3">3</a></sup>  <sup id="a4"><a href="#fn4">4</a></sup></p></li>
-<li><p>Art history: A painting is scanned to examine the underlying pigments and perhaps reveal the presence of additional hidden images.<sup id="a5"><a href="#fn5">5</a></sup></p></li>
+<li><p>Biomedical imaging: a series of Raman spectra are collected as a
+microscopic piece of tissue is scanned in an <span class="math inline">\(x,y\)</span> plane. Such studies are of interest
+for real time imaging of surgical tissue samples. Other types of
+spectroscopy can be employed, for instance mass
+spectrometry.<sup id="a1"><a href="#fn1">1</a></sup>  <sup id="a2"><a href="#fn2">2</a></sup></p></li>
+<li><p>Airborne imaging: A satellite, plane or drone flies a pattern
+over land and collects spectra in the visible, UV or NIR range. Such
+studies have been used to map mineral formations and to study the
+quality of forest canopies.<sup id="a3"><a href="#fn3">3</a></sup>  <sup id="a4"><a href="#fn4">4</a></sup></p></li>
+<li><p>Art history: A painting is scanned to examine the underlying
+pigments and perhaps reveal the presence of additional hidden
+images.<sup id="a5"><a href="#fn5">5</a></sup></p></li>
 </ul>
 </div>
 <div class="section level2">
 <h2 id="what-is-meant-by-unmixing">What is Meant by Unmixing?<a class="anchor" aria-label="anchor" href="#what-is-meant-by-unmixing"></a>
 </h2>
-<p>Unmixing is the process of taking a data set such as those described above and extracting the pure spectra that make up the data. For instance, a mineral-rich landscape may have regions that consist of pure minerals and regions where minerals are mixed due to erosion and movement of materials. Pure minerals have characteristic IR spectra. Spectra collected as part of an airborne imaging study of the region would be expected to consist of many spectral mixtures as well as some pure or nearly pure spectra.</p>
-<p>Terminology: Since so many applications involve collecting data over a <span class="math inline">\(x,y\)</span> grid, this is often referred to as an image or “scene”. This scene is often said to be composed to “pixels” which would correspond to the sample spectra. The pure component spectra are typically referred to as “endmembers.” Sometimes they are simply called components.</p>
+<p>Unmixing is the process of taking a data set such as those described
+above and extracting the pure spectra that make up the data. For
+instance, a mineral-rich landscape may have regions that consist of pure
+minerals and regions where minerals are mixed due to erosion and
+movement of materials. Pure minerals have characteristic IR spectra.
+Spectra collected as part of an airborne imaging study of the region
+would be expected to consist of many spectral mixtures as well as some
+pure or nearly pure spectra.</p>
+<p>Terminology: Since so many applications involve collecting data over
+a <span class="math inline">\(x,y\)</span> grid, this is often referred
+to as an image or “scene”. This scene is often said to be composed to
+“pixels” which would correspond to the sample spectra. The pure
+component spectra are typically referred to as “endmembers.” Sometimes
+they are simply called components.</p>
 </div>
 <div class="section level2">
 <h2 id="what-information-can-be-obtained">What Information Can Be Obtained?<a class="anchor" aria-label="anchor" href="#what-information-can-be-obtained"></a>
 </h2>
 <ul>
-<li><p>Endmembers: The pure spectra of the components of the scene. These can be compared to databases or analyzed using the appropriate domain knowledge to determine their identity.</p></li>
-<li><p>Abundances: Once the endmembers have been obtained, they can be used to calculate the abundances of each endmember at each point in the scene. From this, one can make an abundance map. In the mineral-rich landscape example, this could be a map of a particular mineral of interest.</p></li>
+<li><p>Endmembers: The pure spectra of the components of the scene.
+These can be compared to databases or analyzed using the appropriate
+domain knowledge to determine their identity.</p></li>
+<li><p>Abundances: Once the endmembers have been obtained, they can be
+used to calculate the abundances of each endmember at each point in the
+scene. From this, one can make an abundance map. In the mineral-rich
+landscape example, this could be a map of a particular mineral of
+interest.</p></li>
 </ul>
 </div>
 <div class="section level2">
 <h2 id="an-example">An Example<a class="anchor" aria-label="anchor" href="#an-example"></a>
 </h2>
-<p>Much of the hyperspectral unmixing literature comes from the field of remote sensing where airborne platforms are employed to collect the data. The mineral-rich landscape example above is not an abstraction. A frequently used example is the AVIRIS study of the cuprite region in the state of Nevada, USA. This region is devoid of most vegetation and rich in geological formations.<sup id="a6"><a href="#fn6">6</a></sup></p>
-<p>The following results are based on unmixing a small portion of the cuprite data set. The first figure shows two of the endmembers (careful work and comparison to ground-based geological studies suggest that there are at least 19 distinct mineral entities present). Using the appropriate domain knowledge these endmembers can be identified.</p>
+<p>Much of the hyperspectral unmixing literature comes from the field of
+remote sensing where airborne platforms are employed to collect the
+data. The mineral-rich landscape example above is not an abstraction. A
+frequently used example is the AVIRIS study of the cuprite region in the
+state of Nevada, USA. This region is devoid of most vegetation and rich
+in geological formations.<sup id="a6"><a href="#fn6">6</a></sup></p>
+<p>The following results are based on unmixing a small portion of the
+cuprite data set. The first figure shows two of the endmembers (careful
+work and comparison to ground-based geological studies suggest that
+there are at least 19 distinct mineral entities present). Using the
+appropriate domain knowledge these endmembers can be identified.</p>
 <div class="figure">
 <img src="endmembers.png" alt=""><p class="caption">endmembers</p>
 </div>
-<p>The next figure is an abundance map of these endmembers. Clearly if you were a prospector these maps would be a great guide to finding treasure!</p>
+<p>The next figure is an abundance map of these endmembers. Clearly if
+you were a prospector these maps would be a great guide to finding
+treasure!</p>
 <div class="figure">
 <img src="map.png" alt=""><p class="caption">abundance map</p>
 </div>
@@ -153,20 +202,49 @@
 <div class="section level3">
 <h3 id="algebraic-description-of-the-data">Algebraic Description of the Data<a class="anchor" aria-label="anchor" href="#algebraic-description-of-the-data"></a>
 </h3>
-<p>In the following, lower-case bold letters represent vectors (matrices with a single row or column), e.g. <span class="math inline">\(\mathbf{x}\)</span>. The corresponding upper-case letter, <span class="math inline">\(\mathbf{X}\)</span>, represents the same conceptual quantity, but scaled up so that each dimension is greater than 1. Since hyperspectral data sets are typically stored with samples in rows and wavelengths in columns, <span class="math inline">\(\mathbf{x}\)</span> would be a particular row of <span class="math inline">\(\mathbf{X}\)</span>.</p>
-<p>For hyperspectral data measured at <span class="math inline">\(p\)</span> wavelengths, and assuming <span class="math inline">\(m\)</span> endmembers are present, the data in a hyperspectral study can be represented in several ways. A single sample is a spectrum at location (pixel) or time point. It can be represented as</p>
-<p><span class="math display">\[ \mathbf{x}^{(1 \ \times \ p)} = \mathbf{a}^{(1 \ \times \ m)} \times \mathbf{E}^{(m \ \times \ p)} + \epsilon \]</span></p>
-<p>Where <span class="math inline">\(\mathbf{x}\)</span> is the spectrum, <span class="math inline">\(\mathbf{a}\)</span> gives the fraction of each endmember present at that particular pixel, and <span class="math inline">\(\mathbf{E}\)</span> is a matrix of the endmembers, the pure component spectra. <span class="math inline">\(\epsilon\)</span> represents noise. Think of <span class="math inline">\(\mathbf{E}\)</span> as a library of reference spectra. It’s just that before unmixing you don’t have that library! In words, this says that a given spectrum is the sum of the product of each abundance times the corresponding reference spectrum, plus noise.</p>
+<p>In the following, lower-case bold letters represent vectors (matrices
+with a single row or column), e.g. <span class="math inline">\(\mathbf{x}\)</span>. The corresponding upper-case
+letter, <span class="math inline">\(\mathbf{X}\)</span>, represents the
+same conceptual quantity, but scaled up so that each dimension is
+greater than 1. Since hyperspectral data sets are typically stored with
+samples in rows and wavelengths in columns, <span class="math inline">\(\mathbf{x}\)</span> would be a particular row of
+<span class="math inline">\(\mathbf{X}\)</span>.</p>
+<p>For hyperspectral data measured at <span class="math inline">\(p\)</span> wavelengths, and assuming <span class="math inline">\(m\)</span> endmembers are present, the data in a
+hyperspectral study can be represented in several ways. A single sample
+is a spectrum at location (pixel) or time point. It can be represented
+as</p>
+<p><span class="math display">\[ \mathbf{x}^{(1 \ \times \ p)} =
+\mathbf{a}^{(1 \ \times \ m)} \times \mathbf{E}^{(m \ \times \ p)} +
+\epsilon \]</span></p>
+<p>Where <span class="math inline">\(\mathbf{x}\)</span> is the
+spectrum, <span class="math inline">\(\mathbf{a}\)</span> gives the
+fraction of each endmember present at that particular pixel, and <span class="math inline">\(\mathbf{E}\)</span> is a matrix of the endmembers,
+the pure component spectra. <span class="math inline">\(\epsilon\)</span> represents noise. Think of <span class="math inline">\(\mathbf{E}\)</span> as a library of reference
+spectra. It’s just that before unmixing you don’t have that library! In
+words, this says that a given spectrum is the sum of the product of each
+abundance times the corresponding reference spectrum, plus noise.</p>
 <p>If we scale this up to a real data set containing <span class="math inline">\(n\)</span> samples, the equation above becomes</p>
-<p><span class="math display">\[ \mathbf{X}^{(n \ \times \ p)} = \mathbf{A}^{(n \ \times \ m)} \times \mathbf{E}^{(m \ \times \ p)} + \epsilon \]</span></p>
-<p>where <span class="math inline">\(\mathbf{X}\)</span> is a matrix of the raw data and <span class="math inline">\(\mathbf{A}\)</span> is a matrix giving the abundances of each endmember in each sample (<span class="math inline">\(\mathbf{E}\)</span> and <span class="math inline">\(\epsilon\)</span> as before). If we drop some of the extra notation, the above can be written</p>
-<p><span class="math display">\[ \mathbf{X} = \mathbf{A}\mathbf{E} + \epsilon \]</span></p>
+<p><span class="math display">\[ \mathbf{X}^{(n \ \times \ p)} =
+\mathbf{A}^{(n \ \times \ m)} \times \mathbf{E}^{(m \ \times \ p)} +
+\epsilon \]</span></p>
+<p>where <span class="math inline">\(\mathbf{X}\)</span> is a matrix of
+the raw data and <span class="math inline">\(\mathbf{A}\)</span> is a
+matrix giving the abundances of each endmember in each sample (<span class="math inline">\(\mathbf{E}\)</span> and <span class="math inline">\(\epsilon\)</span> as before). If we drop some of
+the extra notation, the above can be written</p>
+<p><span class="math display">\[ \mathbf{X} = \mathbf{A}\mathbf{E} +
+\epsilon \]</span></p>
 <p>for simplicity.</p>
-<p>If instead we scale down to a single wavelength in a single spectrum, the equation becomes</p>
-<p><span class="math display">\[ x_k = \mathbf{a} \times \mathbf{e}_k \]</span></p>
-<p>where <span class="math inline">\(k\)</span> is one of the <span class="math inline">\(p\)</span> wavelengths (<span class="math inline">\(\mathbf{e}_k\)</span> is one wavelength selected from the reference library <span class="math inline">\(\mathbf{E}\)</span>).</p>
-<p>By the way, this way of looking at the data is called the “linear mixing model” or the “convex geometry model.” We’ll have more to say about this latter term in a bit.</p>
-<p>The system is subject to several constraints. The abundances must be positive, and they must sum to one.</p>
+<p>If instead we scale down to a single wavelength in a single spectrum,
+the equation becomes</p>
+<p><span class="math display">\[ x_k = \mathbf{a} \times \mathbf{e}_k
+\]</span></p>
+<p>where <span class="math inline">\(k\)</span> is one of the <span class="math inline">\(p\)</span> wavelengths (<span class="math inline">\(\mathbf{e}_k\)</span> is one wavelength selected
+from the reference library <span class="math inline">\(\mathbf{E}\)</span>).</p>
+<p>By the way, this way of looking at the data is called the “linear
+mixing model” or the “convex geometry model.” We’ll have more to say
+about this latter term in a bit.</p>
+<p>The system is subject to several constraints. The abundances must be
+positive, and they must sum to one.</p>
 <p><span class="math display">\[ 0 \leqq a_i \leqq 1 \]</span></p>
 <p><span class="math display">\[ \sum_{i=1}^{m} a_i = 1 \]</span></p>
 <p>where <span class="math inline">\(i\)</span> is one of the <span class="math inline">\(m\)</span> endmembers of the system.</p>
@@ -174,40 +252,108 @@
 <div class="section level3">
 <h3 id="data-reduction">Data Reduction<a class="anchor" aria-label="anchor" href="#data-reduction"></a>
 </h3>
-<p>All hyperspectral unmixing algorithms begin with some sort of data reduction step. There are several possibilities, but the most familiar will be PCA or principal components analysis. PCA is a widely used method which converts raw data into uncorrelated abstract components which can stand in for the data. The advantage to this is that you don’t need all the components to represent the data, because some or even many of them are merely noise. In the spectral context, this is equivalent to saying that some wavelengths are not informative, so we can discard them with little change to our analysis. PCA is a dimensional reduction method because instead of having <span class="math inline">\(p\)</span> wavelengths, we now have many fewer abstract components to deal with. Hence PCA not only removes noise but makes the problem computationally much faster.</p>
-<p>After PCA (or a similar technique), the equation describing the system would be:</p>
-<p><span class="math display">\[ \mathbf{X} = \mathbf{A}\mathbf{E} \]</span></p>
-<p>where <span class="math inline">\(\epsilon\)</span> has effectively been eliminated. However, and this is important, <span class="math inline">\(\mathbf{X}\)</span> is no longer the original data, but rather the abstract components. Its dimensions are still <span class="math inline">\(n \ \times \ p\)</span>, but <span class="math inline">\(p\)</span> is no longer <span class="math inline">\(p\)</span>, it is much smaller than the original number of wavelengths. Perhaps it should be called something different, like <span class="math inline">\(p'\)</span>, but the habit in the literature is to ignore that <span class="math inline">\(\mathbf{X}\)</span> and <span class="math inline">\(p\)</span> are no longer what they were originally. The subsequent steps apply either way, but after dimension reduction they are computationally tractable.</p>
+<p>All hyperspectral unmixing algorithms begin with some sort of data
+reduction step. There are several possibilities, but the most familiar
+will be PCA or principal components analysis. PCA is a widely used
+method which converts raw data into uncorrelated abstract components
+which can stand in for the data. The advantage to this is that you don’t
+need all the components to represent the data, because some or even many
+of them are merely noise. In the spectral context, this is equivalent to
+saying that some wavelengths are not informative, so we can discard them
+with little change to our analysis. PCA is a dimensional reduction
+method because instead of having <span class="math inline">\(p\)</span>
+wavelengths, we now have many fewer abstract components to deal with.
+Hence PCA not only removes noise but makes the problem computationally
+much faster.</p>
+<p>After PCA (or a similar technique), the equation describing the
+system would be:</p>
+<p><span class="math display">\[ \mathbf{X} = \mathbf{A}\mathbf{E}
+\]</span></p>
+<p>where <span class="math inline">\(\epsilon\)</span> has effectively
+been eliminated. However, and this is important, <span class="math inline">\(\mathbf{X}\)</span> is no longer the original
+data, but rather the abstract components. Its dimensions are still <span class="math inline">\(n \ \times \ p\)</span>, but <span class="math inline">\(p\)</span> is no longer <span class="math inline">\(p\)</span>, it is much smaller than the original
+number of wavelengths. Perhaps it should be called something different,
+like <span class="math inline">\(p'\)</span>, but the habit in the
+literature is to ignore that <span class="math inline">\(\mathbf{X}\)</span> and <span class="math inline">\(p\)</span> are no longer what they were
+originally. The subsequent steps apply either way, but after dimension
+reduction they are computationally tractable.</p>
 </div>
 <div class="section level3">
 <h3 id="the-role-of-the-simplex">The Role of the Simplex<a class="anchor" aria-label="anchor" href="#the-role-of-the-simplex"></a>
 </h3>
-<p>A key concept common to unmixing algorithms is that of a simplex. A simplex is a container that holds the data points. For two-dimensional data (measurements at two wavelengths), such as that illustrated below, several kinds of containers can be imagined. The “convex hull” is a container that is shrink-wrapped around the cloud of data points. A simplex for two-dimensional data is a scalene triangle of the smallest possible size.</p>
+<p>A key concept common to unmixing algorithms is that of a simplex. A
+simplex is a container that holds the data points. For two-dimensional
+data (measurements at two wavelengths), such as that illustrated below,
+several kinds of containers can be imagined. The “convex hull” is a
+container that is shrink-wrapped around the cloud of data points. A
+simplex for two-dimensional data is a scalene triangle of the smallest
+possible size.</p>
 <div class="figure">
 <img src="Simplex2small.png" alt=""><p class="caption">2-Simplex</p>
 </div>
-<p>The reason a simplex is of interest is that for unmixing purposes, the vertices of the simplex are the locations of the endmembers. Sticking with the two-dimensional example, the three vertices correspond theoretically to pure components. Every other point inside the simplex can be thought of as a weighted average of each of the endmembers.</p>
-<p>If one has spectra composed of <span class="math inline">\(p\)</span> wavelengths, the data exists as a point cloud in <span class="math inline">\(p\)</span>-dimensions. If <span class="math inline">\(p = 2\)</span> as in the figure above, the cloud of data can be captured in a 2-simplex or triangle. For <span class="math inline">\(p = 3\)</span>, a tetrahedron would be needed to contain the data. For <span class="math inline">\(p &gt; 3\)</span> there is no simple visual analog to the container, but we know that it would have <span class="math inline">\(p + 1\)</span> edges. Typical data sets might have hundreds or even thousands of wavelengths. Simplices of this size are hard to imagine and would be computationally intractable regardless. Recall from the section above however, that prior to the unmixing process, we reduce the data (remember that <span class="math inline">\(p\)</span> is not really <span class="math inline">\(p\)</span> any longer). Thus, a data set of perhaps hundreds of wavelengths can be reduced to a much smaller dimensionality. In practice, <span class="math inline">\(p\)</span> is chosen (or perhaps we should say “guessed at”) by the researcher using the relevant domain knowledge. The unmixing process then seeks to find these <span class="math inline">\(p\)</span> endmembers from which all the data can be reconstructed.</p>
+<p>The reason a simplex is of interest is that for unmixing purposes,
+the vertices of the simplex are the locations of the endmembers.
+Sticking with the two-dimensional example, the three vertices correspond
+theoretically to pure components. Every other point inside the simplex
+can be thought of as a weighted average of each of the endmembers.</p>
+<p>If one has spectra composed of <span class="math inline">\(p\)</span>
+wavelengths, the data exists as a point cloud in <span class="math inline">\(p\)</span>-dimensions. If <span class="math inline">\(p = 2\)</span> as in the figure above, the cloud
+of data can be captured in a 2-simplex or triangle. For <span class="math inline">\(p = 3\)</span>, a tetrahedron would be needed to
+contain the data. For <span class="math inline">\(p &gt; 3\)</span>
+there is no simple visual analog to the container, but we know that it
+would have <span class="math inline">\(p + 1\)</span> edges. Typical
+data sets might have hundreds or even thousands of wavelengths.
+Simplices of this size are hard to imagine and would be computationally
+intractable regardless. Recall from the section above however, that
+prior to the unmixing process, we reduce the data (remember that <span class="math inline">\(p\)</span> is not really <span class="math inline">\(p\)</span> any longer). Thus, a data set of
+perhaps hundreds of wavelengths can be reduced to a much smaller
+dimensionality. In practice, <span class="math inline">\(p\)</span> is
+chosen (or perhaps we should say “guessed at”) by the researcher using
+the relevant domain knowledge. The unmixing process then seeks to find
+these <span class="math inline">\(p\)</span> endmembers from which all
+the data can be reconstructed.</p>
 </div>
 <div class="section level3">
 <h3 id="algorithm-options">Algorithm Options<a class="anchor" aria-label="anchor" href="#algorithm-options"></a>
 </h3>
-<p>With this background in mind, you should be ready to read the vignettes on individual algorithms. A number of unmixing algorithms have been described in the literature. The chief difference between them is how they go about finding the relevant simplex. In <code>unmixR</code>, there are variations of the NFINDR, VCA and ICE algorithms. See <code><a href="../reference/nfindr.html">?nfindr</a></code>, <code><a href="../reference/vca.html">?vca</a></code>, <code><a href="../reference/ice.html">?ice</a></code> or <code>browseVignettes("unmixR")</code> for additional information.</p>
+<p>With this background in mind, you should be ready to read the
+vignettes on individual algorithms. A number of unmixing algorithms have
+been described in the literature. The chief difference between them is
+how they go about finding the relevant simplex. In <code>unmixR</code>,
+there are variations of the NFINDR, VCA and ICE algorithms. See
+<code><a href="../reference/nfindr.html">?nfindr</a></code>, <code><a href="../reference/vca.html">?vca</a></code>, <code><a href="../reference/ice.html">?ice</a></code> or
+<code>browseVignettes("unmixR")</code> for additional information.</p>
 </div>
 </div>
 <div class="section level2">
 <h2 id="project-history">Project History<a class="anchor" aria-label="anchor" href="#project-history"></a>
 </h2>
-<p>The development of <code>unmixR</code> was initiated by Claudia Beleites. Most of the code was written by Conor McManus (2013) and Anton Belov (2016). Conor and Anton were participants in the Google Summer of Code program. Additional code was written by Claudia and Bryan A. Hanson. Claudia, Bryan and Simon Fuller were the mentors in the GSOC program.</p>
+<p>The development of <code>unmixR</code> was initiated by Claudia
+Beleites. Most of the code was written by Conor McManus (2013) and Anton
+Belov (2016). Conor and Anton were participants in the Google Summer of
+Code program. Additional code was written by Claudia and Bryan A.
+Hanson. Claudia, Bryan and Simon Fuller were the mentors in the GSOC
+program.</p>
 </div>
 <div class="section level2">
 <h2 id="notes">Notes<a class="anchor" aria-label="anchor" href="#notes"></a>
 </h2>
-<p><b id="fn1">1</b> Bergner et. al. “Hyperspectral unmixing of Raman micro-images for assessment of morphological and chemical parameters in non-dried brain tumor specimens” Anal. Bioanalytical Chemistry vol. 405 no. 27 pp. 8719-8728 (2013).<a href="#a1">↵</a></p>
-<p><b id="fn2">2</b> Hedegaard et. al. “Spectral unmixing and clustering algorithms for assessment of single cells by Raman microscopic imaging” Theoretical Chemistry Accounts vol. 130 no. 4-6 pp. 1249-1260 (2011).<a href="#a2">↵</a></p>
-<p><b id="fn3">3</b> Green et. al. “Imaging spectroscopy and the Airborne Visible Infrared Imaging Spectrometer (AVIRIS)” Remote Sensing Environment vol. 65 no. 3 pp. 227-248 (1998).<a href="#a3">↵</a></p>
-<p><b id="fn4">4</b> Jetz et. al. “Monitoring plant functional diversity from space” Nature Plants vol. 2 no. 3 pp. ? (2016).<a href="#a4">↵</a></p>
-<p><b id="fn5">5</b> Dooley et. al “Mapping of egg yolk and animal skin glue paint binders in Early Renaissance paintings using near infrared reflectance imaging spectroscopy” Analyst vol. 138 no. 17 pp. 4838-4848 (2013).<a href="#a5">↵</a></p>
+<p><b id="fn1">1</b> Bergner et. al. “Hyperspectral unmixing of Raman
+micro-images for assessment of morphological and chemical parameters in
+non-dried brain tumor specimens” Anal. Bioanalytical Chemistry vol. 405
+no. 27 pp. 8719-8728 (2013).<a href="#a1">↵</a></p>
+<p><b id="fn2">2</b> Hedegaard et. al. “Spectral unmixing and clustering
+algorithms for assessment of single cells by Raman microscopic imaging”
+Theoretical Chemistry Accounts vol. 130 no. 4-6 pp. 1249-1260 (2011).<a href="#a2">↵</a></p>
+<p><b id="fn3">3</b> Green et. al. “Imaging spectroscopy and the
+Airborne Visible Infrared Imaging Spectrometer (AVIRIS)” Remote Sensing
+Environment vol. 65 no. 3 pp. 227-248 (1998).<a href="#a3">↵</a></p>
+<p><b id="fn4">4</b> Jetz et. al. “Monitoring plant functional diversity
+from space” Nature Plants vol. 2 no. 3 pp. ? (2016).<a href="#a4">↵</a></p>
+<p><b id="fn5">5</b> Dooley et. al “Mapping of egg yolk and animal skin
+glue paint binders in Early Renaissance paintings using near infrared
+reflectance imaging spectroscopy” Analyst vol. 138 no. 17 pp. 4838-4848
+(2013).<a href="#a5">↵</a></p>
 <p><b id="fn6">6</b> Green1998 op. cit. <a href="#a6">↵</a></p>
 <div class="figure">
 <img src="GSoC2016Logo.png" alt=""><p class="caption">GSOC Logo</p>
@@ -232,7 +378,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>

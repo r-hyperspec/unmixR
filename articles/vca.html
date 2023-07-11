@@ -85,7 +85,8 @@
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>VCA with unmixR</h1>
-                        <h4 data-toc-skip class="author">Anton Belov</h4>
+                        <h4 data-toc-skip class="author">Anton
+Belov</h4>
             
             <h4 data-toc-skip class="date">July 1, 2016</h4>
       
@@ -130,7 +131,11 @@
 <div class="section level2">
 <h2 id="dimensionality-reduction">Dimensionality Reduction<a class="anchor" aria-label="anchor" href="#dimensionality-reduction"></a>
 </h2>
-<p>The algorithm uses two dimensionality reduction techniques. The choice depends on the signal to noise ratio of data. The threshold value is equal to <span class="math inline">\(15 + 10 \log p\)</span> The dimensionality reduction function not only reduces dimensionality of data but also transforms it to amplify noise.</p>
+<p>The algorithm uses two dimensionality reduction techniques. The
+choice depends on the signal to noise ratio of data. The threshold value
+is equal to <span class="math inline">\(15 + 10 \log p\)</span> The
+dimensionality reduction function not only reduces dimensionality of
+data but also transforms it to amplify noise.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-hyperspec.github.io/unmixr/" class="external-link">unmixR</a></span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span></span></code></pre></div>
@@ -153,7 +158,12 @@
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/scatterplot3d/man/scatterplot3d.html" class="external-link">scatterplot3d</a></span><span class="op">(</span><span class="va">lowerReduced</span>, main <span class="op">=</span> <span class="st">"lower dimensionality reduced data"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="vca_files/figure-html/unnamed-chunk-5-1.png" width="768" style="display: block; margin: auto;"></p>
-<p>Using the second approach, the algorithm projects the data onto a subspace of even lower dimensionality and then sets the “missing” dimension values to a certain value. That is why points colored in red have the same z value, because the data was reduced to the dimensionality of 2 (x and y) and then the z value was set to a certain number.</p>
+<p>Using the second approach, the algorithm projects the data onto a
+subspace of even lower dimensionality and then sets the “missing”
+dimension values to a certain value. That is why points colored in red
+have the same z value, because the data was reduced to the
+dimensionality of 2 (x and y) and then the z value was set to a certain
+number.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">my3dplot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/scatterplot3d/man/scatterplot3d.html" class="external-link">scatterplot3d</a></span><span class="op">(</span><span class="va">lowerReduced</span>,</span>
 <span>  color <span class="op">=</span> <span class="st">"red"</span>,</span>
@@ -165,35 +175,73 @@
 <span>  legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"same"</span>, <span class="st">"lower"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p><img src="vca_files/figure-html/unnamed-chunk-6-1.png" width="768" style="display: block; margin: auto;"></p>
-<p>Since the noise in this example is very low the algorithm will use the first approach.</p>
+<p>Since the noise in this example is very low the algorithm will use
+the first approach.</p>
 </div>
 <div class="section level2">
 <h2 id="the-vca-process-illustrated">The VCA Process, Illustrated<a class="anchor" aria-label="anchor" href="#the-vca-process-illustrated"></a>
 </h2>
 <p>The VCA algorithm works as follows:</p>
 <ol style="list-style-type: decimal">
-<li>The data is reduced to a dimensionality equal to <span class="math inline">\(p\)</span> where <span class="math inline">\(p\)</span> is the desired (estimated) number of endmembers. As mentioned above, the details of the reduction depend upon the signal-to-noise ratio of the raw data.</li>
-<li>Initialize <span class="math inline">\(A\)</span>, a <span class="math inline">\(p \times p\)</span> matrix that will store the endmembers. The first column is set to a constant, which represents an initial “fake” endmember to get the process started.</li>
+<li>The data is reduced to a dimensionality equal to <span class="math inline">\(p\)</span> where <span class="math inline">\(p\)</span> is the desired (estimated) number of
+endmembers. As mentioned above, the details of the reduction depend upon
+the signal-to-noise ratio of the raw data.</li>
+<li>Initialize <span class="math inline">\(A\)</span>, a <span class="math inline">\(p \times p\)</span> matrix that will store the
+endmembers. The first column is set to a constant, which represents an
+initial “fake” endmember to get the process started.</li>
 <li>For <span class="math inline">\(i\)</span> from 1 to <span class="math inline">\(p\)</span>:
 <ul>
-<li>Calculate a reference vector orthogonal to the subspace spanned by columns of <span class="math inline">\(A\)</span>. This vector will pass through (0,0,…,0).</li>
+<li>Calculate a reference vector orthogonal to the subspace spanned by
+columns of <span class="math inline">\(A\)</span>. This vector will pass
+through (0,0,…,0).</li>
 <li>Project all the data points onto this reference vector.</li>
-<li>Find which data point’s projection onto the reference vector is furthest from the origin. This is equivalent to the data point which has the maximum absolute projection onto the reference vector.</li>
-<li>Let <span class="math inline">\(k\)</span> be the index of that data point in the dataset. Set the <span class="math inline">\(i\)</span>-th column of <span class="math inline">\(A\)</span> to <span class="math inline">\(k\)</span>-th column of data. This is one of the endmembers.</li>
+<li>Find which data point’s projection onto the reference vector is
+furthest from the origin. This is equivalent to the data point which has
+the maximum absolute projection onto the reference vector.</li>
+<li>Let <span class="math inline">\(k\)</span> be the index of that data
+point in the dataset. Set the <span class="math inline">\(i\)</span>-th
+column of <span class="math inline">\(A\)</span> to <span class="math inline">\(k\)</span>-th column of data. This is one of the
+endmembers.</li>
 </ul>
 </li>
 <li>Return <span class="math inline">\(A\)</span>.</li>
 </ol>
-<p>The following plots illustrate the process for a 3-dimensional data set consisting of a number of points which lie on a plane and form a triangle.</p>
-<p>The system is initialized with a “fake” endmember with coordinates <span class="math inline">\((0,0,1)\)</span> and a reference vector <span class="math inline">\(f\)</span> which is orthogonal to this endmember (point) is computed. Then, each data point is projected onto this reference vector. The data point whose projection intersection with <span class="math inline">\(f\)</span> is farthest from the origin is selected as the first (real) endmember (and the fake endmember is discarded). The next plot shows these steps. The first endmember is at the lower-left.</p>
+<p>The following plots illustrate the process for a 3-dimensional data
+set consisting of a number of points which lie on a plane and form a
+triangle.</p>
+<p>The system is initialized with a “fake” endmember with coordinates
+<span class="math inline">\((0,0,1)\)</span> and a reference vector
+<span class="math inline">\(f\)</span> which is orthogonal to this
+endmember (point) is computed. Then, each data point is projected onto
+this reference vector. The data point whose projection intersection with
+<span class="math inline">\(f\)</span> is farthest from the origin is
+selected as the first (real) endmember (and the fake endmember is
+discarded). The next plot shows these steps. The first endmember is at
+the lower-left.</p>
 <p><img src="vca_files/figure-html/unnamed-chunk-9-1.png" width="768" style="display: block; margin: auto;"></p>
-<p>The first real endmember is then used to construct a new reference vector <span class="math inline">\(f\)</span> and once again the data points are projected onto <span class="math inline">\(f\)</span> and the projection intersection with <span class="math inline">\(f\)</span> which is farthest from the origin is selected as the next endmember. In the following plot, the 2nd endmember selected is the top-most data point.</p>
+<p>The first real endmember is then used to construct a new reference
+vector <span class="math inline">\(f\)</span> and once again the data
+points are projected onto <span class="math inline">\(f\)</span> and the
+projection intersection with <span class="math inline">\(f\)</span>
+which is farthest from the origin is selected as the next endmember. In
+the following plot, the 2nd endmember selected is the top-most data
+point.</p>
 <p><img src="vca_files/figure-html/unnamed-chunk-10-1.png" width="768" style="display: block; margin: auto;"></p>
-<p>With two endmembers identified, we continue the process starting from the most recently identified endmember. In this next plot, the 3rd endmember is the right-most data point. It’s projection onto the reference vector <span class="math inline">\(f\)</span> is very short and not visible as the data point nearly falls on <span class="math inline">\(f\)</span>. In this plot and the next, we are carrying along the vectors which were used to construct the reference vectors <span class="math inline">\(f\)</span> at each step.</p>
+<p>With two endmembers identified, we continue the process starting from
+the most recently identified endmember. In this next plot, the 3rd
+endmember is the right-most data point. It’s projection onto the
+reference vector <span class="math inline">\(f\)</span> is very short
+and not visible as the data point nearly falls on <span class="math inline">\(f\)</span>. In this plot and the next, we are
+carrying along the vectors which were used to construct the reference
+vectors <span class="math inline">\(f\)</span> at each step.</p>
 <p><img src="vca_files/figure-html/unnamed-chunk-11-1.png" width="768" style="display: block; margin: auto;"></p>
 <p>Finally all endmembers have been identified.</p>
 <p><img src="vca_files/figure-html/unnamed-chunk-12-1.png" width="768" style="display: block; margin: auto;"></p>
-<p>If this process were extended to <span class="math inline">\(p\)</span>-dimensions, each reference vector <span class="math inline">\(f\)</span> would be a line in the <span class="math inline">\(p\)</span>-dimensional space. Thus the process would be to choose a point, construct an orthogonal vector <span class="math inline">\(f\)</span>, and determine which data point has the most extreme projection onto this vector. That point is chosen as an endmember and the process is repeated until all the desired endmembers have been identified.</p>
+<p>If this process were extended to <span class="math inline">\(p\)</span>-dimensions, each reference vector <span class="math inline">\(f\)</span> would be a line in the <span class="math inline">\(p\)</span>-dimensional space. Thus the process
+would be to choose a point, construct an orthogonal vector <span class="math inline">\(f\)</span>, and determine which data point has the
+most extreme projection onto this vector. That point is chosen as an
+endmember and the process is repeated until all the desired endmembers
+have been identified.</p>
 </div>
   </div>
 
@@ -214,7 +262,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>

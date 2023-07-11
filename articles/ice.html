@@ -85,7 +85,8 @@
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>ICE with unmixR</h1>
-                        <h4 data-toc-skip class="author">Anton Belov</h4>
+                        <h4 data-toc-skip class="author">Anton
+Belov</h4>
             
             <h4 data-toc-skip class="date">July 25, 2016</h4>
       
@@ -100,7 +101,10 @@
 <div class="section level2">
 <h2 id="algorithm-description">Algorithm Description<a class="anchor" aria-label="anchor" href="#algorithm-description"></a>
 </h2>
-<p>Iterative constrained endmembers is an iterative cyclic descent algorithm which converges to an optimal solution for the endmembers. Unlike many other algorithms it does not require pure pixels to be present in the scene. The algorithm makes three steps:</p>
+<p>Iterative constrained endmembers is an iterative cyclic descent
+algorithm which converges to an optimal solution for the endmembers.
+Unlike many other algorithms it does not require pure pixels to be
+present in the scene. The algorithm makes three steps:</p>
 <ol style="list-style-type: decimal">
 <li>Estimate abundances</li>
 <li>Estimate endmembers</li>
@@ -110,12 +114,18 @@
 <div class="section level2">
 <h2 id="abundances-estimation">Abundances Estimation<a class="anchor" aria-label="anchor" href="#abundances-estimation"></a>
 </h2>
-<p>The abundances are calculated via quadratic programing. There are two possible situations. First one is that the assumption is correct. In this case vertices inside the simplex are convex combinations of simplex vertices.</p>
+<p>The abundances are calculated via quadratic programing. There are two
+possible situations. First one is that the assumption is correct. In
+this case vertices inside the simplex are convex combinations of simplex
+vertices.</p>
 <p><span class="math display">\[\sum_{i=1}^{n}a_{i}x_{i}=r\]</span></p>
-<p>Where <span class="math inline">\(x_{i}\)</span> is a vertex of a simplex.</p>
+<p>Where <span class="math inline">\(x_{i}\)</span> is a vertex of a
+simplex.</p>
 <p>A convex combination has following properties</p>
 <p><span class="math display">\[\sum_{i=1}^{n}a_{i}=1\]</span> <span class="math display">\[0\leqslant a_{i}\leqslant 1\]</span></p>
-<p>A convex combination is also a barycentric one and the coordinates of a point are its barycentric coordinates. To find the coordinates it is enough to solve the following system.</p>
+<p>A convex combination is also a barycentric one and the coordinates of
+a point are its barycentric coordinates. To find the coordinates it is
+enough to solve the following system.</p>
 <p><span class="math display">\[\begin{pmatrix}
 x_{1} &amp; x_{2} &amp; . &amp; x_{n}\\
 y_{1} &amp; y_{2} &amp; . &amp; y_{n}\\
@@ -127,8 +137,13 @@ y_{r}\\
 .\\
 1
 \end{pmatrix}\]</span></p>
-<p>Where <span class="math inline">\(a\)</span> is a vector of abundances. The last line constrains a sum of coordinates and also makes the combination unique.</p>
-<p>But if there are no pure pixels for each of the endmembers then it is possible that a point <span class="math inline">\(r\)</span> will be outside of the simplex. The barycentric coordinates sum to one but they are not necessarily non-negative. Here are some examples.</p>
+<p>Where <span class="math inline">\(a\)</span> is a vector of
+abundances. The last line constrains a sum of coordinates and also makes
+the combination unique.</p>
+<p>But if there are no pure pixels for each of the endmembers then it is
+possible that a point <span class="math inline">\(r\)</span> will be
+outside of the simplex. The barycentric coordinates sum to one but they
+are not necessarily non-negative. Here are some examples.</p>
 <div class="section level4">
 <h4 id="point-inside-a-simplex">Point Inside a Simplex<a class="anchor" aria-label="anchor" href="#point-inside-a-simplex"></a>
 </h4>
@@ -155,12 +170,14 @@ y_{r}\\
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">nnls</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/nnls/man/nnls.html" class="external-link">nnls</a></span><span class="op">(</span><span class="va">m</span>, <span class="va">p</span><span class="op">)</span><span class="op">$</span><span class="va">x</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] 0.125 0.375 0.500</span></span></code></pre>
-<p>Ordinary least squares with no constraints. Since the point is inside the simplex they are not required.</p>
+<p>Ordinary least squares with no constraints. Since the point is inside
+the simplex they are not required.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">limSolve</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/limSolve/man/lsei.html" class="external-link">lsei</a></span><span class="op">(</span>A <span class="op">=</span> <span class="va">m</span>, B <span class="op">=</span> <span class="va">p</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">$</span><span class="va">X</span></span></code></pre></div>
 <pre><code><span><span class="co">##     a     b     c </span></span>
 <span><span class="co">## 0.125 0.375 0.500</span></span></code></pre>
-<p>All methods find the same solution. But what will happen if the point is not inside the simplex?</p>
+<p>All methods find the same solution. But what will happen if the point
+is not inside the simplex?</p>
 </div>
 <div class="section level4">
 <h4 id="point-outside-a-simplex">Point Outside a Simplex<a class="anchor" aria-label="anchor" href="#point-outside-a-simplex"></a>
@@ -172,7 +189,8 @@ y_{r}\\
 <span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">3</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/points.html" class="external-link">points</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">p</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, y <span class="op">=</span> <span class="va">p</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <p><img src="ice_files/figure-html/unnamed-chunk-5-1.png" width="768" style="display: block; margin: auto;"></p>
-<p>True barycentric coordinates can be found solving the system of linear equations.</p>
+<p>True barycentric coordinates can be found solving the system of
+linear equations.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">m1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">m</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">m</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">p1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">p</span>, <span class="fl">1</span><span class="op">)</span></span>
@@ -183,7 +201,11 @@ y_{r}\\
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">nnls</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/nnls/man/nnls.html" class="external-link">nnls</a></span><span class="op">(</span><span class="va">m1</span>, <span class="va">p1</span><span class="op">)</span><span class="op">$</span><span class="va">x</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] 0.75 0.25 0.00</span></span></code></pre>
-<p>Now we have to add both constraints to the least squares method. Note that the matrix <code>m</code> is used not <code>m1</code>. Lsei stands for least squares with equality and inequality constraints. It solves <span class="math inline">\(\left \| Ax - b \right \|^{2}\)</span> problem with <span class="math inline">\(Ex=f\)</span> and <span class="math inline">\(Gx\geq h\)</span> constraints.</p>
+<p>Now we have to add both constraints to the least squares method. Note
+that the matrix <code>m</code> is used not <code>m1</code>. Lsei stands
+for least squares with equality and inequality constraints. It solves
+<span class="math inline">\(\left \| Ax - b \right \|^{2}\)</span>
+problem with <span class="math inline">\(Ex=f\)</span> and <span class="math inline">\(Gx\geq h\)</span> constraints.</p>
 <p>The abundances sum to one means</p>
 <p><span class="math display">\[\begin{pmatrix}
 1 &amp; 1 &amp; ... &amp; 1
@@ -217,14 +239,17 @@ a_{n}
 <span><span class="fu">limSolve</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/limSolve/man/lsei.html" class="external-link">lsei</a></span><span class="op">(</span>A <span class="op">=</span> <span class="va">m</span>, B <span class="op">=</span> <span class="va">p</span>, E <span class="op">=</span> <span class="va">E</span>, F <span class="op">=</span> <span class="fl">1</span>, G <span class="op">=</span> <span class="va">G</span>, H <span class="op">=</span> <span class="va">H</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">$</span><span class="va">X</span></span></code></pre></div>
 <pre><code><span><span class="co">##    a    b    c </span></span>
 <span><span class="co">## 0.75 0.25 0.00</span></span></code></pre>
-<p>The resulting point is the closest point to <code>p</code> from the simplex. In our case it is (2, 2).</p>
+<p>The resulting point is the closest point to <code>p</code> from the
+simplex. In our case it is (2, 2).</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">m</span><span class="op">[</span><span class="fl">1</span>, <span class="op">]</span> <span class="op">*</span> <span class="fu">nnls</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/nnls/man/nnls.html" class="external-link">nnls</a></span><span class="op">(</span><span class="va">m1</span>, <span class="va">p1</span><span class="op">)</span><span class="op">$</span><span class="va">x</span><span class="op">)</span>,</span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">m</span><span class="op">[</span><span class="fl">2</span>, <span class="op">]</span> <span class="op">*</span> <span class="fu">nnls</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/nnls/man/nnls.html" class="external-link">nnls</a></span><span class="op">(</span><span class="va">m1</span>, <span class="va">p1</span><span class="op">)</span><span class="op">$</span><span class="va">x</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] 2 2</span></span></code></pre>
-<p>In this case the function <code>solve</code> is not able to find correct answer, but the two other methods are successful. Let’s consider another point outside a simplex.</p>
+<p>In this case the function <code>solve</code> is not able to find
+correct answer, but the two other methods are successful. Let’s consider
+another point outside a simplex.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">m</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">a</span>, <span class="va">b</span>, <span class="va">c</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/plot.html" class="external-link">plot</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">m</span><span class="op">[</span><span class="fl">1</span>, <span class="op">]</span>, y <span class="op">=</span> <span class="va">m</span><span class="op">[</span><span class="fl">2</span>, <span class="op">]</span><span class="op">)</span></span>
@@ -249,7 +274,8 @@ a_{n}
 <span><span class="va">abundances</span></span></code></pre></div>
 <pre><code><span><span class="co">##   a   b   c </span></span>
 <span><span class="co">## 0.0 0.9 0.1</span></span></code></pre>
-<p>The resulting point is the closest point to p from the simplex. In our case it is (5.1, 4.7).</p>
+<p>The resulting point is the closest point to p from the simplex. In
+our case it is (5.1, 4.7).</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">m</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html" class="external-link">%*%</a></span> <span class="va">abundances</span></span></code></pre></div>
 <pre><code><span><span class="co">##      [,1]</span></span>
@@ -264,13 +290,19 @@ a_{n}
 <p>We assume that pixels are linear combinations of endmembers.</p>
 <p><span class="math display">\[Y = MA\]</span></p>
 <p><span class="math display">\[A^{T}M^{T} = Y^{T}\]</span></p>
-<p>However the matrix <span class="math inline">\(A\)</span> is not square and thus not invertible. To calculate <span class="math inline">\(M\)</span> we will use left inverse matrix</p>
-<p><span class="math display">\[(A^{T})_{left}^{-1} = (AA^{T})^{-1} A\]</span></p>
+<p>However the matrix <span class="math inline">\(A\)</span> is not
+square and thus not invertible. To calculate <span class="math inline">\(M\)</span> we will use left inverse matrix</p>
+<p><span class="math display">\[(A^{T})_{left}^{-1} = (AA^{T})^{-1}
+A\]</span></p>
 <p><span class="math display">\[AA^{T}M^{T} = AY^{T}\]</span></p>
-<p><span class="math display">\[(AA^{T})^{-1}AA^{T}M^{T} = (AA^{T})^{-1}AY^{T}\]</span></p>
+<p><span class="math display">\[(AA^{T})^{-1}AA^{T}M^{T} =
+(AA^{T})^{-1}AY^{T}\]</span></p>
 <p><span class="math display">\[M^{T} = (AA^{T})^{-1}AY^{T}\]</span></p>
-<p>To make the model more resistant to noise in data a regularization parameter is used. Further information about regularization parameter can be found in [1].</p>
-<p><span class="math display">\[M^{T} =(AA^{T} + \lambda (I - \frac{11^{T}}{m}))^{-1}AY^{T}\]</span></p>
+<p>To make the model more resistant to noise in data a regularization
+parameter is used. Further information about regularization parameter
+can be found in [1].</p>
+<p><span class="math display">\[M^{T} =(AA^{T} + \lambda (I -
+\frac{11^{T}}{m}))^{-1}AY^{T}\]</span></p>
 </div>
 <div class="section level2">
 <h2 id="laser-dataset-example">Laser Dataset Example<a class="anchor" aria-label="anchor" href="#laser-dataset-example"></a>
@@ -303,8 +335,12 @@ a_{n}
 <span>  data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">reducedData</span><span class="op">)</span>, x <span class="op">=</span> <span class="va">x</span>, y <span class="op">=</span> <span class="va">y</span>,</span>
 <span>  geom <span class="op">=</span> <span class="st">"point"</span>, main <span class="op">=</span> <span class="st">"laser data reduced to dimensionality of 2"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Warning: `qplot()` was deprecated in ggplot2 3.4.0.</span></span>
+<span><span class="co">## <span style="color: #555555;">This warning is displayed once every 8 hours.</span></span></span>
+<span><span class="co">## <span style="color: #555555;">Call `lifecycle::last_lifecycle_warnings()` to see where this warning was</span></span></span>
+<span><span class="co">## <span style="color: #555555;">generated.</span></span></span></code></pre>
 <p><img src="ice_files/figure-html/unnamed-chunk-15-1.png" width="768" style="display: block; margin: auto;"></p>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1234</span><span class="op">)</span></span>
 <span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ice.html">ice</a></span><span class="op">(</span><span class="va">laser</span>, <span class="fl">3</span><span class="op">)</span></span>
 <span><span class="va">endm</span> <span class="op">&lt;-</span> <span class="va">res</span><span class="op">$</span><span class="va">endmembers</span></span>
@@ -325,8 +361,11 @@ a_{n}
 <div class="section level3">
 <h3 id="regularization-parameter">Regularization Parameter<a class="anchor" aria-label="anchor" href="#regularization-parameter"></a>
 </h3>
-<p>This parameter penalizes the model for the simplex size. The regularization technique makes the model less affected by noise in data. The higher the value the bigger the penalty so when it is equal to 1 the simplex shrinks to a single point.</p>
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<p>This parameter penalizes the model for the simplex size. The
+regularization technique makes the model less affected by noise in data.
+The higher the value the bigger the penalty so when it is equal to 1 the
+simplex shrinks to a single point.</p>
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">m</span> <span class="op">&lt;-</span> <span class="fl">10</span><span class="op">^</span><span class="op">(</span><span class="op">-</span><span class="fl">1</span><span class="op">:</span><span class="op">-</span><span class="fl">5</span><span class="op">)</span></span>
 <span><span class="va">m</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">m</span>, <span class="fl">0</span><span class="op">)</span></span>
 <span><span class="va">simplices</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span>ncol <span class="op">=</span> <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
@@ -339,8 +378,10 @@ a_{n}
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">reducedEndmembers</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span>, <span class="st">"muValue"</span><span class="op">)</span></span>
 <span>  <span class="va">simplices</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">simplices</span>, <span class="va">reducedEndmembers</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
-<p>The dependence of the simplex size on the regularization parameter can be seen on the following picture. Since the value is usually very small we consider values equal to powers of 10.</p>
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<p>The dependence of the simplex size on the regularization parameter
+can be seen on the following picture. Since the value is usually very
+small we consider values equal to powers of 10.</p>
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">reducedData</span><span class="op">)</span>, mapping <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">x</span>, y <span class="op">=</span> <span class="va">y</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_polygon.html" class="external-link">geom_polygon</a></span><span class="op">(</span></span>
@@ -351,8 +392,10 @@ a_{n}
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_gradient.html" class="external-link">scale_color_gradientn</a></span><span class="op">(</span>colours <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/palettes.html" class="external-link">rainbow</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">m</span><span class="op">)</span><span class="op">)</span>, trans <span class="op">=</span> <span class="st">"log10"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Dependence on mu"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="ice_files/figure-html/unnamed-chunk-18-1.png" width="768" style="display: block; margin: auto;"></p>
-<p>As it was already, stated a very small value is enough to prevent the simplex from being unreasonably large. Here the grey triangle corresponds to a simplex computed without the penalty (mu = 0).</p>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<p>As it was already, stated a very small value is enough to prevent the
+simplex from being unreasonably large. Here the grey triangle
+corresponds to a simplex computed without the penalty (mu = 0).</p>
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">reducedData</span><span class="op">)</span>, mapping <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">x</span>, y <span class="op">=</span> <span class="va">y</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_polygon.html" class="external-link">geom_polygon</a></span><span class="op">(</span></span>
@@ -368,8 +411,11 @@ a_{n}
 <div class="section level3">
 <h3 id="tolerance-ratio">Tolerance Ratio<a class="anchor" aria-label="anchor" href="#tolerance-ratio"></a>
 </h3>
-<p>The tolerance ratio determines the number of iterations. The algorithm asymptotically approaches the solution and higher values of the parameter mean that the result will be closer to the optimal one and will require more iterations.</p>
-<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
+<p>The tolerance ratio determines the number of iterations. The
+algorithm asymptotically approaches the solution and higher values of
+the parameter mean that the result will be closer to the optimal one and
+will require more iterations.</p>
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">t</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.9</span>, <span class="fl">0.99</span>, <span class="fl">0.999</span>, <span class="fl">0.9999</span>, <span class="fl">0.99999</span><span class="op">)</span></span>
 <span><span class="va">simplices</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span>ncol <span class="op">=</span> <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">simplices</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span>, <span class="st">"tauValue"</span><span class="op">)</span></span>
@@ -381,8 +427,12 @@ a_{n}
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">reducedEndmembers</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span>, <span class="st">"tauValue"</span><span class="op">)</span></span>
 <span>  <span class="va">simplices</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">simplices</span>, <span class="va">reducedEndmembers</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
-<p>The value of tau is usually extremely close to 1 and the following plot shows it very well. Four simplices corresponding to lower values differ very much. Simplices which correspond to 0.9999 and 0.99999 differ very little. That means that the algorithm finds the optimal solution having the value of tau not less than 0.999.</p>
-<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
+<p>The value of tau is usually extremely close to 1 and the following
+plot shows it very well. Four simplices corresponding to lower values
+differ very much. Simplices which correspond to 0.9999 and 0.99999
+differ very little. That means that the algorithm finds the optimal
+solution having the value of tau not less than 0.999.</p>
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">reducedData</span><span class="op">)</span>, mapping <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">x</span>, y <span class="op">=</span> <span class="va">y</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_polygon.html" class="external-link">geom_polygon</a></span><span class="op">(</span></span>
@@ -394,7 +444,7 @@ a_{n}
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Dependence on tau"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="ice_files/figure-html/unnamed-chunk-21-1.png" width="768" style="display: block; margin: auto;"></p>
 <p>As the number of iterations grows so does the calculation time.</p>
-<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">tst</span> <span class="op">&lt;-</span> <span class="fu">rbenchmark</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/rbenchmark/man/benchmark.html" class="external-link">benchmark</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="../reference/ice.html">ice</a></span><span class="op">(</span><span class="va">laser</span>, <span class="fl">3</span>, t <span class="op">=</span> <span class="fl">0.9</span><span class="op">)</span>,</span>
 <span>  <span class="fu"><a href="../reference/ice.html">ice</a></span><span class="op">(</span><span class="va">laser</span>, <span class="fl">3</span>, t <span class="op">=</span> <span class="fl">0.99</span><span class="op">)</span>,</span>
@@ -404,11 +454,11 @@ a_{n}
 <span><span class="op">)</span></span>
 <span><span class="va">tst</span><span class="op">[</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span></span></code></pre></div>
 <pre><code><span><span class="co">##                         test replications elapsed relative user.self</span></span>
-<span><span class="co">## 1     ice(laser, 3, t = 0.9)          100   2.093    1.000     2.092</span></span>
-<span><span class="co">## 2    ice(laser, 3, t = 0.99)          100   3.498    1.671     3.498</span></span>
-<span><span class="co">## 3   ice(laser, 3, t = 0.999)          100   4.059    1.939     4.058</span></span>
-<span><span class="co">## 4  ice(laser, 3, t = 0.9999)          100   4.058    1.939     4.058</span></span>
-<span><span class="co">## 5 ice(laser, 3, t = 0.99999)          100   4.165    1.990     4.164</span></span></code></pre>
+<span><span class="co">## 1     ice(laser, 3, t = 0.9)          100   2.088    1.000     3.081</span></span>
+<span><span class="co">## 2    ice(laser, 3, t = 0.99)          100   3.499    1.676     5.342</span></span>
+<span><span class="co">## 3   ice(laser, 3, t = 0.999)          100   4.014    1.922     6.057</span></span>
+<span><span class="co">## 4  ice(laser, 3, t = 0.9999)          100   4.065    1.947     6.158</span></span>
+<span><span class="co">## 5 ice(laser, 3, t = 0.99999)          100   4.181    2.002     6.153</span></span></code></pre>
 </div>
 </div>
   </div>
@@ -430,7 +480,7 @@ a_{n}
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>
