@@ -9,7 +9,7 @@ nfindr.default <- function(
   iter = c("points", "endmembers", "both"),
   estimator = c("Cramer", "volume", "height", "cofactor", "LDU"),
   iter_max = 10,
-  n_init = 10,
+  n_init = 1,
   debug.level = 0,
   ...
   ) {
@@ -25,7 +25,6 @@ nfindr.default <- function(
   ## Normalize string arguments -----
   iter <- tolower(match.arg(iter))
   estimator <- tolower(match.arg(estimator))
-  init <- tolower(match.arg(init))
   
   ## Parse init --------
   # Convert init into list where each element of the list is a set of initial indices
@@ -49,10 +48,10 @@ nfindr.default <- function(
 
   # Check dimensions and number of endmembers ------
   if (n != p - 1) {
-    estimator = "height"
-    if (debug.level>0) {
-      warning("Applying N-FINDR without dimension reduction. Note, `estimator` parameter will be ignored.")
+    if (estimator != "height") {
+      warning("Applying N-FINDR without dimension reduction. Note, `estimator` parameter is forced to 'height'.")
     }
+    estimator = "height"
   }
 
   ## Check the selected nfindr method --------

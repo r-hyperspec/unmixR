@@ -115,7 +115,9 @@
 
 
 .nfindr_height_endmembers <- function(data, indices, iter_max=10, debug.level=0) {
-  warning("This combination of iterator and volume change estimator is not optimized. For better performance, it is recommended to change either of the two.")
+  if (debug.level>0) {
+    warning("This combination of iterator and volume change estimator is not optimized. For better performance, it is recommended to change either of the two.")
+  }
 
   p <- length(indices)
   m <- nrow(data)
@@ -212,7 +214,9 @@
 }
 
 .nfindr_height_both <- function(data, indices, iter_max=10, debug.level=0) {
-  warning("This combination of iterator and volume change estimator is not optimized. For better performance, it is recommended to change either of the two.")
+  if (debug.level>0) {
+    warning("This combination of iterator and volume change estimator is not optimized. For better performance, it is recommended to change either of the two.")
+  }
   
   p <- length(indices)
   m <- nrow(data)
