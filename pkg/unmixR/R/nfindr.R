@@ -268,7 +268,8 @@ nfindr <- function (x, ...) {
   
   ## Test other (hyperSpec) objects ----
   test_that ("hyperSpec object", {
-    output <- nfindr (laser, 2)
+    pca <- prcomp(laser$spc)
+    output <- nfindr (pca$x[,1,drop=FALSE], 2)
     expect_equal (output$indices, .correct.laser)
   })
 }

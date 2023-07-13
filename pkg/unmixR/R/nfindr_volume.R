@@ -82,10 +82,7 @@
     }
   }
   
-  result <- list(
-    "indices" = indices_best,
-    "endmembers" = data[indices_best,]
-  )
+  result <- list("indices" = indices_best)
   if (debug.level > 0) {
     result[["iterations_count"]] <- k
     result[["replacements_count"]] <- n_replacements
@@ -132,10 +129,7 @@
     }
   }
   
-  result <- list(
-    "indices" = indices_best,
-    "endmembers" = data[indices_best,]
-  )
+  result <- list("indices" = indices_best)
   if (debug.level > 0) {
     result[["iterations_count"]] <- k
     result[["replacements_count"]] <- n_replacements
@@ -182,10 +176,7 @@
     }
   }
   
-  result <- list(
-    "indices" = indices_best,
-    "endmembers" = data[indices_best,]
-  )
+  result <- list("indices" = indices_best)
   if (debug.level > 0) {
     result[["iterations_count"]] <- k
     result[["replacements_count"]] <- n_replacements

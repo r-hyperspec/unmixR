@@ -9,8 +9,8 @@
     crossprod(c, solve(A))
   })
 
-  # If there are more than one endmember, calculate determinants of A matricies
-  # This is needed for making estimations compitable
+  # If there are more than one endmember, calculate determinants of A matrices
+  # This is needed for making estimations compatible
   determinants <- NULL
   if (n_endmembers>1) {  
     determinants <- sapply(endmembers, function(j) {
@@ -131,10 +131,7 @@
     }
   }
 
-  result <- list(
-    "indices" = indices_best,
-    "endmembers" = data[indices_best,]
-  )
+  result <- list("indices" = indices_best)
   if (debug.level > 0) {
     result[["iterations_count"]] <- k
     result[["replacements_count"]] <- n_replacements
@@ -183,10 +180,7 @@
     }
   }
 
-  result <- list(
-    "indices" = indices_best,
-    "endmembers" = data[indices_best,]
-  )
+  result <- list("indices" = indices_best)
   if (debug.level > 0) {
     result[["iterations_count"]] <- k
     result[["replacements_count"]] <- n_replacements
@@ -237,10 +231,7 @@
     }
   }
 
-  result <- list(
-    "indices" = indices_best,
-    "endmembers" = data[indices_best,]
-  )
+  result <- list("indices" = indices_best)
   if (debug.level > 0) {
     result[["iterations_count"]] <- k
     result[["replacements_count"]] <- n_replacements
