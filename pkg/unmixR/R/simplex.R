@@ -17,14 +17,29 @@
 ##'
 ##' @include unmixR-package.R
 ##' @rdname simplex
-.simplex_E <- function(data, indices = 1:nrow(data)) {
+.simplex_E <- function(data, indices = 1:nrow(data), type=c("affine","vector","gram")) {
+  # Prepare parameters
+  type <- match.arg(type)
   p <- length(indices)
-  if (ncol(data) != p - 1L) {
-    stop("length (indices) does not correspond to dimensionality of data")
+
+  # Validate dimensions
+  if ((type != "gram") && (ncol(data) != p - 1L)) {
+    stop("length(indices) does not correspond to dimensionality of data. Consider using Gram matrix version")
   }
 
   data <- data[indices, , drop = FALSE]
-  rbind(rep(1, p), t(data))
+  if (type == "affine") {
+    V <- rbind(rep(1, p), t(data))
+  } else {
+    # "vector", but also used for "gram"
+    V <- sweep(data[-1,,drop=FALSE], 2L, data[1,], check.margin = FALSE)
+
+    if (type == "gram") {
+      V <- tcrossprod(V)
+    }
+  }
+
+  return(V)
 }
 
 .test(.simplex_E) <- function() {
@@ -53,13 +68,22 @@
     2, 6, 10
   ), ncol = p, byrow = TRUE)
 
-  test_that("correct simplex", {
+  test_that("correct simplex - affine", {
     expect_equal(expected, .simplex_E(data, indices))
     expect_equal(expected, .simplex_E(data[indices,]))
   })
+  
+  test_that("correct simplex - vector", {
+    expect_equal(rbind(c(4,4),c(8,8)), .simplex_E(data, indices,  type="vector"))
+    expect_equal(rbind(c(4,4),c(8,8)), .simplex_E(data[indices,], type="vector"))
+  })
+  
+  test_that("correct simplex - gram", {
+    expect_equal(rbind(c(32,64),c(64,128)), .simplex_E(data, indices,  type="gram"))
+  })
 }
 
-#' Volume of simples
+#' Volume of a simplex
 #'
 #' @param data matrix with coordinates in rows
 #' @param indices  indices of the  \code{ncol(data) + 1} vertex points.
@@ -78,14 +102,19 @@
 #'
 #' simplex_volume(data, indices = c(1, 84, 50))
 simplex_volume <- function(data, indices = seq_len(nrow(data)), factorial = TRUE) {
-  E <- .simplex_E(data = data, indices = indices)
-  V <- abs(det(E))
-
-  if (factorial) {
-    V <- V / factorial(length(indices) - 1)
+  if (ncol(data) == length(indices) - 1) {
+    E <- .simplex_E(data, indices, type="vector")
+    volume <- abs(det(E))
+  } else {
+    E <- .simplex_E(data, indices, type="gram")
+    volume <- sqrt(abs(det(E)))
   }
 
-  V
+  if (factorial) {
+    volume <- volume / factorial(length(indices) - 1)
+  }
+
+  volume
 }
 
 .test(simplex_volume) <- function() {
@@ -112,5 +141,11 @@ simplex_volume <- function(data, indices = seq_len(nrow(data)), factorial = TRUE
   test_that("zero-volume triangle", {
     expect_equal(simplex_volume(zero_volume_triangle), 0)
     expect_equal(simplex_volume(zero_volume_triangle), 0)
+  })
+  
+  triangle_3d <- .rotate3d(cbind(triangle_2d, 1))
+  test_that("triangle in 3D", {
+    expect_equal(simplex_volume(triangle_3d, factorial = FALSE), 2*area_2d)
+    expect_equal(simplex_volume(triangle_3d, factorial = TRUE), area_2d)
   })
 }

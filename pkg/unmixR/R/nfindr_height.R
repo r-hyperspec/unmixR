@@ -78,23 +78,7 @@
   
   # Convert 2d points to 3d by adding constant 3rd coordinate and rotating in 3d
   # These operations are not supposed to change the volume rations
-  a <- 1; b <- 2; c <- 0.5
-  .points_3d <- cbind(.points_2d, 1) %*%
-    rbind(
-      c(cos(a), -sin(a), 0),
-      c(sin(a),  cos(a), 0),
-      c(0,      0,       1)
-    ) %*%
-    rbind(
-      c(cos(b),  0, sin(b)),
-      c(0,       1,      0),
-      c(-sin(b), 0, cos(b))
-    ) %*%
-    rbind(
-      c(1, 0,           0),
-      c(0, cos(c), sin(c)),
-      c(0, sin(c), cos(c))
-    )
+  .points_3d <- .rotate3d(cbind(.points_2d, 1))
   test_that("No dimension reduction", {
     # All rows, all endmembers
     estimates <- .estimate_volume_change_by_height(.points_3d, indices, 1:p, 1:m)

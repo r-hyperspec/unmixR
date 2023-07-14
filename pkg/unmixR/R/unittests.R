@@ -96,6 +96,26 @@ rm(inx,p,i,j)
   }
   coefficients[1:n_points,] %*% vertices
 }
+
+.rotate3d <- function(x, yaw=2, pitch=1, roll=0.5) {
+  x %*%
+    rbind(
+      c(cos(yaw), -sin(yaw), 0),
+      c(sin(yaw),  cos(yaw), 0),
+      c(0,      0,       1)
+    ) %*%
+    rbind(
+      c(cos(pitch),  0, sin(pitch)),
+      c(0,           1, 0         ),
+      c(-sin(pitch), 0, cos(pitch))
+    ) %*%
+    rbind(
+      c(1, 0,           0),
+      c(0, cos(roll), -sin(roll)),
+      c(0, sin(roll),  cos(roll))
+    )
+}
+
 }
 
 ##' get test that is attached to object as "test" attribute
