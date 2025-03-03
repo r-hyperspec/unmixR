@@ -5,18 +5,26 @@
 ##' pixels is larger than any other volume formed from any other combination
 ##' of pixels.
 ##'
-##' @param x Data to unmix. It will be converted to a matrix using
-##'   as.matrix. The matrix should contain a spectrum per row. If the dimension
-##'   of the data is larger than `p-1` then it will be dimensionally reduced
-##'   using PCA. If you want to reduce the data using some other method then
-##'   reduce it first and provide the data of `p-1` dimension.
-##'
-##' @param formula Formula object.
+##' @param x Data to unmix (spectra in rows). It will be converted to a matrix using
+##'   as.matrix. The matrix should contain a spectrum per row. It is recommended
+##'   to reduce the dimensionality of the data to `p-1` before using this
+##'   function. This can be done using PCA or other dimensionality reduction
+##'   techniques. Withouth dimensionality reduction, the results might be
+##'   inefficient and computation intensive.
 ##'
 ##' @param p Number of endmembers.
 ##' 
-##' @param indices Locations of the rows in the dataset that will be used to
-##'   form the initial simplex. Default: Randomly selected indices.
+##' @param init Initialization strategy. 
+##'   \itemize{
+##'     \item vector of `p` integers - manually selected initial points, can be output of
+##'       previous another endmember extraction method, e.g. VCA
+##'     \item random - randomly selected points
+##'     \item projections - selecting the two extreme points of the
+##'       projections of the data onto random vectors
+##'     \item coordinates - selecting the two extreme points of the
+##'       projections of the data onto the coordinate axes
+##'   }
+##'   Default: "projections" is used.
 ##'
 ##' @param iter The iteration strategy. Options: "points", "endmembers",
 ##'   "both". By default, "points" are used.
@@ -37,10 +45,6 @@
 ##'
 ##' @param ... Additional parameters for the methods (currently unused).
 ##'
-##' @param keep_data Boolean that indicates whether the actual data used for 
-##'   the calculation (i.e. after dimension reduction) should be stored in the
-##'   resulting structure. 
-##' 
 ##' @return A list which contains:
 ##'   \itemize{
 ##'     \item \strong{indices}: the indices of the spectra which increased
