@@ -10,7 +10,6 @@ nfindr.default <- function(
   estimator = c("Cramer", "volume", "height", "cofactor", "LDU"),
   iter_max = 10,
   n_init = 1,
-  debug.level = 0,
   ...
   ) {
 
@@ -30,7 +29,7 @@ nfindr.default <- function(
   # Convert init into list where each element of the list is a set of initial indices
   if (is.numeric(init) && (length(init) == p)) {
     init <- list(init)
-    if (debug.level>0) {
+    if ( (.options("debuglevel") > 0L) && (n_init != 1L) ) {
       warning("`n_init` is ignored since specific initial endmember indices were provided.")
     }
   } else if (init == "random") {
@@ -70,7 +69,7 @@ nfindr.default <- function(
   results_list <- lapply(
     init,
     function(indices) {
-      nfindr_func(data, indices, iter_max = iter_max, debug.level = debug.level)
+      nfindr_func(data, indices, iter_max = iter_max)
     }
   )
   
@@ -94,11 +93,11 @@ nfindr.default <- function(
       result$indices <- unique_indices[which.max(volumes),]
     }
 
-    if (debug.level > 0) {
+    if (.options("debuglevel") > 0L) {
       result[["iterations_count"]] <- sapply(results_list, function(r) r$iterations_count)
       result[["replacements_count"]] <- sapply(results_list, function(r) r$replacements_count)
     }
-    if (debug.level > 1) {
+    if (.options("debuglevel") > 1L) {
       result[["replacements"]] <- sapply(results_list, function(r) r$replacements)
     }
   }

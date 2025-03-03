@@ -119,7 +119,7 @@
 }
 
 
-.nfindr_cofactor_endmembers <- function(data, indices, iter_max=10, debug.level=0) {
+.nfindr_cofactor_endmembers <- function(data, indices, iter_max=10) {
   p <- length(indices)
   m <- nrow(data)
 
@@ -127,7 +127,7 @@
   n_replacements <- 0
   is_replacement <- TRUE
   indices_best <- indices
-  if (debug.level > 1) {
+  if (.options("debuglevel") > 1L) {
     replacements <- matrix(indices_best, nrow=1)
   }
   volume_best  <- simplex_volume(data, indices, factorial = FALSE)
@@ -153,7 +153,7 @@
         is_replacement <- TRUE
         # For debugging
         n_replacements <- n_replacements + 1
-        if (debug.level > 1) {
+        if (.options("debuglevel") > 1L) {
           replacements <- rbind(replacements, indices_best)
         }
       }
@@ -161,18 +161,18 @@
   }
 
   result <- list("indices" = indices_best)
-  if (debug.level > 0) {
+  if (.options("debuglevel") > 0L) {
     result[["iterations_count"]] <- k
     result[["replacements_count"]] <- n_replacements
   }
-  if (debug.level > 1) {
+  if (.options("debuglevel") > 1L) {
     result[["replacements"]] <- replacements
   }
   
   result
 }
 
-.nfindr_cofactor_points <- function(data, indices, iter_max=10, debug.level=0) {
+.nfindr_cofactor_points <- function(data, indices, iter_max=10) {
   p <- length(indices)
   m <- nrow(data)
 
@@ -180,7 +180,7 @@
   n_replacements <- 0
   is_replacement <- TRUE
   indices_best <- indices
-  if (debug.level > 1) {
+  if (.options("debuglevel") > 1L) {
     replacements <- matrix(indices_best, nrow=1)
   }
   volume_best  <- simplex_volume(data, indices, factorial = FALSE)
@@ -204,7 +204,7 @@
         is_replacement <- TRUE
         # For debugging
         n_replacements <- n_replacements + 1
-        if (debug.level > 1) {
+        if (.options("debuglevel") > 1L) {
           replacements <- rbind(replacements, indices_best)
         }
       }
@@ -212,18 +212,18 @@
   }
 
   result <- list("indices" = indices_best)
-  if (debug.level > 0) {
+  if (.options("debuglevel") > 0L) {
     result[["iterations_count"]] <- k
     result[["replacements_count"]] <- n_replacements
   }
-  if (debug.level > 1) {
+  if (.options("debuglevel") > 1L) {
     result[["replacements"]] <- replacements
   }
   
   result
 }
 
-.nfindr_cofactor_both <- function(data, indices, iter_max=10, debug.level=0) {
+.nfindr_cofactor_both <- function(data, indices, iter_max=10) {
   p <- length(indices)
   m <- nrow(data)
 
@@ -231,7 +231,7 @@
   n_replacements <- 0
   is_replacement <- TRUE
   indices_best <- indices
-  if (debug.level > 1) {
+  if (.options("debuglevel") > 1L) {
     replacements <- matrix(indices_best, nrow=1)
   }
   volume_best  <- simplex_volume(data, indices, factorial = FALSE)
@@ -256,18 +256,18 @@
       is_replacement <- TRUE
       # For debugging
       n_replacements <- n_replacements + 1
-      if (debug.level > 1) {
+      if (.options("debuglevel") > 1L) {
         replacements <- rbind(replacements, indices_best)
       }
     }
   }
 
   result <- list("indices" = indices_best)
-  if (debug.level > 0) {
+  if (.options("debuglevel") > 0L) {
     result[["iterations_count"]] <- k
     result[["replacements_count"]] <- n_replacements
   }
-  if (debug.level > 1) {
+  if (.options("debuglevel") > 1L) {
     result[["replacements"]] <- replacements
   }
   

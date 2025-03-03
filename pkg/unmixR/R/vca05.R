@@ -41,7 +41,7 @@ vca05 <- function(data, p, SNR = estSNR(data, p)) {
         A[, i] <- Y[, k]
         indices[i] <- k
         
-        if (.options ("debuglevel") >= 1L){
+        if (.options("debuglevel") >= 1L){
             cat("Iteration", i, "\n")
             cat("\tcurrent endmembers:", sort(indices[1:i]), "\n")
             # To monitor the process, capture the volume

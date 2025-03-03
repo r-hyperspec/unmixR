@@ -69,7 +69,7 @@ vcaLopez2012 <- function(data, p, SNR = estSNR(data, p)) {
         #estimated endmember is stored in E
         E[, i + 1] <- Y[, index]
 
-        if (.options ("debuglevel") >= 1L){
+        if (.options("debuglevel") >= 1L){
           cat("Iteration", i, "\n")
           cat("\tcurrent endmembers:", sort(indices[1:i]), "\n")
           
@@ -85,7 +85,7 @@ vcaLopez2012 <- function(data, p, SNR = estSNR(data, p)) {
           cat ("\tmax:", which.max (v), "\t min:", which.min (v), "\n")
         }
 
-        if (.options ("debuglevel") >= 2L){
+        if (.options("debuglevel") >= 2L){
           plot (t (v))
           title (main = paste ("Iteration:", i))
           tmp <- c (indices [i], which.max (v), which.min (v))

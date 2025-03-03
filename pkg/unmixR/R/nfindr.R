@@ -34,10 +34,6 @@
 ##'   Default: Cramer's rules is used since it has best performance.
 ##'
 ##' @param iter_max Maximum number of iterations to make.
-##' 
-##' @param debug.level Debug level. Controls the level of detalization of the
-##'   output. By default, is 0. If it is 1, then number of replacements also will
-##'   be returned. 2 - also will add list of vertices at each iteration.
 ##'
 ##' @param ... Additional parameters for the methods (currently unused).
 ##'
@@ -138,17 +134,20 @@ nfindr <- function (x, ...) {
     test_that(
       paste0("Trivial case: ", estimator, " - endmembers in the inner-most loop"),
       {
+        unmixR.options(debuglevel = 0L)
         result <- nfindr(data, p, indices, iter = "endmembers", estimator = estimator)
         expect_equal(sort(result$indices), best_indices)
         expect_equal(result$endmembers[order(result$indices), ], data[best_indices, ])
         expect_equal(names(result), c("indices", "endmembers"))
         
-        result <- nfindr(data, p, indices, iter = "endmembers", estimator = estimator, debug.level = 1)
+        unmixR.options(debuglevel = 1L)
+        result <- nfindr(data, p, indices, iter = "endmembers", estimator = estimator)
         expect_equal(result$iterations_count, 2)
         expect_equal(result$replacements_count, 3)
         expect_equal(names(result), c("indices", "endmembers", "iterations_count", "replacements_count"))
         
-        result <- nfindr(data, p, indices, iter = "endmembers", estimator = estimator, debug.level = 2)
+        unmixR.options(debuglevel = 2L)
+        result <- nfindr(data, p, indices, iter = "endmembers", estimator = estimator)
         expect_equal(
           result$replacements,
           rbind(
@@ -169,17 +168,20 @@ nfindr <- function (x, ...) {
     test_that(
       paste0("Trivial case: ", estimator, " - points in the inner-most loop"),
       {
+        unmixR.options(debuglevel = 0L)
         result <- nfindr(data, p, indices, iter = "points", estimator = estimator)
         expect_equal(sort(result$indices), best_indices)
         expect_equal(result$endmembers[order(result$indices), ], data[best_indices, ])
         expect_equal(names(result), c("indices", "endmembers"))
         
-        result <- nfindr(data, p, indices, iter = "points", estimator = estimator, debug.level = 1)
+        unmixR.options(debuglevel = 1L)
+        result <- nfindr(data, p, indices, iter = "points", estimator = estimator)
         expect_equal(result$iterations_count, 2)
         expect_equal(result$replacements_count, 3)
         expect_equal(names(result), c("indices", "endmembers", "iterations_count", "replacements_count"))
         
-        result <- nfindr(data, p, indices, iter = "points", estimator = estimator, debug.level = 2)
+        unmixR.options(debuglevel = 2L)
+        result <- nfindr(data, p, indices, iter = "points", estimator = estimator)
         expect_equal(
           result$replacements,
           rbind(
@@ -203,6 +205,8 @@ nfindr <- function (x, ...) {
     test_that(
       paste0("Trivial case: ", estimator, " - both in the inner-most loop"),
       {
+
+        unmixR.options(debuglevel = 0L)
         result <- nfindr(data, p, indices, iter = "both", estimator = estimator)
         expect_equal(sort(result$indices), best_indices)
         expect_equal(
@@ -211,12 +215,14 @@ nfindr <- function (x, ...) {
         )
         expect_equal(names(result), c("indices", "endmembers"))
         
-        result <- nfindr(data, p, indices, iter = "both", estimator = estimator, debug.level = 1)
+        unmixR.options(debuglevel = 1L)
+        result <- nfindr(data, p, indices, iter = "both", estimator = estimator)
         expect_equal(result$iterations_count, 4)
         expect_equal(result$replacements_count, 3)
         expect_equal(names(result), c("indices", "endmembers", "iterations_count", "replacements_count"))
         
-        result <- nfindr(data, p, indices, iter = "both", estimator = estimator, debug.level = 2)
+        unmixR.options(debuglevel = 2L)
+        result <- nfindr(data, p, indices, iter = "both", estimator = estimator)
         expect_equal(
           result$replacements,
           rbind(
@@ -248,6 +254,7 @@ nfindr <- function (x, ...) {
   indices <- sample(which(apply(data, 1, norm, type="2") < 0.3), p)
   
   ## Test non-trivial case ----
+  unmixR.options(debuglevel = 2L)
   iter <- c("endmembers", "points", "both")
   for(estimator in estimators) {
     for (iterator in iter) {
@@ -256,8 +263,8 @@ nfindr <- function (x, ...) {
         # The iteration steps and the final solution must be the same as we use
         # straightforward volume calculation
         expect_equal(
-          nfindr(data, p, indices, iter=iterator, estimator = estimator, debug.level = 2),
-          nfindr(data, p, indices, iter=iterator, estimator = "volume", debug.level = 2)
+          nfindr(data, p, indices, iter=iterator, estimator = estimator),
+          nfindr(data, p, indices, iter=iterator, estimator = "volume")
         )
       )
     }

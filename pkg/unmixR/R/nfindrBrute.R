@@ -23,7 +23,7 @@
 ##' @export
 ##' @importFrom utils combn tail
 
-nfindrBrute <- function(data, p, ..., debuglevel = .options ("debuglevel")) {
+nfindrBrute <- function(data, p, ...) {
   # generate all possible unique combinations of p indices
   combos <- combn(nrow(data), p, simplify=TRUE)
   n <- ncol(combos)
@@ -37,7 +37,7 @@ nfindrBrute <- function(data, p, ..., debuglevel = .options ("debuglevel")) {
     abs (det (simplex))
   })
 
-  if (debuglevel >= 1L) {
+  if (.options("debuglevel") >= 1L) {
     volumes <- volumes / factorial (p - 1)
     
     DF <- as.data.frame(cbind(t (combos), volumes))
@@ -46,10 +46,9 @@ nfindrBrute <- function(data, p, ..., debuglevel = .options ("debuglevel")) {
   	message("Top endmember combinations & their volumes:\n")
   }
   
-  if (debuglevel >= 1L) 
-  if (debuglevel == 1L)
+  if (.options("debuglevel") == 1L)
     message (tail (DF), row.names = FALSE)
-  else if (debuglevel > 1L)
+  else if (.options("debuglevel") > 1L)
     message (DF, row.names = FALSE)
   
   ## return the indices that formed the largest simplex
@@ -65,7 +64,10 @@ nfindrBrute <- function(data, p, ..., debuglevel = .options ("debuglevel")) {
   expect_true (require (hyperSpec))
   
   test_that("correct output for triangle", {
+    unmixR.options(debuglevel = 0L)
     expect_equal(nfindrBrute(.testdata$x[,1:2], p = 3), .correct)
-    expect_equal(nfindrBrute(.testdata$x[,1:2], p = 3, debuglevel = 1), .correct)
+    
+    unmixR.options(debuglevel = 1L)
+    expect_equal(nfindrBrute(.testdata$x[,1:2], p = 3), .correct)
   })
 }
