@@ -47,8 +47,12 @@ nfindr.default <- function(
 
   # Check dimensions and number of endmembers ------
   if (n != p - 1) {
+    warning(
+      "Applying N-FINDR without dimension reduction might be inefficient. ",
+      "Consider reducing the dimensionality of the data first, e.g. with PCA."
+    )
     if (estimator != "height") {
-      warning("Applying N-FINDR without dimension reduction. Note, `estimator` parameter is forced to 'height'.")
+      warning("Note, `estimator` parameter is forced to 'height'.")
     }
     estimator = "height"
   }
@@ -101,8 +105,6 @@ nfindr.default <- function(
       result[["replacements"]] <- sapply(results_list, function(r) r$replacements)
     }
   }
-
-  result[["endmembers"]] <- data[result$indices,]
     
   class(result) <- "nfindr"
   

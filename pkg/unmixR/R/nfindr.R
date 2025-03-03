@@ -43,12 +43,9 @@
 ##' 
 ##' @return A list which contains:
 ##'   \itemize{
-##'     \item \strong{data}: the original data or reduced data if \code{keep_data}
-##'                          is set to \code{TRUE}.
 ##'     \item \strong{indices}: the indices of the spectra which increased
 ##'                             the simplex volume the most. These are the
 ##'                             indices of the endmembers.
-##'     \item \strong{endmembers}: the vectors of endmembers in reduced data space.
 ##'     \item \strong{iterations_count}: if debug level higher than 0, number of
 ##'                                      loop iterations.
 ##'     \item \strong{replacements_count}: if debug level higher than 0, number of
@@ -137,14 +134,13 @@ nfindr <- function (x, ...) {
         unmixR.options(debuglevel = 0L)
         result <- nfindr(data, p, indices, iter = "endmembers", estimator = estimator)
         expect_equal(sort(result$indices), best_indices)
-        expect_equal(result$endmembers[order(result$indices), ], data[best_indices, ])
-        expect_equal(names(result), c("indices", "endmembers"))
+        expect_equal(names(result), c("indices"))
         
         unmixR.options(debuglevel = 1L)
         result <- nfindr(data, p, indices, iter = "endmembers", estimator = estimator)
         expect_equal(result$iterations_count, 2)
         expect_equal(result$replacements_count, 3)
-        expect_equal(names(result), c("indices", "endmembers", "iterations_count", "replacements_count"))
+        expect_equal(names(result), c("indices", "iterations_count", "replacements_count"))
         
         unmixR.options(debuglevel = 2L)
         result <- nfindr(data, p, indices, iter = "endmembers", estimator = estimator)
@@ -158,7 +154,7 @@ nfindr <- function (x, ...) {
           ),
           check.attributes = FALSE
         )
-        expect_equal(names(result), c("indices", "endmembers", "iterations_count", "replacements_count", "replacements"))
+        expect_equal(names(result), c("indices", "iterations_count", "replacements_count", "replacements"))
       }
     )
   }
@@ -171,14 +167,13 @@ nfindr <- function (x, ...) {
         unmixR.options(debuglevel = 0L)
         result <- nfindr(data, p, indices, iter = "points", estimator = estimator)
         expect_equal(sort(result$indices), best_indices)
-        expect_equal(result$endmembers[order(result$indices), ], data[best_indices, ])
-        expect_equal(names(result), c("indices", "endmembers"))
+        expect_equal(names(result), c("indices"))
         
         unmixR.options(debuglevel = 1L)
         result <- nfindr(data, p, indices, iter = "points", estimator = estimator)
         expect_equal(result$iterations_count, 2)
         expect_equal(result$replacements_count, 3)
-        expect_equal(names(result), c("indices", "endmembers", "iterations_count", "replacements_count"))
+        expect_equal(names(result), c("indices", "iterations_count", "replacements_count"))
         
         unmixR.options(debuglevel = 2L)
         result <- nfindr(data, p, indices, iter = "points", estimator = estimator)
@@ -192,7 +187,7 @@ nfindr <- function (x, ...) {
           ),
           check.attributes = FALSE
         )
-        expect_equal(names(result), c("indices", "endmembers", "iterations_count", "replacements_count", "replacements"))
+        expect_equal(names(result), c("indices", "iterations_count", "replacements_count", "replacements"))
       }
     )
   }
@@ -209,17 +204,13 @@ nfindr <- function (x, ...) {
         unmixR.options(debuglevel = 0L)
         result <- nfindr(data, p, indices, iter = "both", estimator = estimator)
         expect_equal(sort(result$indices), best_indices)
-        expect_equal(
-          result$endmembers[order(result$indices), ],
-          data[best_indices, ]
-        )
-        expect_equal(names(result), c("indices", "endmembers"))
+        expect_equal(names(result), c("indices"))
         
         unmixR.options(debuglevel = 1L)
         result <- nfindr(data, p, indices, iter = "both", estimator = estimator)
         expect_equal(result$iterations_count, 4)
         expect_equal(result$replacements_count, 3)
-        expect_equal(names(result), c("indices", "endmembers", "iterations_count", "replacements_count"))
+        expect_equal(names(result), c("indices", "iterations_count", "replacements_count"))
         
         unmixR.options(debuglevel = 2L)
         result <- nfindr(data, p, indices, iter = "both", estimator = estimator)
@@ -233,7 +224,7 @@ nfindr <- function (x, ...) {
           ),
           check.attributes = FALSE
         )
-        expect_equal(names(result), c("indices", "endmembers", "iterations_count", "replacements_count", "replacements"))
+        expect_equal(names(result), c("indices", "iterations_count", "replacements_count", "replacements"))
       }
     )
   }
