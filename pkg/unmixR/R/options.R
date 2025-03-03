@@ -38,7 +38,8 @@ unmixR.options <- function (...) {
 
 .options <- settings::options_manager (
   debuglevel = 0L,
-  implementation.search = "package:unmixR"
+  implementation.search = "package:unmixR",
+  tol=1.5e-8
   )
 
 .test (unmixR.options) <- function (){
@@ -49,7 +50,7 @@ unmixR.options <- function (...) {
   ## options.
   test_that("manual check of option list",{
     expect_equal(sort (names (.options ())),
-                 c("debuglevel", "implementation.search"))
+                 c("debuglevel", "implementation.search", "tol"))
   })
 }
 

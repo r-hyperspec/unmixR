@@ -114,7 +114,7 @@
         invariants = invariants
       )
       estimates <- as.numeric(estimates)
-      if (any(estimates > volume_best+1.5e-8)) {
+      if (any(estimates > volume_best+.options("tol"))) {
         # Update current simplex vertices
         j <- which.max(estimates)
         indices_best[j] <- i
@@ -215,7 +215,7 @@
       invariants = invariants
     )
   
-    if (any(estimates > volume_best+1.5e-8)) {
+    if (any(estimates > volume_best+.options("tol"))) {
       # Update current simplex vertices
       max_ij <- arrayInd(which.max(estimates), dim(estimates))
       indices_best[max_ij[2]] <- max_ij[1]

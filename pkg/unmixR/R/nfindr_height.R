@@ -123,7 +123,7 @@
         data, indices_best, 1:p, i
       )
       estimates <- as.numeric(estimates)
-      if (any(estimates > 1+1.5e-8)) {
+      if (any(estimates > 1+.options("tol"))) {
         # Update current simplex vertices
         j <- which.max(estimates)
         indices_best[j] <- i
@@ -170,7 +170,7 @@
         data, indices_best, j, 1:m
       )
       estimates <- as.numeric(estimates)
-      if (any(estimates > 1+1.5e-8)) {
+      if (any(estimates > 1+.options("tol"))) {
         # Update current simplex vertices
         i <- which.max(estimates)
         indices_best[j] <- i
@@ -221,7 +221,7 @@
       data, indices_best, 1:p, 1:m
     )
   
-    if (any(estimates > 1+1.5e-8)) {
+    if (any(estimates > 1+.options("tol"))) {
       # Update current simplex vertices
       max_ij <- arrayInd(which.max(estimates), dim(estimates))
       indices_best[max_ij[2]] <- max_ij[1]
