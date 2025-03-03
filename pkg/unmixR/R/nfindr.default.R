@@ -52,6 +52,13 @@ nfindr.default <- function(
     stop("p must be a positive integer >= 2")
   }
 
+  ## Normalize string arguments -----
+  iter <- tolower(match.arg(iter))
+  estimator <- tolower(match.arg(estimator))
+  if (is.character(init)) {
+    init <- tolower(match.arg(init))
+  }
+
   # Check dimensions and number of endmembers ------
   if (n != p - 1) {
     warning(
@@ -62,13 +69,6 @@ nfindr.default <- function(
       warning("Note, `estimator` parameter is forced to 'height'.")
     }
     estimator = "height"
-  }
-
-  ## Normalize string arguments -----
-  iter <- tolower(match.arg(iter))
-  estimator <- tolower(match.arg(estimator))
-  if (is.character(init)) {
-    init <- tolower(match.arg(init))
   }
 
   ## Parse init --------
