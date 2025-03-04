@@ -11,11 +11,11 @@ Authors@R: c(
   ),
   person("Bryan A.", "Hanson", role = "aut"),
   person("Simon", "Fuller", role = "aut"),
-  person("Rustam", "Gulieva", role = "aut"))
+  person("Rustam", "Guliev", role = "aut"))
 Description: Functions implementing the N-FINDR, Iterated Constrained
-    Endmembers (ICE) and Vertex Component Analysis (VCA) algorithms which can
-    recover pure component spectra and their respective concentrations from a
-    hyperspectral data set.
+    Endmembers (ICE), Vertex Component Analysis (VCA), and Automatic Target
+    Generation Procedure (ATGP) algorithms which can recover pure component
+    spectra and their respective concentrations from a hyperspectral data set.
 URL: 
     https://github.com/r-hyperspec/unmixR
 BugReports: https://github.com/r-hyperspec/unmixR/issues
