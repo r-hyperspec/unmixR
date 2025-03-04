@@ -1,84 +1,91 @@
-##' General Interface to N-FINDR Spectral Unmixing Implementations
-##'
-##' All the N-FINDR techniques are based on the fact that, in N spectral
-##' dimensions, the N-volume contained by a simplex formed of the purest
-##' pixels is larger than any other volume formed from any other combination
-##' of pixels.
-##'
-##' @param x Data to unmix (spectra in rows). It will be converted to a matrix using
-##'   as.matrix. The matrix should contain a spectrum per row. It is recommended
-##'   to reduce the dimensionality of the data to `p-1` before using this
-##'   function. This can be done using PCA or other dimensionality reduction
-##'   techniques. Withouth dimensionality reduction, the results might be
-##'   inefficient and computation intensive.
-##'
-##' @param p Number of endmembers.
-##' 
-##' @param init Initialization strategy. 
-##'   \itemize{
-##'     \item vector of `p` integers - manually selected initial points, can be output of
-##'       previous another endmember extraction method, e.g. VCA
-##'     \item random - randomly selected points
-##'     \item projections - selecting the two extreme points of the
-##'       projections of the data onto random vectors
-##'     \item coordinates - selecting the two extreme points of the
-##'       projections of the data onto the coordinate axes
-##'   }
-##'   Default: "projections" is used.
-##'
-##' @param iter The iteration strategy. Options: "points", "endmembers",
-##'   "both". By default, "points" are used.
-##' 
-##' @param estimator Volume change estimator
-##'   \itemize{
-##'     \item volume - straight forward volume calculation without any
-##'       optimization
-##'     \item height - Use the fact that the simplex volume is proportional to 
-##'       the product of `height` and `base volume`.
-##'     \item Cramer - Using Cramer's rule
-##'     \item LDU - Using LDU matrix decomposition
-##'     \item cofactor - Using the cofactor expansion for calculating `det(E)` 
-##'   }
-##'   Default: Cramer's rules is used since it has best performance.
-##'
-##' @param iter_max Maximum number of iterations to make.
-##'
-##' @param ... Additional parameters for the methods (currently unused).
-##'
-##' @return A list which contains:
-##'   \itemize{
-##'     \item \strong{indices}: the indices of the spectra which increased
-##'                             the simplex volume the most. These are the
-##'                             indices of the endmembers.
-##'     \item \strong{iterations_count}: if debug level higher than 0, number of
-##'                                      loop iterations.
-##'     \item \strong{replacements_count}: if debug level higher than 0, number of
-##'                                      actual replacements during iterations.
-##'     \item \strong{replacements}: if debug level higher than 1, the vectors of
-##'                                  indices at all replacement steps. If fact,
-##'                                  is used to see how the simplex was growing.  
-##'   }
-##'
-##' @seealso \code{\link{endmembers}} to extract the spectra; \code{\link{predict}}
-##' to determine abundances of endmembers in each sample.
-##'
-##' @examples
-##' data(demo_data)
-##' demo <- nfindr(demo_data, 2)
-##' em <- demo_data[demo$indices,]
-##' em <- rbind(demo_data[c(3,7),], em)
-##' em[3:4,] <- em[3:4,] + 0.5 # a small offset for the found em's
-##' matplot(t(em), type = "l",
-##'    col = c("black", "red", "black", "red"), lty = c(1, 1, 2, 2),
-##'    xlab = "frequency", ylab = "intensity",
-##'    main = "N-FINDR of demo_data")
-##' leg.txt <- c("Endmember 1", "Endmember 2", "Endmember 1 (found)", "Endmember 2 (found)")
-##' legend("topright", leg.txt, col = c("black", "red", "black", "red"),
-##' lty = c(1, 1, 2, 2), cex = 0.75)
-##'
-##' @rdname nfindr
-##' @export
-##' @include unmixR-package.R
+#' General Interface to N-FINDR Spectral Unmixing Implementations
+#'
+#' All the N-FINDR techniques are based on the fact that, in N spectral
+#' dimensions, the N-volume contained by a simplex formed of the purest
+#' pixels is larger than any other volume formed from any other combination
+#' of pixels.
+#'
+#' @param x Data to unmix (spectra in rows). It will be converted to a matrix using
+#'   as.matrix. The matrix should contain a spectrum per row. It is recommended
+#'   to reduce the dimensionality of the data to `p-1` before using this
+#'   function. This can be done using PCA or other dimensionality reduction
+#'   techniques. Withouth dimensionality reduction, the results might be
+#'   inefficient and computation intensive.
+#'
+#' @param p Number of endmembers.
+#' 
+#' @param init Initialization strategy. 
+#'   \itemize{
+#'     \item vector of `p` integers - manually selected initial points, can be output of
+#'       previous another endmember extraction method, e.g. VCA
+#'     \item random - randomly selected points
+#'     \item projections - selecting the two extreme points of the
+#'       projections of the data onto random vectors
+#'     \item coordinates - selecting the two extreme points of the
+#'       projections of the data onto the coordinate axes
+#'   }
+#'   Default: "projections" is used.
+#'
+#' @param iter The iteration strategy. Options: "points", "endmembers",
+#'   "both". By default, "points" are used.
+#' 
+#' @param estimator Volume change estimator
+#'   \itemize{
+#'     \item volume - straight forward volume calculation without any
+#'       optimization
+#'     \item height - Use the fact that the simplex volume is proportional to 
+#'       the product of `height` and `base volume`.
+#'     \item Cramer - Using Cramer's rule
+#'     \item LDU - Using LDU matrix decomposition
+#'     \item cofactor - Using the cofactor expansion for calculating `det(E)` 
+#'   }
+#'   Default: Cramer's rules is used since it has best performance.
+#'
+#' @param iter_max Maximum number of iterations to make.
+#'
+#' @param n_init Number of initializations to try. The final result will be
+#'   the best output of all initializations. Ignored if specific initial 
+#'   endmember indices provided. Default: 1.
+#'
+#' @param ... Additional parameters for the methods (currently unused).
+#'
+#' @return A list which contains:
+#'   \itemize{
+#'     \item \strong{indices}: the indices of the spectra which increased
+#'                             the simplex volume the most. These are the
+#'                             indices of the endmembers.
+#'     \item \strong{iterations_count}: if debug level higher than 0, number of
+#'                                      loop iterations.
+#'     \item \strong{replacements_count}: if debug level higher than 0, number of
+#'                                      actual replacements during iterations.
+#'     \item \strong{replacements}: if debug level higher than 1, the vectors of
+#'                                  indices at all replacement steps. If fact,
+#'                                  is used to see how the simplex was growing.  
+#'   }
+#'
+#' @seealso \code{\link{endmembers}} to extract the endmembers; \code{\link{abundances}}
+#' to determine abundances of endmembers in each sample
+#'
+#' @examples
+#' data("demo_data")
+#' 
+#' # Reduce data dimensionality with PCA
+#' pca <- prcomp(demo_data)
+#' x <- pca$x[,1:2]
+#' 
+#' # Perform N-FINDR in reduced space
+#' nf <- nfindr(x, p = 3)
+#'
+#' # Get endmembers both in reduced and original space
+#' ems <- endmembers(nf, demo_data)
+#' ems_pca <- endmembers(nf, x)
+#' 
+#' # Plot endmembers
+#' matplot(t(ems), type = "l")
+#'
+#' @rdname nfindr
+#' @export
+#' @include unmixR-package.R
 
 nfindr <- function (x, ...) {
   UseMethod("nfindr")

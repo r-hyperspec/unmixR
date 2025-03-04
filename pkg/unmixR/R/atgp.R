@@ -1,18 +1,23 @@
 #' ATGP (Automatic Target Generation Procedure) algorithm.
 #'
-##' @param data Data matrix. It will be converted to a matrix using
-##'   as.matrix. The matrix should contain a spectrum per row.
-##'
-##' @param p Number of endmembers.
-##'
-##' @references Based on Python implementation in [pysptools](https://github.com/ctherien/pysptools/blob/fbcd3ecaa7ab27f0158b28b4327537c3e75db160/pysptools/eea/eea.py#L52)
-##'
-##' @return A list which contains:
-##'   \itemize{
-##'     \item \strong{indices}: the indices of the calculated endmembers.
-##'     \item \strong{projection_vectors}: the projection vectors of the calculated endmembers.
-##'       Included only when debug level is 1 or higher.
-##'   }
+#' @param data Data matrix. It will be converted to a matrix using
+#'   as.matrix. The matrix should contain a spectrum per row.
+#'
+#' @param p Number of endmembers.
+#'
+#' @references Based on Python implementation in [pysptools](https://github.com/ctherien/pysptools/blob/fbcd3ecaa7ab27f0158b28b4327537c3e75db160/pysptools/eea/eea.py#L52)
+#'
+#' @return A list which contains:
+#'   \itemize{
+#'     \item \strong{indices}: the indices of the calculated endmembers.
+#'     \item \strong{projection_vectors}: the projection vectors of the calculated endmembers.
+#'       Included only when debug level is 1 or higher.
+#'   }
+#'
+#' @name atgp
+#' @rdname atgp
+#' @export
+#' @include unmixR-package.R
 atgp <- function(data, p) {
   data <- as.matrix(data)
 

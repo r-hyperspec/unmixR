@@ -11,7 +11,7 @@
 ##' @title Hyperspectral Unmixing Methods
 ##' @docType package
 ##'
-##' @author Anton Belov, Conor McManus, Claudia Beleites, Bryan A. Hanson, Simon Fuller.
+##' @author Anton Belov, Conor McManus, Claudia Beleites, Bryan A. Hanson, Simon Fuller, Rustam Guliev.
 ##'
 ##' Maintainer: Claudia Beleites <chemometrie@beleites.de>
 ##'

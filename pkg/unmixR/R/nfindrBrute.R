@@ -13,9 +13,6 @@
 ##'
 ##' @param ... Extra unused parameters passed in from 
 ##' \code{\link{nfindr}}.
-##'
-##' @param debuglevel If \code{>= 1L}, print top simplices with their 
-##' corresponding volume.
 ##' 
 ##' @return The indices of the endmembers in the original dataset or 
 ##' a data.frame holding indices and corresponding volume if \code{volume = TRUE}.

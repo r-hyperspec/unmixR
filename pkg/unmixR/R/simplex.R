@@ -12,6 +12,13 @@
 ##'
 ##' @param indices Locations of the rows in the dataset to use as simplex vertecies
 ##'
+##' @param type Type of simplex matrix to generate. Can be one of:
+##'   \itemize{
+##'     \item \code{"affine"}: Affine simplex matrix \code{pxp}, i.e. vertices matrix padded with 1s
+##'     \item \code{"vector"}: Vector simplex matrix \code{(p-1)x(p-1)}, i.e. vertices matrix with the first row subtracted
+##'     \item \code{"gram"}: Gram-matrix simplex matrix \code{(p-1)x(p-1)}, i.e. squared 'vector' simplex matrix
+##'   }
+##'
 ##' @return A simplex volume matrix E, a p x p matrix whose first row contains
 ##' only 1s
 ##'

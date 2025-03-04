@@ -17,7 +17,7 @@
 	
 	endmembers <- endmembers (object)
   	
-  	raw <- t(apply(newdata, 1, function(spectrum) {nnls(t(endmembers), spectrum)[["x"]]}))
+  	raw <- t(apply(newdata, 1, function(spectrum) {nnls::nnls(t(endmembers), spectrum)[["x"]]}))
   	
   	return(raw/rowSums(raw))
 }
@@ -70,7 +70,7 @@
 ##'
 ##' @examples
 ##' data(demo_data)
-##' demo <- nfindr(demo_data, p = 3)
+##' demo <- vca(demo_data, p = 3)
 ##' pred_wM <- predict(demo)
 ##'
 ##' # The following is from demo_data

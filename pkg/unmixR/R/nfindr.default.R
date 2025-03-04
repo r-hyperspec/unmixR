@@ -1,4 +1,7 @@
-##' Find initial endmember candidates by selecting extreme points along coordinate axes.
+#' Find initial endmember candidates by selecting extreme points along coordinate axes.
+#' @param data matrix with coordinates in rows
+#' @param p number of endmembers to select
+#' @noRd
 .init_extreme_coordinates <- function(data, p) {
   indices <- c()
   i <- 1
@@ -12,8 +15,11 @@
   return(list("indices"=indices[1:p]))
 }
 
-##' Find initial endmember candidates by projecting the data onto random vectors
-##' and selecting the two extreme points.
+#' Find initial endmember candidates by projecting the data onto random vectors
+#' and selecting the two extreme points.
+#' @param data matrix with coordinates in rows
+#' @param p number of endmembers to select
+#' @noRd
 .init_random_projections <- function(data, p) {
   indices <- c()
   m <- ncol(data)
@@ -29,10 +35,10 @@
 }
 
 
-##' @name nfindr
-##' @rdname nfindr
-##' @include nfindr.R
-##' @export
+#' @name nfindr
+#' @rdname nfindr
+#' @include nfindr.R
+#' @export
 nfindr.default <- function(
   x,
   p,

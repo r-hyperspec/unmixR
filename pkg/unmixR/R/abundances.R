@@ -18,7 +18,7 @@
 #' @return A matrix where each row is the abundance percentages of the endmembers for the corresponding spectrum.
 #'
 #' @examples
-#' data(demo_data)
+#' data("demo_data")
 #' 
 #' # Reduce data dimensionality with PCA
 #' pca <- prcomp(demo_data)
