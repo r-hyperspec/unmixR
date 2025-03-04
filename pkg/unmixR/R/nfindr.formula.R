@@ -1,13 +1,13 @@
-##' @param formula A formula object without a response term
-##' @param frame A data frame containing the variables in the model
-##' @param ... Parameters to be passed to nfindr.default
-##'
-##' @name nfindr
-##' @rdname nfindr
-##' @export
-##' @include nfindr.default.R
-##' @importFrom stats model.matrix terms
-##'
+#' @param formula A formula object without a response term
+#' @param frame A data frame containing the variables in the model
+#' @param ... Parameters to be passed to nfindr.default
+#'
+#' @name nfindr
+#' @rdname nfindr
+#' @export
+#' @include nfindr.default.R
+#' @importFrom stats model.matrix terms
+#'
 nfindr.formula <- function(formula, frame, ...) {
   mt <- terms(formula, data = frame)
   

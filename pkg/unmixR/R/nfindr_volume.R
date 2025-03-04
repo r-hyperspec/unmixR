@@ -1,8 +1,8 @@
-##' Estimate volume change (N-FINDR)
-##'
-##' See [estimate_volume_change()] with `volume` estimator for the details
-##'
-##' @noRd
+#' Estimate volume change (N-FINDR)
+#'
+#' See [estimate_volume_change()] with `volume` estimator for the details
+#'
+#' @noRd
 .estimate_volume_change_by_volume <- function(data, indices, endmembers, new_indices) {
   n_points <- length(new_indices)
   n_endmembers <- length(endmembers)

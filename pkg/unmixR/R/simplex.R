@@ -1,29 +1,29 @@
-##' Generate a simplex volume matrix
-##'
-##' Simple helper function for generating a simplex volume matrix E
-##' (i.e. volume of simplex = det(E)/p-1!) of the following structure:
-##' |   1   1   ... 1 |
-##' | e_1 e_2 ... e_p |
-##' Where e_i is an i-th vertex point of the simplex.
-##'
-##' @param data Matrix whose rows will be included in the simplex. This
-##'   matrix should be reduced using using PCA or some other process
-##'   so that it has p-1 columns before calling this function.
-##'
-##' @param indices Locations of the rows in the dataset to use as simplex vertecies
-##'
-##' @param type Type of simplex matrix to generate. Can be one of:
-##'   \itemize{
-##'     \item \code{"affine"}: Affine simplex matrix \code{pxp}, i.e. vertices matrix padded with 1s
-##'     \item \code{"vector"}: Vector simplex matrix \code{(p-1)x(p-1)}, i.e. vertices matrix with the first row subtracted
-##'     \item \code{"gram"}: Gram-matrix simplex matrix \code{(p-1)x(p-1)}, i.e. squared 'vector' simplex matrix
-##'   }
-##'
-##' @return A simplex volume matrix E, a p x p matrix whose first row contains
-##' only 1s
-##'
-##' @include unmixR-package.R
-##' @rdname simplex
+#' Generate a simplex volume matrix
+#'
+#' Simple helper function for generating a simplex volume matrix E
+#' (i.e. volume of simplex = det(E)/p-1!) of the following structure:
+#' |   1   1   ... 1 |
+#' | e_1 e_2 ... e_p |
+#' Where e_i is an i-th vertex point of the simplex.
+#'
+#' @param data Matrix whose rows will be included in the simplex. This
+#'   matrix should be reduced using using PCA or some other process
+#'   so that it has p-1 columns before calling this function.
+#'
+#' @param indices Locations of the rows in the dataset to use as simplex vertecies
+#'
+#' @param type Type of simplex matrix to generate. Can be one of:
+#'   \itemize{
+#'     \item \code{"affine"}: Affine simplex matrix \code{pxp}, i.e. vertices matrix padded with 1s
+#'     \item \code{"vector"}: Vector simplex matrix \code{(p-1)x(p-1)}, i.e. vertices matrix with the first row subtracted
+#'     \item \code{"gram"}: Gram-matrix simplex matrix \code{(p-1)x(p-1)}, i.e. squared 'vector' simplex matrix
+#'   }
+#'
+#' @return A simplex volume matrix E, a p x p matrix whose first row contains
+#' only 1s
+#'
+#' @include unmixR-package.R
+#' @rdname simplex
 .simplex_E <- function(data, indices = 1:nrow(data), type=c("affine","vector","gram")) {
   # Prepare parameters
   type <- match.arg(type)

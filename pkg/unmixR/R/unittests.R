@@ -1,19 +1,19 @@
-##' Run the Unit Tests
-##'
-##' Run the unit tests for the package and output with the given testthat reporter.
-##'
+#' Run the Unit Tests
+#'
+#' Run the unit tests for the package and output with the given testthat reporter.
+#'
 ##  COMMENTED OUT @param reporter name of a testthat reporter. Defaults to \code{\link[testthat]{SummaryReporter}}.
-##'
-##' @return Invisibly returns a data frame with the test results
-##'
-##' @author Claudia Beleites
-##'
-##' @seealso  \link[svUnit]{svUnit}
-##' @keywords programming utilities
-##' @export
-##' @include unmixR-package.R
-##' @importFrom testthat SummaryReporter ListReporter MultiReporter get_reporter with_reporter
-##' 
+#'
+#' @return Invisibly returns a data frame with the test results
+#'
+#' @author Claudia Beleites
+#'
+#' @seealso  \link[svUnit]{svUnit}
+#' @keywords programming utilities
+#' @export
+#' @include unmixR-package.R
+#' @importFrom testthat SummaryReporter ListReporter MultiReporter get_reporter with_reporter
+#' 
 
 unmixR.unittest <- function () {
 
@@ -41,8 +41,8 @@ unmixR.unittest <- function () {
  invisible(lister$get_results())
 }
 
-##' test data for unit tests
-##' @noRd
+#' test data for unit tests
+#' @noRd
 {
 .C <- expand.grid ( 0 : 3, 0 : 3)
 .C [, 3] <- 3 - rowSums (.C)
@@ -118,8 +118,8 @@ rm(inx,p,i,j)
 
 }
 
-##' get test that is attached to object as "test" attribute
-##' @noRd
+#' get test that is attached to object as "test" attribute
+#' @noRd
 get.test <- function (object)
   attr (object, "test")
 

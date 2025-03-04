@@ -1,7 +1,7 @@
-##' @name vca
-##' @rdname vca
-##' @include vca.R
-##' @export
+#' @name vca
+#' @rdname vca
+#' @include vca.R
+#' @export
 
 vca.default <- function(data, p, method = c("05", "Lopez2012"), seed = 1L, SNR = estSNR(data, p), ..., EMonly = FALSE) {
 

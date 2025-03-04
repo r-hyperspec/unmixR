@@ -1,9 +1,9 @@
-##' @name vca
-##' @rdname vca
-##' @export
-##' @include unmixR-package.R
-##' @include vca.default.R
-##' @importFrom stats terms model.matrix
+#' @name vca
+#' @rdname vca
+#' @export
+#' @include unmixR-package.R
+#' @include vca.default.R
+#' @importFrom stats terms model.matrix
 
 vca.formula <- function(formula, frame, p, method = "05", seed = NULL, ...) {
 

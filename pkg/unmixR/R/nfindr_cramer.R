@@ -1,8 +1,8 @@
-##' Estimate volume change (N-FINDR)
-##'
-##' See [estimate_volume_change()] with `Cramer` estimator for the details
-##'
-##' @noRd
+#' Estimate volume change (N-FINDR)
+#'
+#' See [estimate_volume_change()] with `Cramer` estimator for the details
+#'
+#' @noRd
 .estimate_volume_change_by_cramer <- function(data, indices, endmembers, new_indices, Einv = NULL) {
   if (is.null(Einv)) {
     p <- length(indices)
