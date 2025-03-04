@@ -4,6 +4,7 @@
 # transpositions at the wrong time)
 
 .predict <- function(object, newdata, ...) {
+	warning("This function is deprecated.  Please use 'abundances' function instead.")
 
 	OK <- ((class(object) == "nfindr") | (class(object) == "vca"))
 	if (!OK) stop("You must provide either an nfindr or vca object")
