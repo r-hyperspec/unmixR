@@ -1,81 +1,31 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://r-hyperspec.github.io/unmixR/404.html</loc>
-  </url>
-  <url>
-    <loc>https://r-hyperspec.github.io/unmixR/articles/IntroUnmixR.html</loc>
-  </url>
-  <url>
-    <loc>https://r-hyperspec.github.io/unmixR/articles/ice.html</loc>
-  </url>
-  <url>
-    <loc>https://r-hyperspec.github.io/unmixR/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>https://r-hyperspec.github.io/unmixR/articles/unmixUnittests.html</loc>
-  </url>
-  <url>
-    <loc>https://r-hyperspec.github.io/unmixR/articles/vca.html</loc>
-  </url>
-  <url>
-    <loc>https://r-hyperspec.github.io/unmixR/authors.html</loc>
-  </url>
-  <url>
-    <loc>https://r-hyperspec.github.io/unmixR/index.html</loc>
-  </url>
-  <url>
-    <loc>https://r-hyperspec.github.io/unmixR/reference/demo_data.html</loc>
-  </url>
-  <url>
-    <loc>https://r-hyperspec.github.io/unmixR/reference/dimensionalityReduction.html</loc>
-  </url>
-  <url>
-    <loc>https://r-hyperspec.github.io/unmixR/reference/endmembers.html</loc>
-  </url>
-  <url>
-    <loc>https://r-hyperspec.github.io/unmixR/reference/estSNR.html</loc>
-  </url>
-  <url>
-    <loc>https://r-hyperspec.github.io/unmixR/reference/get.implementations.html</loc>
-  </url>
-  <url>
-    <loc>https://r-hyperspec.github.io/unmixR/reference/ice.html</loc>
-  </url>
-  <url>
-    <loc>https://r-hyperspec.github.io/unmixR/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://r-hyperspec.github.io/unmixR/reference/nfindr.html</loc>
-  </url>
-  <url>
-    <loc>https://r-hyperspec.github.io/unmixR/reference/nfindrBrute.html</loc>
-  </url>
-  <url>
-    <loc>https://r-hyperspec.github.io/unmixR/reference/options.html</loc>
-  </url>
-  <url>
-    <loc>https://r-hyperspec.github.io/unmixR/reference/predict.html</loc>
-  </url>
-  <url>
-    <loc>https://r-hyperspec.github.io/unmixR/reference/simplex.html</loc>
-  </url>
-  <url>
-    <loc>https://r-hyperspec.github.io/unmixR/reference/simplex_volume.html</loc>
-  </url>
-  <url>
-    <loc>https://r-hyperspec.github.io/unmixR/reference/unmixR-package.html</loc>
-  </url>
-  <url>
-    <loc>https://r-hyperspec.github.io/unmixR/reference/unmixR.unittest.html</loc>
-  </url>
-  <url>
-    <loc>https://r-hyperspec.github.io/unmixR/reference/vca.html</loc>
-  </url>
-  <url>
-    <loc>https://r-hyperspec.github.io/unmixR/reference/vca05.html</loc>
-  </url>
-  <url>
-    <loc>https://r-hyperspec.github.io/unmixR/reference/vcaLopez2012.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://r-hyperspec.github.io/unmixR/404.html</loc></url>
+<url><loc>https://r-hyperspec.github.io/unmixR/articles/IntroUnmixR.html</loc></url>
+<url><loc>https://r-hyperspec.github.io/unmixR/articles/ice.html</loc></url>
+<url><loc>https://r-hyperspec.github.io/unmixR/articles/index.html</loc></url>
+<url><loc>https://r-hyperspec.github.io/unmixR/articles/unmixUnittests.html</loc></url>
+<url><loc>https://r-hyperspec.github.io/unmixR/articles/vca.html</loc></url>
+<url><loc>https://r-hyperspec.github.io/unmixR/authors.html</loc></url>
+<url><loc>https://r-hyperspec.github.io/unmixR/index.html</loc></url>
+<url><loc>https://r-hyperspec.github.io/unmixR/reference/abundances.html</loc></url>
+<url><loc>https://r-hyperspec.github.io/unmixR/reference/atgp.html</loc></url>
+<url><loc>https://r-hyperspec.github.io/unmixR/reference/demo_data.html</loc></url>
+<url><loc>https://r-hyperspec.github.io/unmixR/reference/dimensionalityReduction.html</loc></url>
+<url><loc>https://r-hyperspec.github.io/unmixR/reference/endmembers.html</loc></url>
+<url><loc>https://r-hyperspec.github.io/unmixR/reference/estSNR.html</loc></url>
+<url><loc>https://r-hyperspec.github.io/unmixR/reference/get.implementations.html</loc></url>
+<url><loc>https://r-hyperspec.github.io/unmixR/reference/ice.html</loc></url>
+<url><loc>https://r-hyperspec.github.io/unmixR/reference/index.html</loc></url>
+<url><loc>https://r-hyperspec.github.io/unmixR/reference/nfindr.html</loc></url>
+<url><loc>https://r-hyperspec.github.io/unmixR/reference/nfindrBrute.html</loc></url>
+<url><loc>https://r-hyperspec.github.io/unmixR/reference/options.html</loc></url>
+<url><loc>https://r-hyperspec.github.io/unmixR/reference/predict.html</loc></url>
+<url><loc>https://r-hyperspec.github.io/unmixR/reference/simplex.html</loc></url>
+<url><loc>https://r-hyperspec.github.io/unmixR/reference/simplex_volume.html</loc></url>
+<url><loc>https://r-hyperspec.github.io/unmixR/reference/unmixR-package.html</loc></url>
+<url><loc>https://r-hyperspec.github.io/unmixR/reference/unmixR.unittest.html</loc></url>
+<url><loc>https://r-hyperspec.github.io/unmixR/reference/vca.html</loc></url>
+<url><loc>https://r-hyperspec.github.io/unmixR/reference/vca05.html</loc></url>
+<url><loc>https://r-hyperspec.github.io/unmixR/reference/vcaLopez2012.html</loc></url>
 </urlset>
+
