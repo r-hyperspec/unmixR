@@ -1,25 +1,25 @@
-##' Vertex Component Analysis Unmixing Algorithm
-##'
-##' This algorithm is based on the geometry of convex sets. It exploits the
-##' fact that endmembers occupy the vertices of a simplex.
-##' Intended to be called from \code{\link{vca}}.
-##' 
-##' @param data Data matrix. Samples in rows frequencies in columns.
-##'
-##' @param p Number of endmembers.
-##'
-##' @param SNR The Signal-to-Noise ratio of the data. By default it will be
-##'   estimated using \code{\link{estSNR}}.
-##'
-##' @return The indices of the endmembers in the original dataset.
-##'
-##' @references Nascimento, J.M.P. and Bioucas Dias, J.M. "Vertex component
-##'   analysis: a fast algorithm to unmix hyperspectral data," Geoscience and
-##'   Remote Sensing, vol. 43, no. 4, pp. 898-910, April 2005,
-##'   doi: 10.1109/TGRS.2005.844293
-##'
-##' @export
-##' @importFrom stats runif
+#' Vertex Component Analysis Unmixing Algorithm
+#'
+#' This algorithm is based on the geometry of convex sets. It exploits the
+#' fact that endmembers occupy the vertices of a simplex.
+#' Intended to be called from \code{\link{vca}}.
+#' 
+#' @param data Data matrix. Samples in rows frequencies in columns.
+#'
+#' @param p Number of endmembers.
+#'
+#' @param SNR The Signal-to-Noise ratio of the data. By default it will be
+#'   estimated using \code{\link{estSNR}}.
+#'
+#' @return The indices of the endmembers in the original dataset.
+#'
+#' @references Nascimento, J.M.P. and Bioucas Dias, J.M. "Vertex component
+#'   analysis: a fast algorithm to unmix hyperspectral data," Geoscience and
+#'   Remote Sensing, vol. 43, no. 4, pp. 898-910, April 2005,
+#'   doi: 10.1109/TGRS.2005.844293
+#'
+#' @export
+#' @importFrom stats runif
 
 vca05 <- function(data, p, SNR = estSNR(data, p)) {
     Y <- t(data)
@@ -41,7 +41,7 @@ vca05 <- function(data, p, SNR = estSNR(data, p)) {
         A[, i] <- Y[, k]
         indices[i] <- k
         
-        if (.options ("debuglevel") >= 1L){
+        if (.options("debuglevel") >= 1L){
             cat("Iteration", i, "\n")
             cat("\tcurrent endmembers:", sort(indices[1:i]), "\n")
             # To monitor the process, capture the volume

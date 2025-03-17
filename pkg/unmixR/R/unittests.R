@@ -1,19 +1,19 @@
-##' Run the Unit Tests
-##'
-##' Run the unit tests for the package and output with the given testthat reporter.
-##'
+#' Run the Unit Tests
+#'
+#' Run the unit tests for the package and output with the given testthat reporter.
+#'
 ##  COMMENTED OUT @param reporter name of a testthat reporter. Defaults to \code{\link[testthat]{SummaryReporter}}.
-##'
-##' @return Invisibly returns a data frame with the test results
-##'
-##' @author Claudia Beleites
-##'
-##' @seealso  \link[svUnit]{svUnit}
-##' @keywords programming utilities
-##' @export
-##' @include unmixR-package.R
-##' @importFrom testthat SummaryReporter ListReporter MultiReporter get_reporter with_reporter
-##' 
+#'
+#' @return Invisibly returns a data frame with the test results
+#'
+#' @author Claudia Beleites
+#'
+#' @seealso  \link[svUnit]{svUnit}
+#' @keywords programming utilities
+#' @export
+#' @include unmixR-package.R
+#' @importFrom testthat SummaryReporter ListReporter MultiReporter get_reporter with_reporter
+#' 
 
 unmixR.unittest <- function () {
 
@@ -41,8 +41,8 @@ unmixR.unittest <- function () {
  invisible(lister$get_results())
 }
 
-##' test data for unit tests
-##' @noRd
+#' test data for unit tests
+#' @noRd
 {
 .C <- expand.grid ( 0 : 3, 0 : 3)
 .C [, 3] <- 3 - rowSums (.C)
@@ -96,10 +96,30 @@ rm(inx,p,i,j)
   }
   coefficients[1:n_points,] %*% vertices
 }
+
+.rotate3d <- function(x, yaw=2, pitch=1, roll=0.5) {
+  x %*%
+    rbind(
+      c(cos(yaw), -sin(yaw), 0),
+      c(sin(yaw),  cos(yaw), 0),
+      c(0,      0,       1)
+    ) %*%
+    rbind(
+      c(cos(pitch),  0, sin(pitch)),
+      c(0,           1, 0         ),
+      c(-sin(pitch), 0, cos(pitch))
+    ) %*%
+    rbind(
+      c(1, 0,           0),
+      c(0, cos(roll), -sin(roll)),
+      c(0, sin(roll),  cos(roll))
+    )
 }
 
-##' get test that is attached to object as "test" attribute
-##' @noRd
+}
+
+#' get test that is attached to object as "test" attribute
+#' @noRd
 get.test <- function (object)
   attr (object, "test")
 

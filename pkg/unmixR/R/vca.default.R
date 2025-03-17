@@ -1,7 +1,7 @@
-##' @name vca
-##' @rdname vca
-##' @include vca.R
-##' @export
+#' @name vca
+#' @rdname vca
+#' @include vca.R
+#' @export
 
 vca.default <- function(data, p, method = c("05", "Lopez2012"), seed = 1L, SNR = estSNR(data, p), ..., EMonly = FALSE) {
 
@@ -28,7 +28,7 @@ vca.default <- function(data, p, method = c("05", "Lopez2012"), seed = 1L, SNR =
 
   val <- vcaFunc(reducedData, p, SNR, ...)
 
-  if (.options ("debuglevel") >= 1L){
+  if (.options("debuglevel") >= 1L){
       res <- list(data = if (!EMonly) data else data[as.integer(val),],
                   indices = if (!EMonly) as.integer(val) else 1:p,
                   seed = seed)

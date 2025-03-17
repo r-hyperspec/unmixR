@@ -1,87 +1,91 @@
-##' General Interface to N-FINDR Spectral Unmixing Implementations
-##'
-##' All the N-FINDR techniques are based on the fact that, in N spectral
-##' dimensions, the N-volume contained by a simplex formed of the purest
-##' pixels is larger than any other volume formed from any other combination
-##' of pixels.
-##'
-##' @param x Data to unmix. It will be converted to a matrix using
-##'   as.matrix. The matrix should contain a spectrum per row. If the dimension
-##'   of the data is larger than `p-1` then it will be dimensionally reduced
-##'   using PCA. If you want to reduce the data using some other method then
-##'   reduce it first and provide the data of `p-1` dimension.
-##'
-##' @param formula Formula object.
-##'
-##' @param p Number of endmembers.
-##' 
-##' @param indices Locations of the rows in the dataset that will be used to
-##'   form the initial simplex. Default: Randomly selected indices.
-##'
-##' @param iter The iteration strategy. Options: "points", "endmembers",
-##'   "both". By default, "points" are used.
-##' 
-##' @param estimator Volume change estimator
-##'   \itemize{
-##'     \item volume - straight forward volume calculation without any
-##'       optimization
-##'     \item height - Use the fact that the simplex volume is proportional to 
-##'       the product of `height` and `base volume`.
-##'     \item Cramer - Using Cramer's rule
-##'     \item LDU - Using LDU matrix decomposition
-##'     \item cofactor - Using the cofactor expansion for calculating `det(E)` 
-##'   }
-##'   Default: Cramer's rules is used since it has best performance.
-##'
-##' @param iter_max Maximum number of iterations to make.
-##' 
-##' @param debug.level Debug level. Controls the level of detalization of the
-##'   output. By default, is 0. If it is 1, then number of replacements also will
-##'   be returned. 2 - also will add list of vertices at each iteration.
-##'
-##' @param ... Additional parameters for the methods (currently unused).
-##'
-##' @param keep_data Boolean that indicates whether the actual data used for 
-##'   the calculation (i.e. after dimension reduction) should be stored in the
-##'   resulting structure. 
-##' 
-##' @return A list which contains:
-##'   \itemize{
-##'     \item \strong{data}: the original data or reduced data if \code{keep_data}
-##'                          is set to \code{TRUE}.
-##'     \item \strong{indices}: the indices of the spectra which increased
-##'                             the simplex volume the most. These are the
-##'                             indices of the endmembers.
-##'     \item \strong{endmembers}: the vectors of endmembers in reduced data space.
-##'     \item \strong{iterations_count}: if debug level higher than 0, number of
-##'                                      loop iterations.
-##'     \item \strong{replacements_count}: if debug level higher than 0, number of
-##'                                      actual replacements during iterations.
-##'     \item \strong{replacements}: if debug level higher than 1, the vectors of
-##'                                  indices at all replacement steps. If fact,
-##'                                  is used to see how the simplex was growing.  
-##'   }
-##'
-##' @seealso \code{\link{endmembers}} to extract the spectra; \code{\link{predict}}
-##' to determine abundances of endmembers in each sample.
-##'
-##' @examples
-##' data(demo_data)
-##' demo <- nfindr(demo_data, 2)
-##' em <- demo_data[demo$indices,]
-##' em <- rbind(demo_data[c(3,7),], em)
-##' em[3:4,] <- em[3:4,] + 0.5 # a small offset for the found em's
-##' matplot(t(em), type = "l",
-##'    col = c("black", "red", "black", "red"), lty = c(1, 1, 2, 2),
-##'    xlab = "frequency", ylab = "intensity",
-##'    main = "N-FINDR of demo_data")
-##' leg.txt <- c("Endmember 1", "Endmember 2", "Endmember 1 (found)", "Endmember 2 (found)")
-##' legend("topright", leg.txt, col = c("black", "red", "black", "red"),
-##' lty = c(1, 1, 2, 2), cex = 0.75)
-##'
-##' @rdname nfindr
-##' @export
-##' @include unmixR-package.R
+#' General Interface to N-FINDR Spectral Unmixing Implementations
+#'
+#' All the N-FINDR techniques are based on the fact that, in N spectral
+#' dimensions, the N-volume contained by a simplex formed of the purest
+#' pixels is larger than any other volume formed from any other combination
+#' of pixels.
+#'
+#' @param x Data to unmix (spectra in rows). It will be converted to a matrix using
+#'   as.matrix. The matrix should contain a spectrum per row. It is recommended
+#'   to reduce the dimensionality of the data to `p-1` before using this
+#'   function. This can be done using PCA or other dimensionality reduction
+#'   techniques. Withouth dimensionality reduction, the results might be
+#'   inefficient and computation intensive.
+#'
+#' @param p Number of endmembers.
+#' 
+#' @param init Initialization strategy. 
+#'   \itemize{
+#'     \item vector of `p` integers - manually selected initial points, can be output of
+#'       previous another endmember extraction method, e.g. VCA
+#'     \item random - randomly selected points
+#'     \item projections - selecting the two extreme points of the
+#'       projections of the data onto random vectors
+#'     \item coordinates - selecting the two extreme points of the
+#'       projections of the data onto the coordinate axes
+#'   }
+#'   Default: "projections" is used.
+#'
+#' @param iter The iteration strategy. Options: "points", "endmembers",
+#'   "both". By default, "points" are used.
+#' 
+#' @param estimator Volume change estimator
+#'   \itemize{
+#'     \item volume - straight forward volume calculation without any
+#'       optimization
+#'     \item height - Use the fact that the simplex volume is proportional to 
+#'       the product of `height` and `base volume`.
+#'     \item Cramer - Using Cramer's rule
+#'     \item LDU - Using LDU matrix decomposition
+#'     \item cofactor - Using the cofactor expansion for calculating `det(E)` 
+#'   }
+#'   Default: Cramer's rules is used since it has best performance.
+#'
+#' @param iter_max Maximum number of iterations to make.
+#'
+#' @param n_init Number of initializations to try. The final result will be
+#'   the best output of all initializations. Ignored if specific initial 
+#'   endmember indices provided. Default: 1.
+#'
+#' @param ... Additional parameters for the methods (currently unused).
+#'
+#' @return A list which contains:
+#'   \itemize{
+#'     \item \strong{indices}: the indices of the spectra which increased
+#'                             the simplex volume the most. These are the
+#'                             indices of the endmembers.
+#'     \item \strong{iterations_count}: if debug level higher than 0, number of
+#'                                      loop iterations.
+#'     \item \strong{replacements_count}: if debug level higher than 0, number of
+#'                                      actual replacements during iterations.
+#'     \item \strong{replacements}: if debug level higher than 1, the vectors of
+#'                                  indices at all replacement steps. If fact,
+#'                                  is used to see how the simplex was growing.  
+#'   }
+#'
+#' @seealso \code{\link{endmembers}} to extract the endmembers; \code{\link{abundances}}
+#' to determine abundances of endmembers in each sample
+#'
+#' @examples
+#' data("demo_data")
+#' 
+#' # Reduce data dimensionality with PCA
+#' pca <- prcomp(demo_data)
+#' x <- pca$x[,1:2]
+#' 
+#' # Perform N-FINDR in reduced space
+#' nf <- nfindr(x, p = 3)
+#'
+#' # Get endmembers both in reduced and original space
+#' ems <- endmembers(nf, demo_data)
+#' ems_pca <- endmembers(nf, x)
+#' 
+#' # Plot endmembers
+#' matplot(t(ems), type = "l")
+#'
+#' @rdname nfindr
+#' @export
+#' @include unmixR-package.R
 
 nfindr <- function (x, ...) {
   UseMethod("nfindr")
@@ -138,17 +142,19 @@ nfindr <- function (x, ...) {
     test_that(
       paste0("Trivial case: ", estimator, " - endmembers in the inner-most loop"),
       {
+        unmixR.options(debuglevel = 0L)
         result <- nfindr(data, p, indices, iter = "endmembers", estimator = estimator)
         expect_equal(sort(result$indices), best_indices)
-        expect_equal(result$endmembers[order(result$indices), ], data[best_indices, ])
-        expect_equal(names(result), c("indices", "endmembers"))
+        expect_equal(names(result), c("indices"))
         
-        result <- nfindr(data, p, indices, iter = "endmembers", estimator = estimator, debug.level = 1)
+        unmixR.options(debuglevel = 1L)
+        result <- nfindr(data, p, indices, iter = "endmembers", estimator = estimator)
         expect_equal(result$iterations_count, 2)
         expect_equal(result$replacements_count, 3)
-        expect_equal(names(result), c("indices", "endmembers", "iterations_count", "replacements_count"))
+        expect_equal(names(result), c("indices", "iterations_count", "replacements_count"))
         
-        result <- nfindr(data, p, indices, iter = "endmembers", estimator = estimator, debug.level = 2)
+        unmixR.options(debuglevel = 2L)
+        result <- nfindr(data, p, indices, iter = "endmembers", estimator = estimator)
         expect_equal(
           result$replacements,
           rbind(
@@ -159,7 +165,7 @@ nfindr <- function (x, ...) {
           ),
           check.attributes = FALSE
         )
-        expect_equal(names(result), c("indices", "endmembers", "iterations_count", "replacements_count", "replacements"))
+        expect_equal(names(result), c("indices", "iterations_count", "replacements_count", "replacements"))
       }
     )
   }
@@ -169,17 +175,19 @@ nfindr <- function (x, ...) {
     test_that(
       paste0("Trivial case: ", estimator, " - points in the inner-most loop"),
       {
+        unmixR.options(debuglevel = 0L)
         result <- nfindr(data, p, indices, iter = "points", estimator = estimator)
         expect_equal(sort(result$indices), best_indices)
-        expect_equal(result$endmembers[order(result$indices), ], data[best_indices, ])
-        expect_equal(names(result), c("indices", "endmembers"))
+        expect_equal(names(result), c("indices"))
         
-        result <- nfindr(data, p, indices, iter = "points", estimator = estimator, debug.level = 1)
+        unmixR.options(debuglevel = 1L)
+        result <- nfindr(data, p, indices, iter = "points", estimator = estimator)
         expect_equal(result$iterations_count, 2)
         expect_equal(result$replacements_count, 3)
-        expect_equal(names(result), c("indices", "endmembers", "iterations_count", "replacements_count"))
+        expect_equal(names(result), c("indices", "iterations_count", "replacements_count"))
         
-        result <- nfindr(data, p, indices, iter = "points", estimator = estimator, debug.level = 2)
+        unmixR.options(debuglevel = 2L)
+        result <- nfindr(data, p, indices, iter = "points", estimator = estimator)
         expect_equal(
           result$replacements,
           rbind(
@@ -190,7 +198,7 @@ nfindr <- function (x, ...) {
           ),
           check.attributes = FALSE
         )
-        expect_equal(names(result), c("indices", "endmembers", "iterations_count", "replacements_count", "replacements"))
+        expect_equal(names(result), c("indices", "iterations_count", "replacements_count", "replacements"))
       }
     )
   }
@@ -203,20 +211,20 @@ nfindr <- function (x, ...) {
     test_that(
       paste0("Trivial case: ", estimator, " - both in the inner-most loop"),
       {
+
+        unmixR.options(debuglevel = 0L)
         result <- nfindr(data, p, indices, iter = "both", estimator = estimator)
         expect_equal(sort(result$indices), best_indices)
-        expect_equal(
-          result$endmembers[order(result$indices), ],
-          data[best_indices, ]
-        )
-        expect_equal(names(result), c("indices", "endmembers"))
+        expect_equal(names(result), c("indices"))
         
-        result <- nfindr(data, p, indices, iter = "both", estimator = estimator, debug.level = 1)
+        unmixR.options(debuglevel = 1L)
+        result <- nfindr(data, p, indices, iter = "both", estimator = estimator)
         expect_equal(result$iterations_count, 4)
         expect_equal(result$replacements_count, 3)
-        expect_equal(names(result), c("indices", "endmembers", "iterations_count", "replacements_count"))
+        expect_equal(names(result), c("indices", "iterations_count", "replacements_count"))
         
-        result <- nfindr(data, p, indices, iter = "both", estimator = estimator, debug.level = 2)
+        unmixR.options(debuglevel = 2L)
+        result <- nfindr(data, p, indices, iter = "both", estimator = estimator)
         expect_equal(
           result$replacements,
           rbind(
@@ -227,7 +235,7 @@ nfindr <- function (x, ...) {
           ),
           check.attributes = FALSE
         )
-        expect_equal(names(result), c("indices", "endmembers", "iterations_count", "replacements_count", "replacements"))
+        expect_equal(names(result), c("indices", "iterations_count", "replacements_count", "replacements"))
       }
     )
   }
@@ -248,6 +256,7 @@ nfindr <- function (x, ...) {
   indices <- sample(which(apply(data, 1, norm, type="2") < 0.3), p)
   
   ## Test non-trivial case ----
+  unmixR.options(debuglevel = 2L)
   iter <- c("endmembers", "points", "both")
   for(estimator in estimators) {
     for (iterator in iter) {
@@ -256,8 +265,8 @@ nfindr <- function (x, ...) {
         # The iteration steps and the final solution must be the same as we use
         # straightforward volume calculation
         expect_equal(
-          nfindr(data, p, indices, iter=iterator, estimator = estimator, debug.level = 2),
-          nfindr(data, p, indices, iter=iterator, estimator = "volume", debug.level = 2)
+          nfindr(data, p, indices, iter=iterator, estimator = estimator),
+          nfindr(data, p, indices, iter=iterator, estimator = "volume")
         )
       )
     }
@@ -268,7 +277,8 @@ nfindr <- function (x, ...) {
   
   ## Test other (hyperSpec) objects ----
   test_that ("hyperSpec object", {
-    output <- nfindr (laser, 2)
+    pca <- prcomp(laser$spc)
+    output <- nfindr (pca$x[,1,drop=FALSE], 2)
     expect_equal (output$indices, .correct.laser)
   })
 }

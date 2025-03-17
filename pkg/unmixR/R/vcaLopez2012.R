@@ -1,28 +1,28 @@
-##' Modified Vertex Component Analysis
-##'
-##' Modified VCA algorithm that aims to reduced the algorithmic complexity of
-##' the original.
-##' Intended to be called from \code{\link{vca}}.
-##' 
-##' @param data Data matrix. Samples in rows frequencies in columns.
-##'
-##' @param p Number of endmembers.
-##'
-##' @param SNR The Signal-to-Noise ratio of the data. By default it will be
-##'   estimated using \code{\link{estSNR}}.
-##'   
-##' @note for \code{debuglevel}s 1 and 2 debug information is printed (1) and plotted (2).
-##'
-##' @return The indices of the endmembers in the original dataset.
-##' 
-##' @references Lopez, S., Horstrand, P., Callico, G.M., Lopez J.F. and
-##' Sarmiento, R., "A Low-Computational-Complexity Algorithm for
-##' Hyperspectral Endmember Extraction: Modified Vertex Component Analysis,"
-##' Geoscience & Remote Sensing Letters, IEEE, vol. 9 no. 3 pp. 502-506, May 2012
-##' doi: 10.1109/LGRS.2011.2172771
-##' @export
-##' @importFrom stats prcomp
-##' @importFrom graphics title points
+#' Modified Vertex Component Analysis
+#'
+#' Modified VCA algorithm that aims to reduced the algorithmic complexity of
+#' the original.
+#' Intended to be called from \code{\link{vca}}.
+#' 
+#' @param data Data matrix. Samples in rows frequencies in columns.
+#'
+#' @param p Number of endmembers.
+#'
+#' @param SNR The Signal-to-Noise ratio of the data. By default it will be
+#'   estimated using \code{\link{estSNR}}.
+#'   
+#' @note for \code{debuglevel}s 1 and 2 debug information is printed (1) and plotted (2).
+#'
+#' @return The indices of the endmembers in the original dataset.
+#' 
+#' @references Lopez, S., Horstrand, P., Callico, G.M., Lopez J.F. and
+#' Sarmiento, R., "A Low-Computational-Complexity Algorithm for
+#' Hyperspectral Endmember Extraction: Modified Vertex Component Analysis,"
+#' Geoscience & Remote Sensing Letters, IEEE, vol. 9 no. 3 pp. 502-506, May 2012
+#' doi: 10.1109/LGRS.2011.2172771
+#' @export
+#' @importFrom stats prcomp
+#' @importFrom graphics title points
 
 
 vcaLopez2012 <- function(data, p, SNR = estSNR(data, p)) {
@@ -69,7 +69,7 @@ vcaLopez2012 <- function(data, p, SNR = estSNR(data, p)) {
         #estimated endmember is stored in E
         E[, i + 1] <- Y[, index]
 
-        if (.options ("debuglevel") >= 1L){
+        if (.options("debuglevel") >= 1L){
           cat("Iteration", i, "\n")
           cat("\tcurrent endmembers:", sort(indices[1:i]), "\n")
           
@@ -85,7 +85,7 @@ vcaLopez2012 <- function(data, p, SNR = estSNR(data, p)) {
           cat ("\tmax:", which.max (v), "\t min:", which.min (v), "\n")
         }
 
-        if (.options ("debuglevel") >= 2L){
+        if (.options("debuglevel") >= 2L){
           plot (t (v))
           title (main = paste ("Iteration:", i))
           tmp <- c (indices [i], which.max (v), which.min (v))

@@ -1,8 +1,8 @@
-##' Estimate volume change (N-FINDR)
-##'
-##' See [estimate_volume_change()] with `Cramer` estimator for the details
-##'
-##' @noRd
+#' Estimate volume change (N-FINDR)
+#'
+#' See [estimate_volume_change()] with `Cramer` estimator for the details
+#'
+#' @noRd
 .estimate_volume_change_by_cramer <- function(data, indices, endmembers, new_indices, Einv = NULL) {
   if (is.null(Einv)) {
     p <- length(indices)
@@ -46,7 +46,7 @@
 }
 
 
-.nfindr_cramer_endmembers <- function(data, indices, iter_max=10, debug.level=0) {
+.nfindr_cramer_endmembers <- function(data, indices, iter_max=10) {
   p <- length(indices)
   m <- nrow(data)
   
@@ -54,7 +54,7 @@
   n_replacements <- 0
   is_replacement <- TRUE
   indices_best <- indices
-  if (debug.level > 1) {
+  if (.options("debuglevel") > 1L) {
     replacements <- matrix(indices_best, nrow=1)
   }
   Einv <- solve(.simplex_E(data, indices_best))
@@ -65,7 +65,7 @@
     for (i in 1:m) {
       estimates <- .estimate_volume_change_by_cramer(data, indices_best, 1:p, i, Einv=Einv)
       estimates <- as.numeric(estimates)
-      if (any(estimates > 1+1.5e-8)) {
+      if (any(estimates > 1+.options("tol"))) {
         # Update current simplex vertices
         j <- which.max(estimates)
         indices_best[j] <- i
@@ -74,29 +74,26 @@
         is_replacement <- TRUE
         # For debugging
         n_replacements <- n_replacements + 1
-        if (debug.level > 1) {
+        if (.options("debuglevel") > 1L) {
           replacements <- rbind(replacements, indices_best)
         }
       }
     }
   }
   
-  result <- list(
-    "indices" = indices_best,
-    "endmembers" = data[indices_best,]
-  )
-  if (debug.level > 0) {
+  result <- list("indices" = indices_best)
+  if (.options("debuglevel") > 0L) {
     result[["iterations_count"]] <- k
     result[["replacements_count"]] <- n_replacements
   }
-  if (debug.level > 1) {
+  if (.options("debuglevel") > 1L) {
     result[["replacements"]] <- replacements
   }
   
   result
 }
 
-.nfindr_cramer_points <- function(data, indices, iter_max=10, debug.level=0) {
+.nfindr_cramer_points <- function(data, indices, iter_max=10) {
   p <- length(indices)
   m <- nrow(data)
   
@@ -104,7 +101,7 @@
   n_replacements <- 0
   is_replacement <- TRUE
   indices_best <- indices
-  if (debug.level > 1) {
+  if (.options("debuglevel") > 1L) {
     replacements <- matrix(indices_best, nrow=1)
   }
   Einv <- solve(.simplex_E(data, indices_best))
@@ -116,7 +113,7 @@
     for (j in 1:p) {
       estimates <- .estimate_volume_change_by_cramer(data, indices_best, j, 1:m, Einv=Einv)
       estimates <- as.numeric(estimates)
-      if (any(estimates > 1+1.5e-8)) {
+      if (any(estimates > 1+.options("tol"))) {
         # Update current simplex vertices
         i <- which.max(estimates)
         indices_best[j] <- i
@@ -125,29 +122,26 @@
         is_replacement <- TRUE
         # For debugging
         n_replacements <- n_replacements + 1
-        if (debug.level > 1) {
+        if (.options("debuglevel") > 1L) {
           replacements <- rbind(replacements, indices_best)
         }
       }
     }
   }
   
-  result <- list(
-    "indices" = indices_best,
-    "endmembers" = data[indices_best,]
-  )
-  if (debug.level > 0) {
+  result <- list("indices" = indices_best)
+  if (.options("debuglevel") > 0L) {
     result[["iterations_count"]] <- k
     result[["replacements_count"]] <- n_replacements
   }
-  if (debug.level > 1) {
+  if (.options("debuglevel") > 1L) {
     result[["replacements"]] <- replacements
   }
   
   result
 }
 
-.nfindr_cramer_both <- function(data, indices, iter_max=10, debug.level=0) {
+.nfindr_cramer_both <- function(data, indices, iter_max=10) {
   p <- length(indices)
   m <- nrow(data)
   
@@ -155,7 +149,7 @@
   n_replacements <- 0
   is_replacement <- TRUE
   indices_best <- indices
-  if (debug.level > 1) {
+  if (.options("debuglevel") > 1L) {
     replacements <- matrix(indices_best, nrow=1)
   }
   Einv <- solve(.simplex_E(data, indices_best))
@@ -166,7 +160,7 @@
     is_replacement <- FALSE
     
     estimates <- .estimate_volume_change_by_cramer(data, indices_best, 1:p, 1:m, Einv=Einv)
-    if (any(estimates > 1+1.5e-8)) {
+    if (any(estimates > 1+.options("tol"))) {
       # Update current simplex vertices
       max_ij <- arrayInd(which.max(estimates), dim(estimates))
       indices_best[max_ij[2]] <- max_ij[1]
@@ -175,21 +169,18 @@
       is_replacement <- TRUE
       # For debugging
       n_replacements <- n_replacements + 1
-      if (debug.level > 1) {
+      if (.options("debuglevel") > 1L) {
         replacements <- rbind(replacements, indices_best)
       }
     }
   }
   
-  result <- list(
-    "indices" = indices_best,
-    "endmembers" = data[indices_best,]
-  )
-  if (debug.level > 0) {
+  result <- list("indices" = indices_best)
+  if (.options("debuglevel") > 0L) {
     result[["iterations_count"]] <- k
     result[["replacements_count"]] <- n_replacements
   }
-  if (debug.level > 1) {
+  if (.options("debuglevel") > 1L) {
     result[["replacements"]] <- replacements
   }
   

@@ -9,8 +9,8 @@
     crossprod(c, solve(A))
   })
 
-  # If there are more than one endmember, calculate determinants of A matricies
-  # This is needed for making estimations compitable
+  # If there are more than one endmember, calculate determinants of A matrices
+  # This is needed for making estimations compatible
   determinants <- NULL
   if (n_endmembers>1) {  
     determinants <- sapply(endmembers, function(j) {
@@ -90,7 +90,7 @@
 }
 
 
-.nfindr_ldu_endmembers <- function(data, indices, iter_max=10, debug.level=0) {
+.nfindr_ldu_endmembers <- function(data, indices, iter_max=10) {
   p <- length(indices)
   m <- nrow(data)
 
@@ -98,7 +98,7 @@
   n_replacements <- 0
   is_replacement <- TRUE
   indices_best <- indices
-  if (debug.level > 1) {
+  if (.options("debuglevel") > 1L) {
     replacements <- matrix(indices_best, nrow=1)
   }
   volume_best  <- simplex_volume(data, indices, factorial = FALSE)
@@ -114,7 +114,7 @@
         invariants = invariants
       )
       estimates <- as.numeric(estimates)
-      if (any(estimates > volume_best+1.5e-8)) {
+      if (any(estimates > volume_best+.options("tol"))) {
         # Update current simplex vertices
         j <- which.max(estimates)
         indices_best[j] <- i
@@ -124,29 +124,26 @@
         is_replacement <- TRUE
         # For debugging
         n_replacements <- n_replacements + 1
-        if (debug.level > 1) {
+        if (.options("debuglevel") > 1L) {
           replacements <- rbind(replacements, indices_best)
         }
       }
     }
   }
 
-  result <- list(
-    "indices" = indices_best,
-    "endmembers" = data[indices_best,]
-  )
-  if (debug.level > 0) {
+  result <- list("indices" = indices_best)
+  if (.options("debuglevel") > 0L) {
     result[["iterations_count"]] <- k
     result[["replacements_count"]] <- n_replacements
   }
-  if (debug.level > 1) {
+  if (.options("debuglevel") > 1L) {
     result[["replacements"]] <- replacements
   }
   
   result
 }
 
-.nfindr_ldu_points <- function(data, indices, iter_max=10, debug.level=0) {
+.nfindr_ldu_points <- function(data, indices, iter_max=10) {
   p <- length(indices)
   m <- nrow(data)
 
@@ -154,7 +151,7 @@
   n_replacements <- 0
   is_replacement <- TRUE
   indices_best <- indices
-  if (debug.level > 1) {
+  if (.options("debuglevel") > 1L) {
     replacements <- matrix(indices_best, nrow=1)
   }
 
@@ -176,29 +173,26 @@
         is_replacement <- TRUE
         # For debugging
         n_replacements <- n_replacements + 1
-        if (debug.level > 1) {
+        if (.options("debuglevel") > 1L) {
           replacements <- rbind(replacements, indices_best)
         }
       }
     }
   }
 
-  result <- list(
-    "indices" = indices_best,
-    "endmembers" = data[indices_best,]
-  )
-  if (debug.level > 0) {
+  result <- list("indices" = indices_best)
+  if (.options("debuglevel") > 0L) {
     result[["iterations_count"]] <- k
     result[["replacements_count"]] <- n_replacements
   }
-  if (debug.level > 1) {
+  if (.options("debuglevel") > 1L) {
     result[["replacements"]] <- replacements
   }
   
   result
 }
 
-.nfindr_ldu_both <- function(data, indices, iter_max=10, debug.level=0) {
+.nfindr_ldu_both <- function(data, indices, iter_max=10) {
   p <- length(indices)
   m <- nrow(data)
 
@@ -206,7 +200,7 @@
   n_replacements <- 0
   is_replacement <- TRUE
   indices_best <- indices
-  if (debug.level > 1) {
+  if (.options("debuglevel") > 1L) {
     replacements <- matrix(indices_best, nrow=1)
   }
   volume_best  <- simplex_volume(data, indices, factorial = FALSE)
@@ -221,7 +215,7 @@
       invariants = invariants
     )
   
-    if (any(estimates > volume_best+1.5e-8)) {
+    if (any(estimates > volume_best+.options("tol"))) {
       # Update current simplex vertices
       max_ij <- arrayInd(which.max(estimates), dim(estimates))
       indices_best[max_ij[2]] <- max_ij[1]
@@ -231,21 +225,18 @@
       is_replacement <- TRUE
       # For debugging
       n_replacements <- n_replacements + 1
-      if (debug.level > 1) {
+      if (.options("debuglevel") > 1L) {
         replacements <- rbind(replacements, indices_best)
       }
     }
   }
 
-  result <- list(
-    "indices" = indices_best,
-    "endmembers" = data[indices_best,]
-  )
-  if (debug.level > 0) {
+  result <- list("indices" = indices_best)
+  if (.options("debuglevel") > 0L) {
     result[["iterations_count"]] <- k
     result[["replacements_count"]] <- n_replacements
   }
-  if (debug.level > 1) {
+  if (.options("debuglevel") > 1L) {
     result[["replacements"]] <- replacements
   }
   

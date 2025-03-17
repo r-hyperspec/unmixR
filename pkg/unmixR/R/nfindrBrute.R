@@ -1,29 +1,26 @@
-##' Brute Force N-FINDR
-##'
-##' This method exhaustively checks every possible simplex that could be
-##' formed from \code{p} points and returns the indices that generate the simplex
-##' with the largest volume. This should indicate the endmembers based on the
-##' theory of N-FINDR. It should only be used for testing purposes as it
-##' is extremely slow for non-trivial datasets.
-##' Intended to be called from \code{\link{nfindr}}.
-##'
-##' @param data Data matrix to unmix.
-##'
-##' @param p Number of endmembers.
-##'
-##' @param ... Extra unused parameters passed in from 
-##' \code{\link{nfindr}}.
-##'
-##' @param debuglevel If \code{>= 1L}, print top simplices with their 
-##' corresponding volume.
-##' 
-##' @return The indices of the endmembers in the original dataset or 
-##' a data.frame holding indices and corresponding volume if \code{volume = TRUE}.
-##'
-##' @export
-##' @importFrom utils combn tail
+#' Brute Force N-FINDR
+#'
+#' This method exhaustively checks every possible simplex that could be
+#' formed from \code{p} points and returns the indices that generate the simplex
+#' with the largest volume. This should indicate the endmembers based on the
+#' theory of N-FINDR. It should only be used for testing purposes as it
+#' is extremely slow for non-trivial datasets.
+#' Intended to be called from \code{\link{nfindr}}.
+#'
+#' @param data Data matrix to unmix.
+#'
+#' @param p Number of endmembers.
+#'
+#' @param ... Extra unused parameters passed in from 
+#' \code{\link{nfindr}}.
+#' 
+#' @return The indices of the endmembers in the original dataset or 
+#' a data.frame holding indices and corresponding volume if \code{volume = TRUE}.
+#'
+#' @export
+#' @importFrom utils combn tail
 
-nfindrBrute <- function(data, p, ..., debuglevel = .options ("debuglevel")) {
+nfindrBrute <- function(data, p, ...) {
   # generate all possible unique combinations of p indices
   combos <- combn(nrow(data), p, simplify=TRUE)
   n <- ncol(combos)
@@ -37,7 +34,7 @@ nfindrBrute <- function(data, p, ..., debuglevel = .options ("debuglevel")) {
     abs (det (simplex))
   })
 
-  if (debuglevel >= 1L) {
+  if (.options("debuglevel") >= 1L) {
     volumes <- volumes / factorial (p - 1)
     
     DF <- as.data.frame(cbind(t (combos), volumes))
@@ -46,10 +43,9 @@ nfindrBrute <- function(data, p, ..., debuglevel = .options ("debuglevel")) {
   	message("Top endmember combinations & their volumes:\n")
   }
   
-  if (debuglevel >= 1L) 
-  if (debuglevel == 1L)
+  if (.options("debuglevel") == 1L)
     message (tail (DF), row.names = FALSE)
-  else if (debuglevel > 1L)
+  else if (.options("debuglevel") > 1L)
     message (DF, row.names = FALSE)
   
   ## return the indices that formed the largest simplex
@@ -65,7 +61,10 @@ nfindrBrute <- function(data, p, ..., debuglevel = .options ("debuglevel")) {
   expect_true (require (hyperSpec))
   
   test_that("correct output for triangle", {
+    unmixR.options(debuglevel = 0L)
     expect_equal(nfindrBrute(.testdata$x[,1:2], p = 3), .correct)
-    expect_equal(nfindrBrute(.testdata$x[,1:2], p = 3, debuglevel = 1), .correct)
+    
+    unmixR.options(debuglevel = 1L)
+    expect_equal(nfindrBrute(.testdata$x[,1:2], p = 3), .correct)
   })
 }
