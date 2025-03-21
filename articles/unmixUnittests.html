@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">unmixR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.1.0</span>
       </span>
     </div>
 
@@ -86,7 +86,7 @@
       <h1 data-toc-skip>Report of Unittests for unmixR</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/r-hyperspec/unmixR/blob/v2.0/vignettes/unmixUnittests.Rmd" class="external-link"><code>vignettes/unmixUnittests.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/r-hyperspec/unmixR/blob/develop/vignettes/unmixUnittests.Rmd" class="external-link"><code>vignettes/unmixUnittests.Rmd</code></a></small>
       <div class="hidden name"><code>unmixUnittests.Rmd</code></div>
 
     </div>
@@ -105,11 +105,11 @@
 <span><span class="co">## simplex_E: <span style="color: #00BB00;">........</span></span></span>
 <span><span class="co">## abundances: <span style="color: #00BB00;">..............</span></span></span>
 <span><span class="co">## vca.formula: <span style="color: #00BB00;">.</span>Iteration 1 </span></span>
-<span><span class="co">##  current endmembers: 1 </span></span>
+<span><span class="co">##  current endmembers: 10 </span></span>
 <span><span class="co">##  volume: 1 </span></span>
 <span><span class="co">## Iteration 2 </span></span>
-<span><span class="co">##  current endmembers: 1 4 </span></span>
-<span><span class="co">##  volume: 1.069045 </span></span>
+<span><span class="co">##  current endmembers: 1 10 </span></span>
+<span><span class="co">##  volume: 1.336306 </span></span>
 <span><span class="co">## Iteration 3 </span></span>
 <span><span class="co">##  current endmembers: 1 4 10 </span></span>
 <span><span class="co">##  volume: 1.732051 </span></span>
@@ -146,8 +146,7 @@
 <span><span class="co">## <span style="color: #00BB00;">.</span></span></span>
 <span><span class="co">## simplex_volume: <span style="color: #00BB00;">..............</span></span></span>
 <span><span class="co">## nfindr.formula: <span style="color: #00BB00;">..........</span></span></span>
-<span><span class="co">## N-FINDR: character(0)</span></span>
-<span><span class="co">## <span style="color: #00BB00;">..................................</span></span></span>
+<span><span class="co">## N-FINDR: <span style="color: #00BB00;">....................</span><span style="color: #BB00BB;">W</span><span style="color: #00BB00;">...</span><span style="color: #BB00BB;">W</span><span style="color: #00BB00;">............................................................</span><span style="color: #BB00BB;">W</span><span style="color: #00BB00;">...</span><span style="color: #BB00BB;">W</span><span style="color: #00BB00;">...............</span><span style="color: #BB00BB;">W</span><span style="color: #00BB00;">..</span><span style="color: #BB00BB;">W</span><span style="color: #00BB00;">.................................................</span></span></span>
 <span><span class="co">## vca: <span style="color: #00BB00;">......</span><span style="color: #0000BB;">SSSS</span>Iteration 1 </span></span>
 <span><span class="co">##  current endmembers: 84 </span></span>
 <span><span class="co">##  volume: 1 </span></span>
@@ -170,6 +169,19 @@
 <span><span class="co">## <span style="color: #0000BB;">3. correct results for all available methods: laser data</span> - Reason: temporarily disabled</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## <span style="color: #0000BB;">4. vca output is sorted</span> - Reason: Skip tests to implement GHA infrastructure. Fix the tests ASAP</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## ══ Warnings ════════════════════════════════════════════════════════════════════</span></span>
+<span><span class="co">## <span style="color: #0000BB;">1. Trivial case: height - endmembers in the inner-most loop</span> - This combination of iterator and volume change estimator is not optimized. For better performance, it is recommended to change either of the two.</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## <span style="color: #0000BB;">2. Trivial case: height - endmembers in the inner-most loop</span> - This combination of iterator and volume change estimator is not optimized. For better performance, it is recommended to change either of the two.</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## <span style="color: #0000BB;">3. Trivial case: height - both in the inner-most loop</span> - This combination of iterator and volume change estimator is not optimized. For better performance, it is recommended to change either of the two.</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## <span style="color: #0000BB;">4. Trivial case: height - both in the inner-most loop</span> - This combination of iterator and volume change estimator is not optimized. For better performance, it is recommended to change either of the two.</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## <span style="color: #0000BB;">5. Non-trivial case: height endmembers</span> - This combination of iterator and volume change estimator is not optimized. For better performance, it is recommended to change either of the two.</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## <span style="color: #0000BB;">6. Non-trivial case: height both</span> - This combination of iterator and volume change estimator is not optimized. For better performance, it is recommended to change either of the two.</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## ══ DONE ════════════════════════════════════════════════════════════════════════</span></span></code></pre>
   </div>
