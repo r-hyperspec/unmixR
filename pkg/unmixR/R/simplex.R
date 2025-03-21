@@ -90,6 +90,32 @@
   })
 }
 
+#' Faster replacement for \code{abs(det(E))} for simplex volume
+#'
+#' @param x matrix
+#'
+#' @return absolute value of determinant of x
+#'
+#' @include unmixR-package.R
+#' @rdname simplex
+.absdet <- function(x) {
+  determinant(x, logarithm = FALSE)$modulus[1]
+}
+
+.test(.absdet) <- function() {
+  context("absdet")
+
+  test_that("correct determinant", {
+    expect_equal(.absdet(matrix(c(1, 2, 3, 4), nrow = 2)), abs(1*4 - 2*3))
+  })
+
+  test_that("random matrix", {
+    set.seed(1)
+    x <- matrix(rnorm(9), nrow = 3)
+    expect_equal(.absdet(x), abs(det(x)))
+  })
+}
+
 #' Volume of a simplex
 #'
 #' @param data matrix with coordinates in rows
@@ -111,10 +137,10 @@
 simplex_volume <- function(data, indices = seq_len(nrow(data)), factorial = TRUE) {
   if (ncol(data) == length(indices) - 1) {
     E <- .simplex_E(data, indices, type="vector")
-    volume <- abs(det(E))
+    volume <- .absdet(E)
   } else {
     E <- .simplex_E(data, indices, type="gram")
-    volume <- sqrt(abs(det(E)))
+    volume <- sqrt(.absdet(E))
   }
 
   if (factorial) {
