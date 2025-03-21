@@ -121,35 +121,35 @@ nfindr.default <- function(
     }
   )
   
-  if (length(results_list) == 1) {
-    result <- results_list[[1]]
-    # sort the indices to normalize the order between runs
-    result$indices <- sort(result$indices)
+  # Combine the results
+  result <- list()
+  
+  # Remove duplicate results to avoid unnecessary volume calculations
+  # sort the indices to normalize the order between runs
+  unique_indices <- unique(t(
+    sapply(results_list, function(r) sort(r$indices))
+  ))
+  
+  if (nrow(unique_indices) == 1){
+    # if there is only one unique result, return it
+    result$indices <- unique_indices[1,]
   } else {
-    result <- list()
-    
-    # Remove duplicate results to avoid unnecessary volume calculations
-    # sort the indices to normalize the order between runs
-    unique_indices <- unique(t(
-      sapply(results_list, function(r) sort(r$indices))
-    ))
-    
-    if (nrow(unique_indices) == 1){
-      result$indices <- unique_indices[1,]
-    } else {
-      volumes <- apply(unique_indices, 1, function(indices) simplex_volume(data, indices, factorial=FALSE))
-      result$indices <- unique_indices[which.max(volumes),]
-    }
-
-    if (.options("debuglevel") > 0L) {
-      result[["iterations_count"]] <- sapply(results_list, function(r) r$iterations_count)
-      result[["replacements_count"]] <- sapply(results_list, function(r) r$replacements_count)
-    }
-    if (.options("debuglevel") > 1L) {
-      result[["replacements"]] <- sapply(results_list, function(r) r$replacements)
-    }
+    # if there are multiple unique results, select the one with the largest volume
+    volumes <- apply(unique_indices, 1, function(indices) simplex_volume(data, indices, factorial=FALSE))
+    result$indices <- unique_indices[which.max(volumes),]
   }
-    
+
+  # Add counts for debugging
+  if (.options("debuglevel") > 0L) {
+    result[["iterations_count"]] <- sapply(results_list, function(r) r$iterations_count)
+    result[["replacements_count"]] <- sapply(results_list, function(r) r$replacements_count)
+  }
+
+  # Add replacements for debugging
+  if (.options("debuglevel") > 1L) {
+    result[["replacements"]] <- lapply(results_list, function(r) r$replacements)
+  }
+
   class(result) <- "nfindr"
   
   return(result)

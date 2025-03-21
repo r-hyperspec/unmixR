@@ -13,8 +13,8 @@
 #'   inefficient and computation intensive.
 #'
 #' @param p Number of endmembers.
-#' 
-#' @param init Initialization strategy. 
+#'
+#' @param init Initialization strategy.
 #'   \itemize{
 #'     \item vector of `p` integers - manually selected initial points, can be output of
 #'       previous another endmember extraction method, e.g. VCA
@@ -28,23 +28,23 @@
 #'
 #' @param iter The iteration strategy. Options: "points", "endmembers",
 #'   "both". By default, "points" are used.
-#' 
+#'
 #' @param estimator Volume change estimator
 #'   \itemize{
 #'     \item volume - straight forward volume calculation without any
 #'       optimization
-#'     \item height - Use the fact that the simplex volume is proportional to 
+#'     \item height - Use the fact that the simplex volume is proportional to
 #'       the product of `height` and `base volume`.
 #'     \item Cramer - Using Cramer's rule
 #'     \item LDU - Using LDU matrix decomposition
-#'     \item cofactor - Using the cofactor expansion for calculating `det(E)` 
+#'     \item cofactor - Using the cofactor expansion for calculating `det(E)`
 #'   }
 #'   Default: Cramer's rules is used since it has best performance.
 #'
 #' @param iter_max Maximum number of iterations to make.
 #'
 #' @param n_init Number of initializations to try. The final result will be
-#'   the best output of all initializations. Ignored if specific initial 
+#'   the best output of all initializations. Ignored if specific initial
 #'   endmember indices provided. Default: 1.
 #'
 #' @param ... Additional parameters for the methods (currently unused).
@@ -60,7 +60,7 @@
 #'                                      actual replacements during iterations.
 #'     \item \strong{replacements}: if debug level higher than 1, the vectors of
 #'                                  indices at all replacement steps. If fact,
-#'                                  is used to see how the simplex was growing.  
+#'                                  is used to see how the simplex was growing.
 #'   }
 #'
 #' @seealso \code{\link{endmembers}} to extract the endmembers; \code{\link{abundances}}
@@ -68,18 +68,18 @@
 #'
 #' @examples
 #' data("demo_data")
-#' 
+#'
 #' # Reduce data dimensionality with PCA
 #' pca <- prcomp(demo_data)
 #' x <- pca$x[,1:2]
-#' 
+#'
 #' # Perform N-FINDR in reduced space
 #' nf <- nfindr(x, p = 3)
 #'
 #' # Get endmembers both in reduced and original space
 #' ems <- endmembers(nf, demo_data)
 #' ems_pca <- endmembers(nf, x)
-#' 
+#'
 #' # Plot endmembers
 #' matplot(t(ems), type = "l")
 #'
@@ -103,26 +103,19 @@ nfindr <- function (x, ...) {
   # > points(data[indices,], pch=17, col="red")
   # > points(data[best_indices,], pch=17, col="green")
   # This dataset provides a case when all three inner-loop
-  # options give the same result, but upate of points is done
+  # options give the same result, but replacement of points is done
   # in different order.
   # NOTE: The order of points matters
   set.seed(923)
   vertices <- rbind(c(-5, 0), c(0, 4), c(10, 0))
   initial_points <- rbind(c(0, 0), c(-1, 0), c(0, 1))
-  data <- rbind(
-    initial_points,
-    vertices,
-    .get_simplex_points(vertices)
-  )
+  data <- rbind(initial_points, vertices, .get_simplex_points(vertices))
   indices <- 1:3
   best_indices <- 4:6
   p <- length(indices)
-  estimators <- get.implementations ("nfindr")
-  estimators <- estimators[estimators != "Brute"]
-  print(estimators)
-  #c("volume", "height", "Cramer", "cofactor", "LDU")
-  # formals(nfindr)$estimator
-
+  estimators <- eval(formals(nfindr.default)$estimator)
+  estimators <- estimators[order(tolower(estimators))]
+  expect_equal(estimators, c("cofactor", "Cramer", "height", "LDU", "volume"))
   ## Test exceptions ----
   test_that("Exceptions", {
     # invalid p
@@ -156,7 +149,7 @@ nfindr <- function (x, ...) {
         unmixR.options(debuglevel = 2L)
         result <- nfindr(data, p, indices, iter = "endmembers", estimator = estimator)
         expect_equal(
-          result$replacements,
+          result$replacements[[1]],
           rbind(
             c(1, 2, 3),
             c(1, 4, 3),
@@ -189,7 +182,7 @@ nfindr <- function (x, ...) {
         unmixR.options(debuglevel = 2L)
         result <- nfindr(data, p, indices, iter = "points", estimator = estimator)
         expect_equal(
-          result$replacements,
+          result$replacements[[1]],
           rbind(
             c(1, 2, 3),
             c(6, 2, 3),
@@ -226,7 +219,7 @@ nfindr <- function (x, ...) {
         unmixR.options(debuglevel = 2L)
         result <- nfindr(data, p, indices, iter = "both", estimator = estimator)
         expect_equal(
-          result$replacements,
+          result$replacements[[1]],
           rbind(
             c(1, 2, 3),
             c(6, 2, 3),
@@ -250,7 +243,7 @@ nfindr <- function (x, ...) {
       c(-1,0,0)
     ),
     max_coefficient = rep(0.6,4),
-    n_points = 2000
+    n_points = 200
   )
   p <- ncol(data)+1
   indices <- sample(which(apply(data, 1, norm, type="2") < 0.3), p)
@@ -270,6 +263,19 @@ nfindr <- function (x, ...) {
         )
       )
     }
+  }
+
+  ## Test n_init ----
+  unmixR.options(debuglevel = 2L)
+  for (n in c(1, 2, 5)) {
+    test_that(paste("n_init =", n), {
+      set.seed(123)
+      result <- nfindr(data, p, init="random", n_init = n)
+      expect_equal(length(result$indices), p)
+      expect_equal(length(result$iterations_count), n)
+      expect_equal(length(result$replacements_count), n)
+      expect_equal(length(result$replacements), n)
+    })
   }
 
   ## Test the formula interface ----
