@@ -77,7 +77,9 @@ Where e_i is an i-th vertex point of the simplex.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">.simplex_E</span><span class="op">(</span><span class="va">data</span>, indices <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span>, type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"affine"</span>, <span class="st">"vector"</span>, <span class="st">"gram"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">.simplex_E</span><span class="op">(</span><span class="va">data</span>, indices <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span>, type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"affine"</span>, <span class="st">"vector"</span>, <span class="st">"gram"</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">.absdet</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -100,11 +102,16 @@ so that it has p-1 columns before calling this function.</p></dd>
 <li><p><code>"gram"</code>: Gram-matrix simplex matrix <code>(p-1)x(p-1)</code>, i.e. squared 'vector' simplex matrix</p></li>
 </ul></dd>
 
+
+<dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
+<dd><p>matrix</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
     <p>A simplex volume matrix E, a p x p matrix whose first row contains
 only 1s</p>
+<p>absolute value of determinant of x</p>
     </div>
 
   </div>
