@@ -1,40 +1,3 @@
-#' Find initial endmember candidates by selecting extreme points along coordinate axes.
-#' @param data matrix with coordinates in rows
-#' @param p number of endmembers to select
-#' @noRd
-.init_extreme_coordinates <- function(data, p) {
-  indices <- c()
-  i <- 1
-  while((length(indices)<p) && (i<=ncol(data))) {
-    new_indices <- c(which.max(data[,i]), which.min(data[,i]))
-    new_indices <- new_indices[!(new_indices %in% indices)]
-    indices <- c(indices, new_indices)
-    i <- i+1
-  }
-  
-  return(list("indices"=indices[1:p]))
-}
-
-#' Find initial endmember candidates by projecting the data onto random vectors
-#' and selecting the two extreme points.
-#' @param data matrix with coordinates in rows
-#' @param p number of endmembers to select
-#' @noRd
-.init_random_projections <- function(data, p) {
-  indices <- c()
-  m <- ncol(data)
-  while(length(indices)<p) {
-    w <- stats::rnorm(m, sd = 1)
-    projections <- as.vector(data %*% w)
-    new_indices <- c(which.max(projections), which.min(projections))
-    new_indices <- new_indices[!(new_indices %in% indices)]
-    indices <- c(indices, new_indices)
-  }
-  
-  return(list("indices"=indices[1:p]))
-}
-
-
 #' @name nfindr
 #' @rdname nfindr
 #' @include nfindr.R
@@ -42,7 +5,7 @@
 nfindr.default <- function(
   x,
   p,
-  init= c("projections", "random", "coordinates"),
+  init = c("projections", "random", "coordinates_sequence", "coordinates_random"),
   iter = c("points", "endmembers", "both"),
   estimator = c("Cramer", "volume", "height", "cofactor", "LDU"),
   iter_max = 10,
@@ -80,19 +43,42 @@ nfindr.default <- function(
   ## Parse init --------
   # Convert init into list where each element of the list is a set of initial indices
   if (is.numeric(init) && (length(init) == p)) {
+    # Single numeric vector of indices
     init <- list(init)
     if ( (.options("debuglevel") > 0L) && (n_init != 1L) ) {
       warning("`n_init` is ignored since specific initial endmember indices were provided.")
     }
+  } else if (is.list(init)) {
+    # List of numeric vectors (multiple initializations)
+    if ( (.options("debuglevel") > 0L) && (n_init != length(init)) ) {
+      warning("`n_init` is ignored since specific initial endmember indices were provided.")
+    }
+  } else if (is.function(init)) {
+    # Call the function n_init times
+    init <- lapply(1:n_init, function(i) {
+      result <- init(x, p)
+      # Handle both direct indices and list with indices element
+      if (is.list(result) && ("indices" %in% names(result)) ) {
+        result$indices
+      } else {
+        result
+      }
+    })
   } else if (init == "random") {
     init <- lapply(1:n_init, function(i) sample(m, p))
   } else if (init == "projections") {
-    init <- lapply(1:n_init, function(i) .init_random_projections(x, p)$indices)
-  } else if (init == "coordinates") {
-    init <- lapply(1:n_init, function(i) .init_extreme_coordinates(x, p)$indices)
+    init <- lapply(1:n_init, function(i) random_projections(x, p)$indices)
+  } else if (init == "coordinates_sequence") {
+    init <- lapply(1:n_init, function(i) extreme_coordinates(x, p, random = FALSE)$indices)
+  } else if (init == "coordinates_random") {
+    init <- lapply(1:n_init, function(i) extreme_coordinates(x, p, random = TRUE)$indices)
   } else {
-    stop("Unexpected `init` value.")
+    stop("Unexpected `init` value. Must be a string, numeric vector, list of numeric vectors, or function.")
   }
+
+  stopifnot(
+    is.list(init) && all(sapply(init, is.numeric)) && all(sapply(init, length) == p)
+  )
 
   ## Check number of outer-most iterations --------
   # for "both" type iteration increase the number of iteration

@@ -18,11 +18,17 @@
 #'   \itemize{
 #'     \item vector of `p` integers - manually selected initial points, can be output of
 #'       previous another endmember extraction method, e.g. VCA
+#'     \item list of numeric vectors - multiple initializations, each element should be
+#'       a vector of `p` integers representing indices
+#'     \item function - a callable function that takes (data, p) as arguments and returns
+#'       either numeric indices or a list with 'indices' element (e.g. output of other methods)
 #'     \item random - randomly selected points
 #'     \item projections - selecting the two extreme points of the
 #'       projections of the data onto random vectors
-#'     \item coordinates - selecting the two extreme points of the
-#'       projections of the data onto the coordinate axes
+#'     \item coordinates_sequence - selecting extreme points along coordinate axes
+#'       in a deterministic sequential manner
+#'     \item coordinates_random - selecting extreme points along coordinate axes
+#'       with randomization
 #'   }
 #'   Default: "projections" is used.
 #'
@@ -136,18 +142,24 @@ nfindr <- function (x, ...) {
       paste0("Trivial case: ", estimator, " - endmembers in the inner-most loop"),
       {
         unmixR.options(debuglevel = 0L)
-        result <- nfindr(data, p, indices, iter = "endmembers", estimator = estimator)
+        suppressWarnings({
+          result <- nfindr(data, p, indices, iter = "endmembers", estimator = estimator)
+        })
         expect_equal(sort(result$indices), best_indices)
         expect_equal(names(result), c("indices"))
         
         unmixR.options(debuglevel = 1L)
-        result <- nfindr(data, p, indices, iter = "endmembers", estimator = estimator)
+        suppressWarnings({
+          result <- nfindr(data, p, indices, iter = "endmembers", estimator = estimator)
+        })
         expect_equal(result$iterations_count, 2)
         expect_equal(result$replacements_count, 3)
         expect_equal(names(result), c("indices", "iterations_count", "replacements_count"))
         
         unmixR.options(debuglevel = 2L)
-        result <- nfindr(data, p, indices, iter = "endmembers", estimator = estimator)
+        suppressWarnings({
+          result <- nfindr(data, p, indices, iter = "endmembers", estimator = estimator)
+        })
         expect_equal(
           result$replacements[[1]],
           rbind(
@@ -206,18 +218,24 @@ nfindr <- function (x, ...) {
       {
 
         unmixR.options(debuglevel = 0L)
-        result <- nfindr(data, p, indices, iter = "both", estimator = estimator)
+        suppressWarnings({
+          result <- nfindr(data, p, indices, iter = "both", estimator = estimator)
+        })
         expect_equal(sort(result$indices), best_indices)
         expect_equal(names(result), c("indices"))
         
         unmixR.options(debuglevel = 1L)
-        result <- nfindr(data, p, indices, iter = "both", estimator = estimator)
+        suppressWarnings({
+          result <- nfindr(data, p, indices, iter = "both", estimator = estimator)
+        })
         expect_equal(result$iterations_count, 4)
         expect_equal(result$replacements_count, 3)
         expect_equal(names(result), c("indices", "iterations_count", "replacements_count"))
         
         unmixR.options(debuglevel = 2L)
-        result <- nfindr(data, p, indices, iter = "both", estimator = estimator)
+        suppressWarnings({
+          result <- nfindr(data, p, indices, iter = "both", estimator = estimator)
+        })
         expect_equal(
           result$replacements[[1]],
           rbind(
@@ -257,10 +275,21 @@ nfindr <- function (x, ...) {
         paste("Non-trivial case:", estimator, iterator),
         # The iteration steps and the final solution must be the same as we use
         # straightforward volume calculation
-        expect_equal(
-          nfindr(data, p, indices, iter=iterator, estimator = estimator),
-          nfindr(data, p, indices, iter=iterator, estimator = "volume")
-        )
+        {
+          if ((estimator == "height") && (iterator %in% c("endmembers", "both"))) {
+            expect_warning(
+              result <- nfindr(data, p, indices, iter=iterator, estimator = estimator),
+              "This combination of iterator and volume change estimator is not optimized"
+            )
+          } else {
+            result <- nfindr(data, p, indices, iter=iterator, estimator = estimator)
+          }
+          
+          expect_equal(
+            result,
+            nfindr(data, p, indices, iter=iterator, estimator = "volume")
+          )
+        }
       )
     }
   }
@@ -277,6 +306,135 @@ nfindr <- function (x, ...) {
       expect_equal(length(result$replacements), n)
     })
   }
+
+  ## Test init ----
+  unmixR.options(debuglevel = 2L)
+
+  # Test string-based initialization methods
+  test_that("String-based initialization methods", {
+    set.seed(123)
+    
+    # Test projections initialization
+    result_proj <- nfindr(data, p, init="projections")
+    expect_equal(length(result_proj$indices), p)
+    expect_true(all(result_proj$indices %in% 1:nrow(data)))
+    
+    # Test coordinates_sequence initialization
+    result_coords_seq <- nfindr(data, p, init="coordinates_sequence")
+    expect_equal(
+      result_coords_seq$replacements[[1]][1,],
+      extreme_coordinates(data, p, random=FALSE)$indices
+    )
+    
+    # Test coordinates_random initialization
+    set.seed(1234)
+    result_coords_rand <- nfindr(data, p, init="coordinates_random")
+    expect_equal(
+      result_coords_rand$replacements[[1]][1,],
+      {set.seed(1234); extreme_coordinates(data, p, random=TRUE)$indices}
+    )
+    
+    # Test random initialization
+    set.seed(1234)
+    result_random <- nfindr(data, p, init="random")
+    expect_equal(
+      result_random$replacements[[1]][1,],
+      {set.seed(1234); sample(nrow(data), p)}
+    )
+  })
+  
+  # Test numeric vector initialization
+  test_that("Numeric vector initialization", {
+    manual_indices <- c(1, 5, 10, 15)
+    result <- nfindr(data, p, init=manual_indices)
+    expect_equal(result$replacements[[1]][1,], manual_indices)
+  })
+  
+  # Test list initialization
+  test_that("List initialization", {
+    init_list <- list(
+      c(1, 5, 10, 15),
+      c(2, 8, 12, 18),
+      c(3, 7, 11, 16)
+    )
+    expect_warning(
+      result <- nfindr(data, p, init=init_list),
+      "n_init.*is ignored"
+    )
+    expect_equal(length(result$replacements), length(init_list))
+    expect_true(
+      all(
+        sapply(1:length(init_list), function(i) result$replacements[[i]][1,] == init_list[[i]])
+      )
+    )
+  })
+  
+  # Test function initialization
+  test_that("Function initialization", {
+    # Test function that returns numeric indices
+    custom_init_numeric <- function(data, p) {
+      return(sample(1:nrow(data), p))
+    }
+    
+    set.seed(456)
+    result_numeric <- nfindr(data, p, init=custom_init_numeric)
+    expect_equal(length(result_numeric$indices), p)
+    expect_true(all(result_numeric$indices %in% 1:nrow(data)))
+    
+    # Test function that returns list with indices element
+    custom_init_list <- function(data, p) {
+      indices <- sample(1:nrow(data), p)
+      return(list(indices = indices))
+    }
+    
+    set.seed(789)
+    result_list <- nfindr(data, p, init=custom_init_list)
+    expect_equal(length(result_list$indices), p)
+    expect_true(all(result_list$indices %in% 1:nrow(data)))
+  })
+  
+  # Test error conditions for initialization
+  test_that("Initialization error conditions", {
+    # Test invalid list elements
+    invalid_list <- list(c(1, 2), c(3, 4, 5))  # Different lengths
+    expect_error(nfindr(data, p, init=invalid_list, n_init=2))
+    
+    # Test function that returns invalid output
+    invalid_function <- function(data, p) {
+      return("invalid")
+    }
+    expect_error(nfindr(data, p, init=invalid_function))
+    
+    # Test invalid string
+    expect_error(nfindr(data, p, init="invalid_method"))
+  })
+  
+  # Test that n_init warnings are properly issued
+  test_that("n_init warnings", {
+    # Test with numeric vector
+    expect_warning(
+      nfindr(data, p, init=c(1, 5, 10, 15), n_init=3),
+      "n_init.*is ignored"
+    )
+    
+    # Test with list
+    expect_warning(
+      nfindr(data, p, init=list(c(1, 5, 10, 15)), n_init=3),
+      "n_init.*is ignored"
+    )
+  })
+  
+  # Test reproducibility with seed
+  test_that("Reproducibility with seed", {
+    set.seed(999)
+    result1 <- nfindr(data, p, init="random")
+    
+    set.seed(999)
+    result2 <- nfindr(data, p, init="random")
+    
+    expect_equal(result1$indices, result2$indices)
+  })
+  
 
   ## Test the formula interface ----
   # -> nfindr.formula has its own test

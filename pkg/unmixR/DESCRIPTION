@@ -1,7 +1,7 @@
 Package: unmixR
 Type: Package
 Title: Hyperspectral Unmixing Methods
-Version: 2.2.0
+Version: 2.3.0
 Date: 20025-07-11
 Authors@R: c(
   person("Anton", "Belov", role = "aut"),
@@ -64,6 +64,7 @@ Collate:
     'nfindr_volume.R'
     'options.R'
     'predict.R'
+    'projections.R'
     'simplex.R'
     'unittests.R'
     'vca.R'
