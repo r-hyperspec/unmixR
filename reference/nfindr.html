@@ -20,7 +20,7 @@ of pixels."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">unmixR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.4.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.5.0</span>
       </span>
     </div>
 
@@ -63,7 +63,7 @@ of pixels."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>General Interface to N-FINDR Spectral Unmixing Implementations</h1>
-    <small class="dont-index">Source: <a href="https://github.com/r-hyperspec/unmixR/blob/develop/R/nfindr.R" class="external-link"><code>R/nfindr.R</code></a>, <a href="https://github.com/r-hyperspec/unmixR/blob/develop/R/nfindr.default.R" class="external-link"><code>R/nfindr.default.R</code></a>, <a href="https://github.com/r-hyperspec/unmixR/blob/develop/R/nfindr.formula.R" class="external-link"><code>R/nfindr.formula.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/r-hyperspec/unmixR/blob/develop/R/nfindr.R" class="external-link"><code>R/nfindr.R</code></a></small>
     <div class="hidden name"><code>nfindr.Rd</code></div>
     </div>
 
@@ -75,10 +75,7 @@ of pixels.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">nfindr</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Default S3 method</span></span>
-<span><span class="fu">nfindr</span><span class="op">(</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">nfindr</span><span class="op">(</span></span>
 <span>  <span class="va">x</span>,</span>
 <span>  <span class="va">p</span>,</span>
 <span>  init <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"projections"</span>, <span class="st">"random"</span>, <span class="st">"coordinates_sequence"</span>, <span class="st">"coordinates_random"</span><span class="op">)</span>,</span>
@@ -87,10 +84,7 @@ of pixels.</p>
 <span>  iter_max <span class="op">=</span> <span class="fl">10</span>,</span>
 <span>  n_init <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  <span class="va">...</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># S3 method for class 'formula'</span></span>
-<span><span class="fu">nfindr</span><span class="op">(</span><span class="va">formula</span>, <span class="va">frame</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -104,10 +98,6 @@ to reduce the dimensionality of the data to `p-1` before using this
 function. This can be done using PCA or other dimensionality reduction
 techniques. Withouth dimensionality reduction, the results might be
 inefficient and computation intensive.</p></dd>
-
-
-<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Parameters to be passed to nfindr.default</p></dd>
 
 
 <dt id="arg-p">p<a class="anchor" aria-label="anchor" href="#arg-p"></a></dt>
@@ -157,12 +147,8 @@ the best output of all initializations. Ignored if specific initial
 endmember indices provided. Default: 1.</p></dd>
 
 
-<dt id="arg-formula">formula<a class="anchor" aria-label="anchor" href="#arg-formula"></a></dt>
-<dd><p>A formula object without a response term</p></dd>
-
-
-<dt id="arg-frame">frame<a class="anchor" aria-label="anchor" href="#arg-frame"></a></dt>
-<dd><p>A data frame containing the variables in the model</p></dd>
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
+<dd><p>Additional parameters for the methods (currently unused).</p></dd>
 
 </dl></div>
     <div id="value">
