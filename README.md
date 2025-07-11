@@ -9,9 +9,6 @@
 [![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
 <!-- badges: end -->
 
-> [!NOTE]
-> This `README` is for GitHub only. `pkgdown` website currently has a separate `README`.
-
 > [!WARNING]
 > `unmixR` is **WORK IN PROGRESS**. The fundamental structures & behavior may change. For the time being, use at your own risk.
 
