@@ -5,16 +5,16 @@
       base <- data[indices[-j],,drop=FALSE]
       
       # Calculate the null space, generalization of normal vector for an arbitrary dimension
-      # e.g. for a plain triangle in 3D, a null space will be a 2D hyper plane orthogonal to the base
-      N <- MASS::Null(t(
-        # Remove first row from all other rows to move from points to vectors, i.e.
-        # from [em1, em2, em3, ...] we switch to [(em2-em1), (em3-em1), ...]
-        sweep(base, 2L, base[1,], check.margin=FALSE)[-1,,drop = FALSE]
-      ))
-      
-      # Handle a special case, e.g. length(indices) == 2
-      if (ncol(N) == 0) {
-        N <- diag(1, nrow = ncol(data), ncol = ncol(data))
+      # e.g. for a plain triangle in 3D, a null space is a 2D hyper plane orthogonal to the base
+
+      # Remove first row from all other rows to move from points to vectors, i.e.
+      # from [em1, em2, em3, ...] we switch to [(em2-em1), (em3-em1), ...]
+      Ut <- sweep(base, 2L, base[1,], check.margin=FALSE)[-1,,drop = FALSE]
+      if (nrow(Ut) == 0) {
+        # Handle a special case, e.g. length(indices) == 2
+        P <- diag(ncol(data))
+      } else {
+        P <- diag(ncol(data)) - t(Ut) %*% solve(tcrossprod(Ut), Ut)
       }
       
       # Project points onto the null space and remove base offset of the base
@@ -24,8 +24,8 @@
       # Alternatively, it is possible to do apply same shift before the projection,
       # i.e. `sweep(data[...], 2L, base[1,]) %*% N` but we chose to do it after the projection
       # because the projected data has smaller dimension.
-      base_offset <- as.vector(base[1,] %*% N)
-      proj <- data[new_indices, ] %*% N
+      base_offset <- as.vector(base[1,] %*% P)
+      proj <- data[new_indices, ] %*% P
       proj <- sweep(proj, 2L, base_offset)
       
       # Calculate height ratios
@@ -34,7 +34,7 @@
       if (indices[j] %in% new_indices) {
         height_current <- heights[new_indices == indices[j]]
       } else {
-        height_current <- (data[indices[j],] %*% N) - base_offset
+        height_current <- (data[indices[j],] %*% P) - base_offset
         height_current <- sqrt(sum(height_current*height_current))
       }
       
