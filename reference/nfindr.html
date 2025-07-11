@@ -20,7 +20,7 @@ of pixels."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">unmixR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.3.0</span>
       </span>
     </div>
 
@@ -81,7 +81,7 @@ of pixels.</p>
 <span><span class="fu">nfindr</span><span class="op">(</span></span>
 <span>  <span class="va">x</span>,</span>
 <span>  <span class="va">p</span>,</span>
-<span>  init <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"projections"</span>, <span class="st">"random"</span>, <span class="st">"coordinates"</span><span class="op">)</span>,</span>
+<span>  init <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"projections"</span>, <span class="st">"random"</span>, <span class="st">"coordinates_sequence"</span>, <span class="st">"coordinates_random"</span><span class="op">)</span>,</span>
 <span>  iter <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"points"</span>, <span class="st">"endmembers"</span>, <span class="st">"both"</span><span class="op">)</span>,</span>
 <span>  estimator <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Cramer"</span>, <span class="st">"volume"</span>, <span class="st">"height"</span>, <span class="st">"cofactor"</span>, <span class="st">"LDU"</span><span class="op">)</span>,</span>
 <span>  iter_max <span class="op">=</span> <span class="fl">10</span>,</span>
@@ -117,11 +117,17 @@ inefficient and computation intensive.</p></dd>
 <dt id="arg-init">init<a class="anchor" aria-label="anchor" href="#arg-init"></a></dt>
 <dd><p>Initialization strategy.</p><ul><li><p>vector of `p` integers - manually selected initial points, can be output of
     previous another endmember extraction method, e.g. VCA</p></li>
+<li><p>list of numeric vectors - multiple initializations, each element should be
+    a vector of `p` integers representing indices</p></li>
+<li><p>function - a callable function that takes (data, p) as arguments and returns
+    either numeric indices or a list with 'indices' element (e.g. output of other methods)</p></li>
 <li><p>random - randomly selected points</p></li>
 <li><p>projections - selecting the two extreme points of the
     projections of the data onto random vectors</p></li>
-<li><p>coordinates - selecting the two extreme points of the
-    projections of the data onto the coordinate axes</p></li>
+<li><p>coordinates_sequence - selecting extreme points along coordinate axes
+    in a deterministic sequential manner</p></li>
+<li><p>coordinates_random - selecting extreme points along coordinate axes
+    with randomization</p></li>
 </ul><p>Default: "projections" is used.</p></dd>
 
 

@@ -13,6 +13,7 @@
 <url><loc>https://r-hyperspec.github.io/unmixR/reference/dimensionalityReduction.html</loc></url>
 <url><loc>https://r-hyperspec.github.io/unmixR/reference/endmembers.html</loc></url>
 <url><loc>https://r-hyperspec.github.io/unmixR/reference/estSNR.html</loc></url>
+<url><loc>https://r-hyperspec.github.io/unmixR/reference/extreme_coordinates.html</loc></url>
 <url><loc>https://r-hyperspec.github.io/unmixR/reference/get.implementations.html</loc></url>
 <url><loc>https://r-hyperspec.github.io/unmixR/reference/ice.html</loc></url>
 <url><loc>https://r-hyperspec.github.io/unmixR/reference/index.html</loc></url>
@@ -20,6 +21,7 @@
 <url><loc>https://r-hyperspec.github.io/unmixR/reference/nfindrBrute.html</loc></url>
 <url><loc>https://r-hyperspec.github.io/unmixR/reference/options.html</loc></url>
 <url><loc>https://r-hyperspec.github.io/unmixR/reference/predict.html</loc></url>
+<url><loc>https://r-hyperspec.github.io/unmixR/reference/random_projections.html</loc></url>
 <url><loc>https://r-hyperspec.github.io/unmixR/reference/simplex.html</loc></url>
 <url><loc>https://r-hyperspec.github.io/unmixR/reference/simplex_volume.html</loc></url>
 <url><loc>https://r-hyperspec.github.io/unmixR/reference/unmixR-package.html</loc></url>
