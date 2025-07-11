@@ -5,7 +5,8 @@
 #'
 #' @param p Number of endmembers.
 #'
-#' @references Based on Python implementation in [pysptools](https://github.com/ctherien/pysptools/blob/fbcd3ecaa7ab27f0158b28b4327537c3e75db160/pysptools/eea/eea.py#L52)
+#' @references Based on Python implementation in [pysptools](https://github.com/ctherien/pysptools/blob/fbcd3ecaa7ab27f0158b28b4327537c3e75db160/pysptools/eea/eea.py#L52).
+#' Also matches [matlabHyperspectralToolbox](https://github.com/isaacgerg/matlabHyperspectralToolbox/blob/master/hyperspectralToolbox/hyperAtgp.m)
 #'
 #' @return A list which contains:
 #'   \itemize{
@@ -33,7 +34,13 @@ atgp <- function(data, p) {
   projection_vectors <- NULL
   while (length(indices) < p) {
     # Get the next projection vector
-    P <- MASS::Null(t(data[indices,,drop=FALSE]))
+    # Same as `P <- MASS::Null(t(data[indices,,drop=FALSE]))`
+    # But MASS::Null is very slow, it is faster to use orthogonal complement:
+    # $P = I - U(UU^T)^{-1}U^T$
+    # P is symmetric matrix, so we use Ut directly to reduce transpositions
+    Ut <- data[indices, ,drop=FALSE]
+    P <- diag(ncol(data)) - t(Ut) %*% solve(tcrossprod(Ut), Ut)
+    projections <- data %*% P
     
     # Save it for debugging
     if (.options("debuglevel") >= 1L) {
@@ -61,6 +68,54 @@ atgp <- function(data, p) {
 .test(atgp) <- function() {
   context("ATGP")
   
+  # Reference implementation from matlabHyperspectralToolbox
+  .ref_hyperAtgp <- function(M, q, Maug = NULL) {
+    # Inputs:
+    #   M    - Matrix of hyperspectral data (p x N)
+    #   q    - Number of endmembers
+    #   Maug - Optional initial endmembers (p x k)
+    # Outputs:
+    #   List containing:
+    #     U        - Extracted endmember matrix (p x q)
+    #     indices  - Indices in M of selected endmembers
+    
+    p <- nrow(M)
+    N <- ncol(M)
+    
+    U <- matrix(numeric(0), nrow = p)
+    indices <- integer(0)
+    
+    # Step 1: Find the pixel with the largest norm
+    norms <- colSums(M * M)  # squared L2 norm for each column
+    idx <- which.max(norms)
+    indices <- c(indices, idx)
+    U <- M[, idx, drop = FALSE]
+    
+    start <- 1
+    
+    # Step 2: Use initial endmembers if provided
+    if (!is.null(Maug)) {
+      U <- Maug
+      # start <- ncol(Maug) + 1  # Not used in original loop
+    }
+    
+    # Step 3: Iteratively find new endmembers
+    for (n in start:(q - 1)) {
+      # Orthogonal projection matrix
+      P <- diag(p) - U %*% solve(t(U) %*% U) %*% t(U)
+      
+      # Compute projection magnitudes
+      projected <- P %*% M
+      norms <- colSums(projected * projected)
+      
+      idx <- which.max(abs(norms))
+      indices <- c(indices, idx)
+      U <- cbind(U, M[, idx])
+    }
+    
+    return(list(U = U, indices = indices))
+  }
+
   test_that("ATGP produces error for invalid values of p", {
     expect_error(atgp(.testdata$x, p = "---"))
     expect_error(atgp(.testdata$x, p = 0))
@@ -75,4 +130,17 @@ atgp <- function(data, p) {
   test_that("ATGP works in higher dimensions", {
     expect_equal(atgp(.testdata$x, p = 2)$indices, .correct[1:2])
   })
+
+  test_that("ATGP works same as MATLAB implementation", {
+    # Compare with the reference implementation
+
+    set.seed(123)
+    # Generate a random matrix with 5 rows and 10 columns
+    X <- matrix(rnorm(100*20), nrow = 100)
+
+    res <- atgp(X, p = 3)$indices
+    ref <- .ref_hyperAtgp(t(X), q = 3)$indices
+    expect_equal(res, ref)
+  })
+
 }
