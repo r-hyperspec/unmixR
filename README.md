@@ -75,6 +75,6 @@ Thank you Google!
 
 This project has received funding from the European Union's [Horizon 2020](https://research-and-innovation.ec.europa.eu/funding/funding-opportunities/funding-programmes-and-open-calls/horizon-2020_en) research and innovation programme under the [Marie Sklodowska-Curie Actions](https://marie-sklodowska-curie-actions.ec.europa.eu/) *(Grant Agreement 861122)* as part of [IMAGE-IN](https://image-in-itn.eu/) project.
 
-![GSOC 2016 logo](https://gitlab.com/chemometrics/unmixR/raw/master/GSoC2016Logo.png)
+![GSOC 2016 logo](./GSoC2016Logo.png)
 <img src="https://bgsmath.cat/wp-content/uploads/2017/09/marie_curie1-300x160.jpg" alt="Horizon 2020"  style="height: 100px; margin: 10px"/>
 
