@@ -9,8 +9,8 @@
 #'   Be careful,
 #'   when this function is called by \code{\link{vca05}} the data is already
 #'   transposed due to
-#'   lazy evaluation.  If you want to get the same answer by calling this function
-#'   directly, you'll need to transpose the data first!
+#'   lazy evaluation. If you want to get the same answer by calling this
+#'   function directly, you'll need to transpose the data first!
 #'
 #' @param p The number of endmembers.
 #'
@@ -24,26 +24,26 @@
 #' @export
 
 vca_snr <- function(data, p) {
-    data <- as.matrix(data)
-    
-    E <- function(M, n) sum(c(M)^2 / n) # expectation operator
-    
-    L <- ncol(data) # no of frequencies / bands 
-    N <- nrow(data) # no of samples # NOT used in estSNR3
-    
-    Ud <- svd(crossprod(data), nu = p, nv = p)
-    Ud <- Ud[["u"]][, sequence(p), drop = FALSE]
-    
-    reducedData <- data %*% Ud
-    
-    pr <- E(data, N) # E value of raw data
-    prp <- E(reducedData, N) # E value of reduced data
-    
-    snr <- (prp - (p * pr / L)) / (pr - prp)
-    equalityThreshold <- 1e-4
-    if(pr - prp < equalityThreshold){
-        snr <- Inf
-    }
-    SNR <- 10 * log10(snr)
-    return(SNR)
+  data <- as.matrix(data)
+
+  E <- function(M, n) sum(c(M)^2 / n) # expectation operator
+
+  L <- ncol(data) # no of frequencies / bands
+  N <- nrow(data) # no of samples # NOT used in estSNR3
+
+  Ud <- svd(crossprod(data), nu = p, nv = p)
+  Ud <- Ud[["u"]][, sequence(p), drop = FALSE]
+
+  reducedData <- data %*% Ud
+
+  pr <- E(data, N) # E value of raw data
+  prp <- E(reducedData, N) # E value of reduced data
+
+  snr <- (prp - (p * pr / L)) / (pr - prp)
+  equalityThreshold <- 1e-4
+  if (pr - prp < equalityThreshold) {
+    snr <- Inf
+  }
+  SNR <- 10 * log10(snr)
+  return(SNR)
 }

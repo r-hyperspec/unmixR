@@ -17,8 +17,7 @@
 #'     \item lopez (\code{\link{vca_lopez}})
 #'   }
 #'   Default: \code{nascimento}.
-#' 
-
+#'
 #' @return A list which contains:
 #'   \itemize{
 #'     \item \strong{indices}: sorted indices of the calculated endmembers.
@@ -28,7 +27,7 @@
 #'       i.e., in the same order as iteration, included only
 #'       when \code{debuglevel >= 1}.
 #'   }
-#' 
+#'
 #'
 #' @seealso \code{\link{endmembers}} to extract the spectra; \code{\link{predict}}
 #' to determine abundances of endmembers in each sample.
@@ -54,17 +53,17 @@
 vca <- function(data, p, method = c("nascimento", "lopez"), ...) {
 
   # check if the method passed in is valid
-  method <- match.arg (method)
+  method <- match.arg(method)
 
   # transform the input into a matrix
-  data <- as.matrix (data)
+  data <- as.matrix(data)
 
   # check for p being with the valid range, >= 2
-  if (!is.numeric (p) || p < 2 || p > ncol (data)) {
+  if (!is.numeric(p) || p < 2 || p > ncol(data)) {
     stop("p must be a positive integer >= 2 and <= ncol (data)")
   }
 
-  vcaFunc <- get(paste("vca", method, sep="_"), mode = "function")
+  vcaFunc <- get(paste("vca", method, sep = "_"), mode = "function")
   res <- vcaFunc(data)
 
   if (.options("debuglevel") >= 1L) {
@@ -73,26 +72,24 @@ vca <- function(data, p, method = c("nascimento", "lopez"), ...) {
   }
   class(res) = "vca"
   return(res)
-
 }
 
-
 .test(vca) <- function() {
-  context ("vca")
+  context("vca")
 
   # Note: .testdata$x matches all columns of .testdata, which are x.L1, x.L2, x.L3.
 
   reduced <- vca_dr(.testdata$x, p = 3)
 
-  test_that ("vca produces error for invalid values of p", {
-    expect_error (vca (.testdata$x, p = "---"))
-    expect_error (vca (.testdata$x, p = 0))
-    expect_error (vca (.testdata$x, p = 1))
-    expect_error (vca (.testdata$x, p = 4))
+  test_that("vca produces error for invalid values of p", {
+    expect_error(vca(.testdata$x, p = "---"))
+    expect_error(vca(.testdata$x, p = 0))
+    expect_error(vca(.testdata$x, p = 1))
+    expect_error(vca(.testdata$x, p = 4))
   })
 
   test_that("vca produces error for invalid method", {
-    expect_error(vca(reduced, p=3, method="invalid"))
+    expect_error(vca(reduced, p = 3, method = "invalid"))
   })
 
   test_that("vca requires input with exactly p columns", {
@@ -111,45 +108,43 @@ vca <- function(data, p, method = c("nascimento", "lopez"), ...) {
     skip("Skip tests to implement GHA infrastructure. Fix the tests ASAP")
 
     for (i in implementations) {
-      expect_equal (vca (.testdata$x, p = 3, method = i)$indices, .correct)
+      expect_equal(vca(.testdata$x, p = 3, method = i)$indices, .correct)
 
-      indices <- vca (.testdata$x, p = 2, method = i)$indices
-      expect_true (all (indices %in% .correct), info = i)
+      indices <- vca(.testdata$x, p = 2, method = i)$indices
+      expect_true(all(indices %in% .correct), info = i)
 
-      if (i == "Lopez2012") skip ("temporarily disabled: known issue #36")
-      expect_false (any (duplicated (indices)), info = i)
+      if (i == "Lopez2012") skip("temporarily disabled: known issue #36")
+      expect_false(any(duplicated(indices)), info = i)
     }
   })
 
-  test_that ("no duplicates with Lopez2012 for test data", {
-    skip ("known issue: #36")
+  test_that("no duplicates with Lopez2012 for test data", {
+    skip("known issue: #36")
 
-    indices <- replicate (10, vca (.testdata$x, p = 2, method = "Lopez2012")$indices)
-    expect_true (all (indices %in% .correct))
-    expect_true (all (indices [1, ] != indices [2, ]), info = "Lopez2012 duplicate indices: testdata, p = 2")
-  }
-  )
+    indices <- replicate(10, vca(.testdata$x, p = 2, method = "Lopez2012")$indices)
+    expect_true(all(indices %in% .correct))
+    expect_true(all(indices[1, ] != indices[2, ]), info = "Lopez2012 duplicate indices: testdata, p = 2")
+  })
 
   test_that("correct results for all available methods: laser data", {
-    skip ("temporarily disabled")
+    skip("temporarily disabled")
     for (i in implementations) {
-      expect_equal (vca (laser$spc, p = 2, method = i)$indices, .correct.laser)
+      expect_equal(vca(laser$spc, p = 2, method = i)$indices, .correct.laser)
     }
   })
-
 
   ## all 3 components should be recovered, vca output is sorted.
   test_that("vca output is sorted", {
     # FIXME: Fix the tests below ASAP
     skip("Skip tests to implement GHA infrastructure. Fix the tests ASAP")
 
-    indices <- vca (.testdata$x, p = 3)$indices
-    expect_equal(indices, sort (indices))
+    indices <- vca(.testdata$x, p = 3)$indices
+    expect_equal(indices, sort(indices))
   })
 
   # test: hyperSpec object
   test_that("vca on hyperSpec object", {
-      expect_equal (vca (laser, p = 2, seed = 12345)$indices,
-                    vca (laser$spc, p = 2, seed = 12345)$indices)
+    expect_equal(vca(laser, p = 2, seed = 12345)$indices,
+                 vca(laser$spc, p = 2, seed = 12345)$indices)
   })
 }

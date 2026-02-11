@@ -27,14 +27,14 @@ The spectra are often visible, infrared, near-infrared, raman spectra or mass sp
 remotes::install_github("r-hyperspec/unmixR")
 
 # Install a specific version from GitHub (for versions <=2.5)
-remotes::install_github("r-hyperspec/unmixR", subdir = "pkg/unmixR", branch="v2.0")
+remotes::install_github("r-hyperspec/unmixR", subdir = "pkg/unmixR", branch = "v2.0")
 
 # Install a specific version from GitHub (for versions > 2.5)
-remotes::install_github("r-hyperspec/unmixR", branch="v2.6")
+remotes::install_github("r-hyperspec/unmixR", branch = "v2.6")
 ```
 
 > [!NOTE]
-> Version tagged as `v1.0` is the last stable version prior to significant changes. This tag was added for users who prefer to use old version. However, the tag version `v1.0` **does not match the version in DESCRIPION** (see more on this in the [issue](https://github.com/r-hyperspec/unmixR/issues/54)). Starting from `v2.0` the version in DESCRIPTION will match the tag version.
+> Version tagged as `v1.0` is the last stable version prior to significant changes. This tag was added for users who prefer to use an older version. However, the tag version `v1.0` **does not match the version in DESCRIPTION** (see more on this in the [issue](https://github.com/r-hyperspec/unmixR/issues/54)). Starting from `v2.0`, the version in DESCRIPTION will match the tag version.
 
 ## Example: N-FINDR workflow
 
@@ -46,7 +46,7 @@ data("demo_data")
 
 # Reduce data dimensionality with PCA
 pca <- prcomp(demo_data)
-x <- pca$x[,1:2]
+x <- pca$x[, 1:2]
 
 # Perform N-FINDR in reduced space
 nf <- nfindr(x, p = 3)
@@ -86,9 +86,9 @@ ems_raw <- endmembers(res_vca, demo_data)
 ems_red <- endmembers(res_vca, demo_red)
 ```
 
-## Acknoledgements
+## Acknowledgements
 
-Initial development of `unmixR` has been supported by Google Summer of Code 2013 (Conor McManus) and 2016 (Anton Belov). 
+Initial development of `unmixR` has been supported by Google Summer of Code 2013 (Conor McManus) and 2016 (Anton Belov).
 Thank you Google!
 
 This project has received funding from the European Union's [Horizon 2020](https://research-and-innovation.ec.europa.eu/funding/funding-opportunities/funding-programmes-and-open-calls/horizon-2020_en) research and innovation programme under the [Marie Sklodowska-Curie Actions](https://marie-sklodowska-curie-actions.ec.europa.eu/) *(Grant Agreement 861122)* as part of [IMAGE-IN](https://image-in-itn.eu/) project.

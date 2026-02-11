@@ -28,13 +28,13 @@
 # BH: this doesn't handle drop = TRUE for nfindr series correctly.
 # need to determine if we want to keep drop = TRUE
 
-endmembers <- function(object, data=NULL) {
-	if (is.null(data)) {
-		if (is.null(object[["data"]])) {
-			stop("No data provided and none found in object.")
-		}
-		data <- object[["data"]]
-	}
-	i <- object[["indices"]]
-	return(data[i, , drop = FALSE])
+endmembers <- function(object, data = NULL) {
+  if (is.null(data)) {
+    if (is.null(object[["data"]])) {
+      stop("No data provided and none found in object.")
+    }
+    data <- object[["data"]]
+  }
+  i <- object[["indices"]]
+  return(data[i, , drop = FALSE])
 }
