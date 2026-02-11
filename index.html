@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">unmixR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.6.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.7.0</span>
       </span>
     </div>
 
@@ -102,16 +102,16 @@
 <span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"r-hyperspec/unmixR"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Install a specific version from GitHub (for versions &lt;=2.5)</span></span>
-<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"r-hyperspec/unmixR"</span>, subdir <span class="op">=</span> <span class="st">"pkg/unmixR"</span>, branch<span class="op">=</span><span class="st">"v2.0"</span><span class="op">)</span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"r-hyperspec/unmixR"</span>, subdir <span class="op">=</span> <span class="st">"pkg/unmixR"</span>, branch <span class="op">=</span> <span class="st">"v2.0"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Install a specific version from GitHub (for versions &gt; 2.5)</span></span>
-<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"r-hyperspec/unmixR"</span>, branch<span class="op">=</span><span class="st">"v2.6"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"r-hyperspec/unmixR"</span>, branch <span class="op">=</span> <span class="st">"v2.7"</span><span class="op">)</span></span></code></pre></div>
 <blockquote>
-<p>[!NOTE] Version tagged as <code>v1.0</code> is the last stable version prior to significant changes. This tag was added for users who prefer to use old version. However, the tag version <code>v1.0</code> <strong>does not match the version in DESCRIPION</strong> (see more on this in the <a href="https://github.com/r-hyperspec/unmixR/issues/54" class="external-link">issue</a>). Starting from <code>v2.0</code> the version in DESCRIPTION will match the tag version.</p>
+<p>[!NOTE] Version tagged as <code>v1.0</code> is the last stable version prior to significant changes. This tag was added for users who prefer to use an older version. However, the tag version <code>v1.0</code> <strong>does not match the version in DESCRIPTION</strong> (see more on this in the <a href="https://github.com/r-hyperspec/unmixR/issues/54" class="external-link">issue</a>). Starting from <code>v2.0</code>, the version in DESCRIPTION will match the tag version.</p>
 </blockquote>
 </div>
 <div class="section level2">
-<h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
+<h2 id="example-n-findr-workflow">Example: N-FINDR workflow<a class="anchor" aria-label="anchor" href="#example-n-findr-workflow"></a>
 </h2>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-hyperspec/unmixR" class="external-link">unmixR</a></span><span class="op">)</span></span>
@@ -121,7 +121,7 @@
 <span></span>
 <span><span class="co"># Reduce data dimensionality with PCA</span></span>
 <span><span class="va">pca</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/prcomp.html" class="external-link">prcomp</a></span><span class="op">(</span><span class="va">demo_data</span><span class="op">)</span></span>
-<span><span class="va">x</span> <span class="op">&lt;-</span> <span class="va">pca</span><span class="op">$</span><span class="va">x</span><span class="op">[</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span></span>
+<span><span class="va">x</span> <span class="op">&lt;-</span> <span class="va">pca</span><span class="op">$</span><span class="va">x</span><span class="op">[</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span></span>
 <span></span>
 <span><span class="co"># Perform N-FINDR in reduced space</span></span>
 <span><span class="va">nf</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/nfindr.html">nfindr</a></span><span class="op">(</span><span class="va">x</span>, p <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
@@ -134,16 +134,39 @@
 <span></span>
 <span><span class="co"># Calculate abundances using barycentric coordinates</span></span>
 <span><span class="co"># it works only in the reduced space</span></span>
-<span><span class="va">ab_bary</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/abundances.html">abundances</a></span><span class="op">(</span><span class="va">ems_pca</span>, <span class="va">x</span>, method <span class="op">=</span> <span class="st">"bary"</span><span class="op">)</span></span>
+<span><span class="va">ab_bary</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/abundances.html">abundances</a></span><span class="op">(</span><span class="va">nf</span>, <span class="va">x</span>, method <span class="op">=</span> <span class="st">"bary"</span><span class="op">)</span></span>
+<span><span class="co"># Same as: abundances(ems_pca, x, method = "bary")</span></span>
 <span><span class="co"># Same as: bary(ems_pca, x)</span></span>
 <span></span>
 <span><span class="co"># Calculate abundances using NNLS</span></span>
 <span><span class="co"># it works in both spaces but it is better to be applied in the original space</span></span>
-<span><span class="va">ab_nnls</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/abundances.html">abundances</a></span><span class="op">(</span><span class="va">ems</span>, <span class="va">demo_data</span>, method <span class="op">=</span> <span class="st">"nnls"</span>, normalize <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co"># Same as: nnls(ems, demo_data)/rowSums(nnls(ems, demo_data))</span></span></code></pre></div>
+<span><span class="va">ab_nnls</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/abundances.html">abundances</a></span><span class="op">(</span><span class="va">nf</span>, <span class="va">demo_data</span>, method <span class="op">=</span> <span class="st">"nnls"</span>, normalize <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="co"># Same as: nnls(ems, demo_data) / rowSums(nnls(ems, demo_data))</span></span>
+<span><span class="co"># Same as: `predict` method in older version of the package</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="acknoledgements">Acknoledgements<a class="anchor" aria-label="anchor" href="#acknoledgements"></a>
+<h2 id="example-vca-workflow">Example: VCA workflow<a class="anchor" aria-label="anchor" href="#example-vca-workflow"></a>
+</h2>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-hyperspec/unmixR" class="external-link">unmixR</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"demo_data"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 1) Explicit VCA preprocessing</span></span>
+<span><span class="va">demo_red</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/vca_dr.html">vca_dr</a></span><span class="op">(</span><span class="va">demo_data</span>, p <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 2) Endmember extraction (indices-only result)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
+<span><span class="va">res_vca</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/vca.html">vca</a></span><span class="op">(</span><span class="va">demo_red</span>, p <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 3) Endmembers in original or reduced space</span></span>
+<span><span class="va">ems_raw</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/endmembers.html">endmembers</a></span><span class="op">(</span><span class="va">res_vca</span>, <span class="va">demo_data</span><span class="op">)</span></span>
+<span><span class="va">ems_red</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/endmembers.html">endmembers</a></span><span class="op">(</span><span class="va">res_vca</span>, <span class="va">demo_red</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Abundances from VCA model output</span></span>
+<span><span class="va">ab_vca</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/abundances.html">abundances</a></span><span class="op">(</span><span class="va">res_vca</span>, <span class="va">demo_red</span>, method <span class="op">=</span> <span class="st">"nnls"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="acknowledgements">Acknowledgements<a class="anchor" aria-label="anchor" href="#acknowledgements"></a>
 </h2>
 <p>Initial development of <code>unmixR</code> has been supported by Google Summer of Code 2013 (Conor McManus) and 2016 (Anton Belov). Thank you Google!</p>
 <p>This project has received funding from the European Union’s <a href="https://research-and-innovation.ec.europa.eu/funding/funding-opportunities/funding-programmes-and-open-calls/horizon-2020_en" class="external-link">Horizon 2020</a> research and innovation programme under the <a href="https://marie-sklodowska-curie-actions.ec.europa.eu/" class="external-link">Marie Sklodowska-Curie Actions</a> <em>(Grant Agreement 861122)</em> as part of <a href="https://image-in-itn.eu/" class="external-link">IMAGE-IN</a> project.</p>
@@ -164,7 +187,9 @@
 <div class="license">
 <h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
-<li><a href="https://opensource.org/licenses/mit-license.php" class="external-link">MIT</a></li>
+<li>
+<a href="https://opensource.org/licenses/mit-license.php" class="external-link">MIT</a> + file <a href="LICENSE-text.html">LICENSE</a>
+</li>
 </ul>
 </div>
 

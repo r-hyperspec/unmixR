@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">unmixR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.6.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.7.0</span>
       </span>
     </div>
 
@@ -380,6 +380,15 @@ how they go about finding the relevant simplex. In <code>unmixR</code>,
 there are variations of the NFINDR, VCA and ICE algorithms. See
 <code><a href="../reference/nfindr.html">?nfindr</a></code>, <code><a href="../reference/vca.html">?vca</a></code>, <code><a href="../reference/ice.html">?ice</a></code> or
 <code>browseVignettes("unmixR")</code> for additional information.</p>
+<p>In practice, abundance estimation supports both pure-pixel and
+non-pure-pixel workflows:</p>
+<ul>
+<li>Pure-pixel methods (<code>nfindr</code>, <code>vca</code>,
+<code>atgp</code>): pass the model output directly,
+e.g. <code>abundances(nfindr_fit, x)</code>.</li>
+<li>Non-pure-pixel methods (<code>ice</code>): pass the endmember
+matrix, e.g. <code>abundances(ice_fit$endmembers, x)</code>.</li>
+</ul>
 </div>
 </div>
 <div class="section level2">

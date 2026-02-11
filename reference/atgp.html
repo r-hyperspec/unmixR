@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">unmixR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.6.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.7.0</span>
       </span>
     </div>
 
@@ -90,7 +90,9 @@ as.matrix. The matrix should contain a spectrum per row.</p></dd>
     <p>A list which contains:</p><ul><li><p><strong>indices</strong>: the indices of the calculated endmembers.</p></li>
 <li><p><strong>projection_vectors</strong>: the projection vectors of the calculated endmembers.
       Included only when debug level is 1 or higher.</p></li>
-</ul></div>
+</ul><p>The returned object has classes <code>c("atgp", "pure_endmembers")</code> and
+  can be passed directly to <code><a href="abundances.html">abundances</a></code>.</p>
+    </div>
     <div id="references">
     <h2>References</h2>
     <p>Based on Python implementation in [pysptools](https://github.com/ctherien/pysptools/blob/fbcd3ecaa7ab27f0158b28b4327537c3e75db160/pysptools/eea/eea.py#L52).

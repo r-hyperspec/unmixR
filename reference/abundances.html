@@ -24,7 +24,7 @@ the abundances."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">unmixR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.6.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.7.0</span>
       </span>
     </div>
 
@@ -95,7 +95,9 @@ the abundances.</p>
 
 
 <dl><dt id="arg-endmembers">endmembers<a class="anchor" aria-label="anchor" href="#arg-endmembers"></a></dt>
-<dd><p>A matrix where each row is an endmember.</p></dd>
+<dd><p>Either a matrix where each row is an endmember, or a
+pure-pixel model object (class <code>pure_endmembers</code>) such as output from
+<code><a href="nfindr.html">nfindr</a></code>, <code><a href="vca.html">vca</a></code>, or <code><a href="atgp.html">atgp</a></code>.</p></dd>
 
 
 <dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
@@ -115,6 +117,13 @@ Options are "nnls" (default) for non-negative least squares and "bary" for baryc
     <h2>Value</h2>
     <p>A matrix where each row is the abundance percentages of the endmembers for the corresponding spectrum.</p>
     </div>
+    <div id="details">
+    <h2>Details</h2>
+    <p>For pure-pixel extractors (e.g. <code><a href="nfindr.html">nfindr</a></code>, <code><a href="vca.html">vca</a></code>,
+<code><a href="atgp.html">atgp</a></code>), the model object can be passed directly. For methods
+that return endmember matrices directly (e.g. <code><a href="ice.html">ice</a></code>), pass that
+matrix.</p>
+    </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
@@ -127,17 +136,18 @@ Options are "nnls" (default) for non-negative least squares and "bary" for baryc
 <span class="r-in"><span><span class="co"># Perform N-FINDR in reduced space</span></span></span>
 <span class="r-in"><span><span class="va">nf</span> <span class="op">&lt;-</span> <span class="fu"><a href="nfindr.html">nfindr</a></span><span class="op">(</span><span class="va">x</span>, p <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Get endmembers both in reduced and original space</span></span></span>
-<span class="r-in"><span><span class="va">ems</span> <span class="op">&lt;-</span> <span class="fu"><a href="endmembers.html">endmembers</a></span><span class="op">(</span><span class="va">nf</span>, <span class="va">demo_data</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">ems_pca</span> <span class="op">&lt;-</span> <span class="fu"><a href="endmembers.html">endmembers</a></span><span class="op">(</span><span class="va">nf</span>, <span class="va">x</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Calculate abundances using barycentric coordinates</span></span></span>
 <span class="r-in"><span><span class="co"># it works only in the reduced space</span></span></span>
-<span class="r-in"><span><span class="va">ab_bary</span> <span class="op">&lt;-</span> <span class="fu">abundances</span><span class="op">(</span><span class="va">ems_pca</span>, <span class="va">x</span>, method <span class="op">=</span> <span class="st">"bary"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">ab_bary</span> <span class="op">&lt;-</span> <span class="fu">abundances</span><span class="op">(</span><span class="va">nf</span>, <span class="va">x</span>, method <span class="op">=</span> <span class="st">"bary"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Calculate abundances using NNLS</span></span></span>
 <span class="r-in"><span><span class="co"># it works in both spaces but it is better to be applied in the original space</span></span></span>
-<span class="r-in"><span><span class="va">ab_nnls</span> <span class="op">&lt;-</span> <span class="fu">abundances</span><span class="op">(</span><span class="va">ems</span>, <span class="va">demo_data</span>, method <span class="op">=</span> <span class="st">"nnls"</span>, normalize <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">ab_nnls</span> <span class="op">&lt;-</span> <span class="fu">abundances</span><span class="op">(</span><span class="va">nf</span>, <span class="va">demo_data</span>, method <span class="op">=</span> <span class="st">"nnls"</span>, normalize <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># One can use the specific endmember matrix directly:</span></span></span>
+<span class="r-in"><span><span class="co"># `abundances(nf, x)` is the same as `abundances(endmembers(nf, x), x)`</span></span></span>
+<span class="r-in"><span><span class="va">ems</span> <span class="op">&lt;-</span> <span class="fu"><a href="endmembers.html">endmembers</a></span><span class="op">(</span><span class="va">nf</span>, <span class="va">demo_data</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">ab_from_matrix</span> <span class="op">&lt;-</span> <span class="fu">abundances</span><span class="op">(</span><span class="va">ems</span>, <span class="va">demo_data</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Alternatively, one can use the specific function directly</span></span></span>
 <span class="r-in"><span><span class="fu">nnls</span><span class="op">(</span><span class="va">ems</span>, <span class="va">demo_data</span><span class="op">)</span> <span class="co"># not normalized</span></span></span>
@@ -152,18 +162,18 @@ Options are "nnls" (default) for non-negative least squares and "bary" for baryc
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [8,] 5.266130e-01 1.077283e-01 1.604470e-01</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [9,] 5.588728e-17 9.859033e-18 1.000000e+00</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [10,] 1.075593e-01 5.646902e-01 1.886078e-01</span>
-<span class="r-in"><span><span class="fu">bary</span><span class="op">(</span><span class="va">ems_pca</span>, <span class="va">x</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                [,1]         [,2]         [,3]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [1,] -0.0008319302 6.320082e-01 3.688237e-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [2,]  0.4778597220 1.949952e-01 3.271451e-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [3,]  1.0000000000 0.000000e+00 0.000000e+00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [4,]  0.3641838837 3.908607e-01 2.449555e-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [5,]  0.5035764061 1.871646e-01 3.092590e-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [6,]  0.0541159317 6.336887e-01 3.121954e-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [7,]  0.0000000000 1.000000e+00 6.530324e-18</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [8,]  0.6385098515 1.564022e-01 2.050880e-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [9,]  0.0000000000 2.248834e-17 1.000000e+00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [10,]  0.1632957053 6.228286e-01 2.138757e-01</span>
+<span class="r-in"><span><span class="fu">bary</span><span class="op">(</span><span class="fu"><a href="endmembers.html">endmembers</a></span><span class="op">(</span><span class="va">nf</span>, <span class="va">x</span><span class="op">)</span>, <span class="va">x</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                [,1]          [,2]         [,3]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1,] -0.0008319302  6.320082e-01 3.688237e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [2,]  0.4778597220  1.949952e-01 3.271451e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [3,]  1.0000000000  0.000000e+00 0.000000e+00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [4,]  0.3641838837  3.908607e-01 2.449555e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [5,]  0.5035764061  1.871646e-01 3.092590e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [6,]  0.0541159317  6.336887e-01 3.121954e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [7,]  0.0000000000  1.000000e+00 2.258079e-17</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [8,]  0.6385098515  1.564022e-01 2.050880e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [9,]  0.0000000000 -3.862056e-17 1.000000e+00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [10,]  0.1632957053  6.228286e-01 2.138757e-01</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
