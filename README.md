@@ -36,7 +36,7 @@ remotes::install_github("r-hyperspec/unmixR", branch="v2.6")
 > [!NOTE]
 > Version tagged as `v1.0` is the last stable version prior to significant changes. This tag was added for users who prefer to use old version. However, the tag version `v1.0` **does not match the version in DESCRIPION** (see more on this in the [issue](https://github.com/r-hyperspec/unmixR/issues/54)). Starting from `v2.0` the version in DESCRIPTION will match the tag version.
 
-## Example
+## Example: N-FINDR workflow
 
 ```r
 library(unmixR)
@@ -68,6 +68,24 @@ ab_nnls <- abundances(ems, demo_data, method = "nnls", normalize = TRUE)
 # Same as: nnls(ems, demo_data)/rowSums(nnls(ems, demo_data))
 ```
 
+## Example: VCA workflow
+
+```r
+library(unmixR)
+data("demo_data")
+
+# 1) Explicit VCA preprocessing
+demo_red <- vca_dr(demo_data, p = 3)
+
+# 2) Endmember extraction (indices-only result)
+set.seed(123)
+res_vca <- vca(demo_red, p = 3)
+
+# 3) Endmembers in original or reduced space
+ems_raw <- endmembers(res_vca, demo_data)
+ems_red <- endmembers(res_vca, demo_red)
+```
+
 ## Acknoledgements
 
 Initial development of `unmixR` has been supported by Google Summer of Code 2013 (Conor McManus) and 2016 (Anton Belov). 
@@ -77,4 +95,3 @@ This project has received funding from the European Union's [Horizon 2020](https
 
 ![GSOC 2016 logo](./GSoC2016Logo.png)
 <img src="https://bgsmath.cat/wp-content/uploads/2017/09/marie_curie1-300x160.jpg" alt="Horizon 2020"  style="height: 100px; margin: 10px"/>
-

@@ -36,5 +36,5 @@ endmembers <- function(object, data=NULL) {
 		data <- object[["data"]]
 	}
 	i <- object[["indices"]]
-	return(data[i,])
+	return(data[i, , drop = FALSE])
 }

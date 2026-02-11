@@ -1,5 +1,5 @@
 #' Dimensionality Reduction Contingent on SNR
-#' 
+#'
 #' Reduces the dimensionality of a data matrix if the signal-to-noise
 #' ratio (SNR) is above a certain threshold.
 #'
@@ -13,7 +13,7 @@
 #' @param p Number of endmembers.
 #'
 #' @param SNR The Signal-to-Noise ratio of the data. By default it will be
-#'   estimated using \code{\link{estSNR}}.
+#'   estimated using \code{\link{vca_snr}}.
 #'
 #' @return Data matrix with dimensionality equal to \code{p}.
 #'
@@ -25,14 +25,14 @@
 #' @export
 #' 
 
-dimensionalityReduction <- function(data, p, SNR = estSNR(data, p)){
+vca_dr <- function(data, p, SNR = vca_snr(data, p)){
 
     # Mostly using the symbols in Algorithm 1 in the ref
 
     R <- t(as.matrix(data))    
     SNRth <- 15 + 10 * log10(p)
     N <- nrow(R) # after transposition, this is the number of frequencies
-    
+
     # Reduce depending upon SNR
     
     if (SNR > SNRth) {
@@ -50,12 +50,12 @@ dimensionalityReduction <- function(data, p, SNR = estSNR(data, p)){
         u <- rowMeans(R)
         Ud <- svd(tcrossprod(R - u) / N, nu = d, nv = 0)$u
         X <- crossprod(Ud, R - u)
-        
+
         # The value of cc assures that co-latitude angle between u
         # and any vector from X is between 0 and 45
         cc <- max(apply(X, 2, function(x){sqrt(sum(x^2))}))
         Y <- rbind(X, cc) # restores to dimension p
     }
-    
+
     t(Y)
 }

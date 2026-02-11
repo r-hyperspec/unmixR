@@ -11,6 +11,7 @@
 #'
 #' @examples
 #' get.implementations ("nfindr")
+#' get.implementations ("vca")
 get.implementations  <- function (method, search.paths = unmixR.options("implementation.search")){
   search.paths <- lapply (search.paths, as.environment)
   
@@ -19,6 +20,11 @@ get.implementations  <- function (method, search.paths = unmixR.options("impleme
   implementations <- gsub (method, "", implementations)
   
   implementations <- implementations [nzchar (implementations)] 
+  
+  implementations <- unique(implementations)
+  if (identical(method, "vca")) {
+    implementations <- implementations[!implementations %in% c("dr", "snr")]
+  }
   
   implementations
 }

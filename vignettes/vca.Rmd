@@ -53,8 +53,8 @@ library(unmixR, quietly = TRUE)
 dim(d)
 endNum <- 3
 snrThreshhold <- 15 + 10 * log10(endNum)
-sameReduced <- dimensionalityReduction(d, endNum, snrThreshhold + 1)
-lowerReduced <- dimensionalityReduction(d, endNum, snrThreshhold - 1)
+sameReduced <- vca_dr(d, endNum, snrThreshhold + 1)
+lowerReduced <- vca_dr(d, endNum, snrThreshhold - 1)
 ```
 
 # Plotting the Data
@@ -138,7 +138,7 @@ plotVectors <- function(matrix, vector, newEndmember, testdata) {
   colnames(newEndmember) <- c("x", "y", "z")
 
   # show the reduced data points
-  red <- dimensionalityReduction(testdata, 3)
+  red <- vca_dr(testdata, 3)
   colnames(red) <- c("x", "y", "z")
   sc3 <- scatterplot3d(red,
     type = "p", xlim = c(-1, 1), pch = 20,
@@ -173,7 +173,7 @@ plotVectors <- function(matrix, vector, newEndmember, testdata) {
 
 ```{r, echo = FALSE}
 p <- 3
-Y <- dimensionalityReduction(d, p)
+Y <- vca_dr(d, p)
 Y <- t(Y)
 set.seed(123)
 indices <- array(0, p)

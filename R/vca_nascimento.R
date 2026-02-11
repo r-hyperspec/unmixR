@@ -19,11 +19,10 @@
 #'   doi: 10.1109/TGRS.2005.844293
 #'
 #' @export
-#' @importFrom stats runif
 
-vca05 <- function(data, p, SNR = estSNR(data, p)) {
-    Y <- t(data)
-    indices <- array(0, p)
+vca_nascimento <- function(data, p) {
+    Y <- t(as.matrix(data))
+    indices <- array(0L, p)
     # the matrix A stores the projection of the estimated endmember signatures
     A <- matrix(0, nrow = p, ncol = p)
     A[p, 1] <- 1
@@ -36,11 +35,11 @@ vca05 <- function(data, p, SNR = estSNR(data, p)) {
         v <- crossprod(f, Y)
         #getting index of the maximal projection
         k <- which.max(abs(v))
-        
+
         #ith column of A is set to estimated endmember
         A[, i] <- Y[, k]
         indices[i] <- k
-        
+
         if (.options("debuglevel") >= 1L){
             cat("Iteration", i, "\n")
             cat("\tcurrent endmembers:", sort(indices[1:i]), "\n")
@@ -55,7 +54,7 @@ vca05 <- function(data, p, SNR = estSNR(data, p)) {
             cat("\tvolume:", vol, "\n")
         }
     }
-    
+
     #computation of mixing matrices
     # if(SNR > SNRth){
     #     M <- U_d %*% X[, indices]

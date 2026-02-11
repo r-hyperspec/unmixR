@@ -15,15 +15,15 @@
 #' @param p The number of endmembers.
 #'
 #' @return The estimated signal to noise ratio in decibels.
-#' 
+#'
 #' @references Nascimento, J.M.P. and Bioucas Dias, J.M. "Vertex component
 #'   analysis: a fast algorithm to unmix hyperspectral data," Geoscience and
-#'   Remote Sensing, vol. 43, no. 4, pp. 898-910, April 2005, 
+#'   Remote Sensing, vol. 43, no. 4, pp. 898-910, April 2005,
 #'   doi: 10.1109/TGRS.2005.844293
 #'
 #' @export
 
-estSNR <- function(data, p) {
+vca_snr <- function(data, p) {
     data <- as.matrix(data)
     
     E <- function(M, n) sum(c(M)^2 / n) # expectation operator

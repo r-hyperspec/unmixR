@@ -1,35 +1,24 @@
 #' General Interface to Vertex Component Analysis Spectral Unmixing
 #' Implementations
-#' 
+#'
 #' This algorithm is based on the geometry of convex sets. It exploits the
 #' fact that endmembers occupy the vertices of a simplex.
-#' 
+#'
 #' @param data Data matrix. It will be converted to a matrix using
 #'   as.matrix. The matrix should contain a spectrum per row.
 #'
 #' @param p Number of endmembers.
 #'
-#' @param SNR The Signal-to-Noise ratio of the data. By default it will be
-#'   estimated using \code{\link{estSNR}}.
-#'
 #' @param method The VCA algorithm to use. Options:
 #'   \itemize{
-#'     \item 05 (\code{\link{vca05}})
-#'     \item Lopez2012 (\code{\link{vcaLopez2012}})
+#'     \item nascimento (\code{\link{vca_nascimento}})
+#'     \item lopez (\code{\link{vca_lopez}})
 #'   }
-#'   Default: 05.
-#'
-#' @param seed vca05 generates a random vector. Set
-#'   the random number generator seed with this argument.
-#'
-#' @param EMonly Boolean that indicates whether the \code{data} parameter
-#'   should be stored in the resulting structure.
-#'
-#' @param ... Additional parameters for the methods (currently unused).
+#'   Default: \code{nascimento}.
 #' 
+
 #' @return A list which contains:
 #'   \itemize{
-#'     \item \strong{data}: the original data.
 #'     \item \strong{indices}: the indices of the calculated endmembers.
 #'   }
 #' 
@@ -43,9 +32,10 @@
 #'
 #' @examples
 #' data(demo_data)
-#' demo <- vca(demo_data, 2, method = "05")
-#' em <- endmembers(demo)
-#' em <- rbind(demo_data[c(7,9),], em)
+#' demo_red <- vca_dr(demo_data, p = 2)
+#' demo <- vca(demo_red, p = 2, method = "nascimento")
+#' em <- endmembers(demo, demo_data)
+#' em <- rbind(demo_data[c(7, 9), ], em)
 #' em[3:4,] <- em[3:4,] + 0.5 # a small offset for the found em's
 #' matplot(t(em), type = "l",
 #'    col = c("black", "blue", "black", "blue"), lty = c(1, 1, 2, 2),
@@ -54,7 +44,7 @@
 #' leg.txt <- c("Endmember 2", "Endmember 3", "Endmember 2 (found)", "Endmember 3 (found)")
 #' legend("topright", leg.txt, col = c("black", "blue", "black", "blue"),
 #' lty = c(1, 1, 2, 2), cex = 0.75)
-vca <- function(data, p, method = c("05", "Lopez2012"), seed = 1L, SNR = estSNR(data, p), ..., EMonly = FALSE) {
+vca <- function(data, p, method = c("nascimento", "lopez"), ...) {
 
   # check if the method passed in is valid
   method <- match.arg (method)
@@ -67,25 +57,17 @@ vca <- function(data, p, method = c("05", "Lopez2012"), seed = 1L, SNR = estSNR(
     stop("p must be a positive integer >= 2 and <= ncol (data)")
   }
 
-  # set the random number generator seed if supplied
-  set.seed(seed)
-  
-  force(SNR)
-  reducedData <- dimensionalityReduction(data, p, SNR)
-
   vcaFunc <- get(paste("vca", method, sep=""), mode = "function")
 
-  seed <- .Random.seed
+  if (ncol(data) != p) {
+    indices <- vcaFunc(vca_dr(data, p), p)
+  } else {
+    indices <- vcaFunc(data, p)
+  }
 
-  val <- vcaFunc(reducedData, p, SNR, ...)
-
+  res <- list(indices = as.integer(indices))
   if (.options("debuglevel") >= 1L){
-      res <- list(data = if (!EMonly) data else data[as.integer(val),],
-                  indices = if (!EMonly) as.integer(val) else 1:p,
-                  seed = seed)
-  }else{
-      res <- list(data = if (!EMonly) data else data[as.integer(val),],
-                  indices = if (!EMonly) as.integer(val) else 1:p)
+    # TODO: add projection vectors
   }
   class(res) = "vca"
   return(res)
@@ -96,7 +78,9 @@ vca <- function(data, p, method = c("05", "Lopez2012"), seed = 1L, SNR = estSNR(
 .test(vca) <- function() {
   context ("vca")
 
-  # Note: .testdata$x matches all columns of .testdata, which are x.L1, x.L2, x.L3
+  # Note: .testdata$x matches all columns of .testdata, which are x.L1, x.L2, x.L3.
+
+  reduced <- vca_dr(.testdata$x, p = 3)
 
   test_that ("vca produces error for invalid values of p", {
     expect_error (vca (.testdata$x, p = "---"))
@@ -105,20 +89,20 @@ vca <- function(data, p, method = c("05", "Lopez2012"), seed = 1L, SNR = estSNR(
     expect_error (vca (.testdata$x, p = 4))
   })
 
-  test_that ("vca produces error for invalid method", {
-    expect_error (vca (.testdata$x, p, method="invalid"))
+  test_that("vca produces error for invalid method", {
+    expect_error(vca(reduced, p=3, method="invalid"))
   })
 
-  ## test that at least the implementations provided by unmixR are available
-  # this fails at the moment (correctly!) because we need to rename mvca again!
-  implementations <- get.implementations("vca")
-  test_that ("Implementations available", {
-    expect_true (all (c ("05", "Lopez2012") %in% implementations))
+  test_that("vca requires input with exactly p columns", {
+    expect_error(vca(.testdata$x, p = 2), "Use `vca_dr\\(\\)` first")
   })
 
 
   # test correct calculations for the available methods
-  implementations <- get.implementations("vca")
+  test_that("Implementations available", {
+    implementations <- get.implementations("vca")
+    expect_true(implementations == c("nascimento", "lopez"))
+  })
 
   test_that("correct results for all available methods: triangle data", {
     # FIXME: Fix the tests below ASAP

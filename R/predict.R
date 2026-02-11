@@ -16,7 +16,7 @@
 	if (ncol(object[["data"]]) != ncol(newdata)) stop("Dimensions of newdata don't match")
 	
 	endmembers <- endmembers (object)
-  	
+	
   	raw <- t(apply(newdata, 1, function(spectrum) {nnls::nnls(t(endmembers), spectrum)[["x"]]}))
   	
   	return(raw/rowSums(raw))
@@ -70,8 +70,9 @@
 #'
 #' @examples
 #' data(demo_data)
-#' demo <- vca(demo_data, p = 3)
-#' pred_wM <- predict(demo)
+#' demo_red <- vca_dr(demo_data, p = 3)
+#' demo <- vca(demo_red, p = 3)
+#' pred_wM <- predict(demo, newdata = demo_data)
 #'
 #' # The following is from demo_data
 #' set.seed(123)
