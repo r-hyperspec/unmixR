@@ -4,16 +4,18 @@
 #' the original.
 #' Intended to be called from \code{\link{vca}}.
 #'
-#' @param data Data matrix. Samples in rows frequencies in columns.
+#' @param data Data matrix. Samples in rows, frequencies in columns.
+#'   This function expects data to be already dimension-reduced (for example
+#'   with \code{\link{vca_dr}}). The number of endmembers is inferred as
+#'   \code{ncol(data)}.
 #'
-#' @param p Number of endmembers.
-#'
-#' @param SNR The Signal-to-Noise ratio of the data. By default it will be
-#'   estimated using \code{\link{estSNR}}.
-#'   
-#' @note for \code{debuglevel}s 1 and 2 debug information is printed (1) and plotted (2).
-#'
-#' @return The indices of the endmembers in the original dataset.
+#' @return A list which contains:
+#'   \itemize{
+#'     \item \strong{indices}: indices of endmembers in extraction order.
+#'     \item \strong{projection_vectors}: projection vectors (row-wise) used in each
+#'       iteration, included only when \code{debuglevel >= 1}.
+#'   }
+#'   Both elements are returned in the same order as the endmembers are extracted.
 #'
 #' @references Lopez, S., Horstrand, P., Callico, G.M., Lopez J.F. and
 #' Sarmiento, R., "A Low-Computational-Complexity Algorithm for
@@ -21,11 +23,12 @@
 #' Geoscience & Remote Sensing Letters, IEEE, vol. 9 no. 3 pp. 502-506, May 2012
 #' doi: 10.1109/LGRS.2011.2172771
 #' @export
-#' @importFrom stats prcomp
-#' @importFrom graphics title points
 
-vca_lopez <- function(data, p) {
+vca_lopez <- function(data) {
     Y <- t(as.matrix(data))
+    p <- nrow(Y)
+
+    indices <- integer(p)
     #matrix of endmembers
     E <- matrix(0, nrow = p, ncol = p + 1)
     E[p, 1] <- 1
@@ -34,7 +37,11 @@ vca_lopez <- function(data, p) {
     #px1 vector
     w <- c(rep(1, p))
     proj_acc <- c(rep(0, p))
-    indices <- c(rep(0, p))
+
+    if (.options("debuglevel") >= 1L) {
+        projection_vectors <- matrix(NA_real_, nrow = p, ncol = p)
+    }
+
     for (i in 1:p) {
         #U_i is initialized with the endmember computed in the last iteration
         U[, i] <- E[, i]
@@ -68,30 +75,14 @@ vca_lopez <- function(data, p) {
         #estimated endmember is stored in E
         E[, i + 1] <- Y[, index]
 
-        if (.options("debuglevel") >= 1L){
-            cat("Iteration", i, "\n")
-            cat("\tcurrent endmembers:", sort(indices[1:i]), "\n")
-
-          ## To monitor the process, capture the volume
-          ## of the current simplex using the same process
-          ## as in nfindr.default, except the data set
-          ## grows with each iteration
-          inds <- indices[1:i] # limit to non-zero indices
-          red_data <- stats::prcomp(data)[["x"]][, sequence(length(inds)-1), drop=FALSE]
-            simplex <- .simplex_E(red_data, inds)
-            vol <- abs(det(simplex))
-          cat("\tvolume:", vol,  "\n")
-          cat ("\tmax:", which.max (v), "\t min:", which.min (v), "\n")
-        }
-
-        if (.options("debuglevel") >= 2L){
-          plot (t (v))
-          title (main = paste ("Iteration:", i))
-          tmp <- c (indices [i], which.max (v), which.min (v))
-          tmp <- tmp [! is.na (tmp)]
-          points (tmp, v [tmp],  col = 2 : 4, pch = c (19, 20, 20))
+        if (.options("debuglevel") >= 1L) {
+            projection_vectors[i, ] <- as.vector(f)
         }
     }
-    indices <- sort(indices)
-    indices
+    
+    res <- list(indices = as.integer(indices))
+    if (.options("debuglevel") >= 1L) {
+        res[["projection_vectors"]] <- projection_vectors
+    }
+    res
 }

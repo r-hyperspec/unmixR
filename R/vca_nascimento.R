@@ -3,15 +3,19 @@
 #' This algorithm is based on the geometry of convex sets. It exploits the
 #' fact that endmembers occupy the vertices of a simplex.
 #' Intended to be called from \code{\link{vca}}.
-#' 
-#' @param data Data matrix. Samples in rows frequencies in columns.
 #'
-#' @param p Number of endmembers.
+#' @param data Data matrix. Samples in rows, frequencies in columns.
+#'   This function expects data to be already dimension-reduced (for example
+#'   with \code{\link{vca_dr}}). The number of endmembers is inferred as
+#'   \code{ncol(data)}.
 #'
-#' @param SNR The Signal-to-Noise ratio of the data. By default it will be
-#'   estimated using \code{\link{estSNR}}.
-#'
-#' @return The indices of the endmembers in the original dataset.
+#' @return A list which contains:
+#'   \itemize{
+#'     \item \strong{indices}: indices of endmembers in extraction order.
+#'     \item \strong{projection_vectors}: projection vectors (row-wise) used in each
+#'       iteration, included only when \code{debuglevel >= 1}.
+#'   }
+#'   Both elements are returned in the same order as the endmembers are extracted.
 #'
 #' @references Nascimento, J.M.P. and Bioucas Dias, J.M. "Vertex component
 #'   analysis: a fast algorithm to unmix hyperspectral data," Geoscience and
@@ -20,16 +24,23 @@
 #'
 #' @export
 
-vca_nascimento <- function(data, p) {
+vca_nascimento <- function(data) {
     Y <- t(as.matrix(data))
-    indices <- array(0L, p)
+    p <- nrow(Y)
+
+    indices <- integer(p)
     # the matrix A stores the projection of the estimated endmember signatures
     A <- matrix(0, nrow = p, ncol = p)
     A[p, 1] <- 1
+
+    if (.options("debuglevel") >= 1L) {
+        projection_vectors <- matrix(NA_real_, nrow = p, ncol = p)
+    }
+
     for(i in 1:p){
         #getting vector f orthonormal to the space spanned by A
         w <- stats::rnorm(p, sd = 1)
-        f <- (diag(p) - A %*% ginv(A)) %*% w
+        f <- (diag(p) - A %*% MASS::ginv(A)) %*% w
         f <- f / sqrt(sum(f^2))
         #projecting data onto f
         v <- crossprod(f, Y)
@@ -40,27 +51,14 @@ vca_nascimento <- function(data, p) {
         A[, i] <- Y[, k]
         indices[i] <- k
 
-        if (.options("debuglevel") >= 1L){
-            cat("Iteration", i, "\n")
-            cat("\tcurrent endmembers:", sort(indices[1:i]), "\n")
-            # To monitor the process, capture the volume
-            # of the current simplex using the same process
-            # as in nfindr.default, except the data set
-            # grows with each iteration
-            inds <- indices[1:i] # limit to non-zero indices
-            red_data <- stats::prcomp(data)[["x"]][, sequence(length(inds)-1), drop=FALSE]
-            simplex <- .simplex_E(red_data, inds)
-            vol <- abs(det(simplex))
-            cat("\tvolume:", vol, "\n")
+        if (.options("debuglevel") >= 1L) {
+            projection_vectors[i, ] <- as.vector(f)
         }
     }
 
-    #computation of mixing matrices
-    # if(SNR > SNRth){
-    #     M <- U_d %*% X[, indices]
-    # }else{
-    #     M <- u_d %*% X[, indices] + r_
-    # }
-    indices <- sort(indices)
-    indices
+    res <- list(indices = as.integer(indices))
+    if (.options("debuglevel") >= 1L) {
+        res[["projection_vectors"]] <- projection_vectors
+    }
+    res
 }

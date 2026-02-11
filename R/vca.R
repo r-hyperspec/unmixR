@@ -5,7 +5,9 @@
 #' fact that endmembers occupy the vertices of a simplex.
 #'
 #' @param data Data matrix. It will be converted to a matrix using
-#'   as.matrix. The matrix should contain a spectrum per row.
+#'   as.matrix. The matrix should contain a spectrum per row. If dimension
+#'   of the data is higher than \code{p}, \code{\link{vca_dr}} is applied
+#'   to reduce the data to \code{p} dimensions before running projections.
 #'
 #' @param p Number of endmembers.
 #'
@@ -19,7 +21,12 @@
 
 #' @return A list which contains:
 #'   \itemize{
-#'     \item \strong{indices}: the indices of the calculated endmembers.
+#'     \item \strong{indices}: sorted indices of the calculated endmembers.
+#'     \item \strong{projection_vectors}: projection vectors in iteration
+#'       order, included only when \code{debuglevel >= 1}.
+#'     \item \strong{unsorted_indices}: unsorted list of indices,
+#'       i.e., in the same order as iteration, included only
+#'       when \code{debuglevel >= 1}.
 #'   }
 #' 
 #'
@@ -57,17 +64,12 @@ vca <- function(data, p, method = c("nascimento", "lopez"), ...) {
     stop("p must be a positive integer >= 2 and <= ncol (data)")
   }
 
-  vcaFunc <- get(paste("vca", method, sep=""), mode = "function")
+  vcaFunc <- get(paste("vca", method, sep="_"), mode = "function")
+  res <- vcaFunc(data)
 
-  if (ncol(data) != p) {
-    indices <- vcaFunc(vca_dr(data, p), p)
-  } else {
-    indices <- vcaFunc(data, p)
-  }
-
-  res <- list(indices = as.integer(indices))
-  if (.options("debuglevel") >= 1L){
-    # TODO: add projection vectors
+  if (.options("debuglevel") >= 1L) {
+    res[["unsorted_indices"]] <- res$indices
+    res$indices <- sort(res$indices)
   }
   class(res) = "vca"
   return(res)
@@ -99,9 +101,9 @@ vca <- function(data, p, method = c("nascimento", "lopez"), ...) {
 
 
   # test correct calculations for the available methods
+  implementations <- get.implementations("vca")
   test_that("Implementations available", {
-    implementations <- get.implementations("vca")
-    expect_true(implementations == c("nascimento", "lopez"))
+    expect_equal(sort(implementations), c("lopez", "nascimento"))
   })
 
   test_that("correct results for all available methods: triangle data", {
