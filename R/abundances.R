@@ -42,14 +42,14 @@
 #' # it works in both spaces but it is better to be applied in the original space
 #' ab_nnls <- abundances(nf, demo_data, method = "nnls", normalize = TRUE)
 #'
-#' # Alternatively, one can use the specific endmember matrix directly:
+#' # One can use the specific endmember matrix directly:
 #' # `abundances(nf, x)` is the same as `abundances(endmembers(nf, x), x)`
 #' ems <- endmembers(nf, demo_data)
-#' ab_short <- abundances(ems, demo_data)
+#' ab_from_matrix <- abundances(ems, demo_data)
 #'
 #' # Alternatively, one can use the specific function directly
 #' nnls(ems, demo_data) # not normalized
-#' bary(ems, demo_data)
+#' bary(endmembers(nf, x), x)
 #'
 #' @name abundances
 #' @include unmixR-package.R
