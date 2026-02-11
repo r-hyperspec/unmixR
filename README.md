@@ -30,7 +30,7 @@ remotes::install_github("r-hyperspec/unmixR")
 remotes::install_github("r-hyperspec/unmixR", subdir = "pkg/unmixR", branch = "v2.0")
 
 # Install a specific version from GitHub (for versions > 2.5)
-remotes::install_github("r-hyperspec/unmixR", branch = "v2.6")
+remotes::install_github("r-hyperspec/unmixR", branch = "v2.7")
 ```
 
 > [!NOTE]
