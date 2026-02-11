@@ -144,6 +144,11 @@ If one has spectra composed of $p$ wavelengths, the data exists as a point cloud
 
 With this background in mind, you should be ready to read the vignettes on individual algorithms.  A number of unmixing algorithms have been described in the literature. The chief difference between them is how they go about finding the relevant simplex.    In `unmixR`, there are variations of the NFINDR, VCA and ICE algorithms.  See `?nfindr`, `?vca`, `?ice` or `browseVignettes("unmixR")` for additional information.
 
+In practice, abundance estimation supports both pure-pixel and non-pure-pixel workflows:
+
+* Pure-pixel methods (`nfindr`, `vca`, `atgp`): pass the model output directly, e.g. `abundances(nfindr_fit, x)`.
+* Non-pure-pixel methods (`ice`): pass the endmember matrix, e.g. `abundances(ice_fit$endmembers, x)`.
+
 # Project History
 
 The development of `unmixR` was initiated by Claudia Beleites.  Most of the code was written by Conor McManus (2013) and Anton Belov (2016).  Conor and Anton were participants in the Google Summer of Code program.  Additional code was written by Claudia and Bryan A. Hanson.  Claudia, Bryan and Simon Fuller were the mentors in the GSOC program.

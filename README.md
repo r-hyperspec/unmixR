@@ -59,13 +59,15 @@ ems_pca <- endmembers(nf, x)
 
 # Calculate abundances using barycentric coordinates
 # it works only in the reduced space
-ab_bary <- abundances(ems_pca, x, method = "bary")
+ab_bary <- abundances(nf, x, method = "bary")
+# Same as: abundances(ems_pca, x, method = "bary")
 # Same as: bary(ems_pca, x)
 
 # Calculate abundances using NNLS
 # it works in both spaces but it is better to be applied in the original space
-ab_nnls <- abundances(ems, demo_data, method = "nnls", normalize = TRUE)
-# Same as: nnls(ems, demo_data)/rowSums(nnls(ems, demo_data))
+ab_nnls <- abundances(nf, demo_data, method = "nnls", normalize = TRUE)
+# Same as: nnls(ems, demo_data) / rowSums(nnls(ems, demo_data))
+# Same as: `predict` method in older version of the package
 ```
 
 ## Example: VCA workflow
@@ -84,6 +86,9 @@ res_vca <- vca(demo_red, p = 3)
 # 3) Endmembers in original or reduced space
 ems_raw <- endmembers(res_vca, demo_data)
 ems_red <- endmembers(res_vca, demo_red)
+
+# Abundances from VCA model output
+ab_vca <- abundances(res_vca, demo_red, method = "nnls")
 ```
 
 ## Acknowledgements

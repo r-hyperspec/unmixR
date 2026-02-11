@@ -27,9 +27,11 @@
 #'       i.e., in the same order as iteration, included only
 #'       when \code{debuglevel >= 1}.
 #'   }
+#'   The returned object has classes \code{c("vca", "pure_endmembers")} and
+#'   can be passed directly to \code{\link{abundances}}.
 #'
 #'
-#' @seealso \code{\link{endmembers}} to extract the spectra; \code{\link{predict}}
+#' @seealso \code{\link{endmembers}} to extract the spectra; \code{\link{abundances}}
 #' to determine abundances of endmembers in each sample.
 #'
 #' @rdname vca
@@ -65,7 +67,7 @@ vca <- function(data, p, method = c("nascimento", "lopez")) {
   }
   res$indices <- sort(res$indices)
 
-  class(res) <- "vca"
+  class(res) <- c("vca", "pure_endmembers")
   return(res)
 }
 
@@ -96,6 +98,7 @@ vca <- function(data, p, method = c("nascimento", "lopez")) {
       res <- vca(.testdata$x, p = 3, method = method)
 
       expect_s3_class(res, "vca")
+      expect_s3_class(res, "pure_endmembers")
       expect_true(names(res) == "indices", info = method)
       expect_equal(res$indices, .correct, info = method)
     }

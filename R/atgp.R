@@ -14,6 +14,8 @@
 #'     \item \strong{projection_vectors}: the projection vectors of the calculated endmembers.
 #'       Included only when debug level is 1 or higher.
 #'   }
+#'   The returned object has classes \code{c("atgp", "pure_endmembers")} and
+#'   can be passed directly to \code{\link{abundances}}.
 #'
 #' @name atgp
 #' @rdname atgp
@@ -60,6 +62,7 @@ atgp <- function(data, p) {
   if (.options("debuglevel") >= 1L) {
     res[["projection_vectors"]] <- t(projection_vectors)
   }
+  class(res) <- c("atgp", "pure_endmembers")
 
   return(res)
 }
@@ -124,7 +127,10 @@ atgp <- function(data, p) {
   })
 
   test_that("ATGP produces correct results", {
-    expect_equal(atgp(.testdata$x, p = 3)$indices, .correct)
+    res <- atgp(.testdata$x, p = 3)
+    expect_s3_class(res, "atgp")
+    expect_s3_class(res, "pure_endmembers")
+    expect_equal(res$indices, .correct)
   })
 
   test_that("ATGP works in higher dimensions", {
