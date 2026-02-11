@@ -23,18 +23,18 @@ The spectra are often visible, infrared, near-infrared, raman spectra or mass sp
 **Installation:** works easiest using `remotes::install_git()`:
 
 ```r
-library("remotes")
-
 # Install latest version from GitHub
-remotes::install_github("r-hyperspec/unmixR", subdir = "pkg/unmixR")
+remotes::install_github("r-hyperspec/unmixR")
 
-# Install a specific version from GitHub
+# Install a specific version from GitHub (for versions <=2.5)
 remotes::install_github("r-hyperspec/unmixR", subdir = "pkg/unmixR", branch="v2.0")
+
+# Install a specific version from GitHub (for versions > 2.5)
+remotes::install_github("r-hyperspec/unmixR", branch="v2.6")
 ```
 
 > [!NOTE]
 > Version tagged as `v1.0` is the last stable version prior to significant changes. This tag was added for users who prefer to use old version. However, the tag version `v1.0` **does not match the version in DESCRIPION** (see more on this in the [issue](https://github.com/r-hyperspec/unmixR/issues/54)). Starting from `v2.0` the version in DESCRIPTION will match the tag version.
-
 
 ## Example
 
