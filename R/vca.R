@@ -38,20 +38,10 @@
 #'
 #' @examples
 #' data(demo_data)
-#' demo_red <- vca_dr(demo_data, p = 2)
-#' demo <- vca(demo_red, p = 2, method = "nascimento")
-#' em <- endmembers(demo, demo_data)
-#' em <- rbind(demo_data[c(7, 9), ], em)
-#' em[3:4,] <- em[3:4,] + 0.5 # a small offset for the found em's
-#' matplot(t(em), type = "l",
-#'    col = c("black", "blue", "black", "blue"), lty = c(1, 1, 2, 2),
-#'    xlab = "frequency", ylab = "intensity",
-#'    main = "mvca of demo_data")
-#' leg.txt <- c("Endmember 2", "Endmember 3", "Endmember 2 (found)", "Endmember 3 (found)")
-#' legend("topright", leg.txt, col = c("black", "blue", "black", "blue"),
-#' lty = c(1, 1, 2, 2), cex = 0.75)
-vca <- function(data, p, method = c("nascimento", "lopez"), ...) {
-
+#' vca_demo <- vca(demo_data, p = 2)
+#' em <- endmembers(vca_demo, demo_data)
+#' matplot(t(em), type = "l")
+vca <- function(data, p, method = c("nascimento", "lopez")) {
   # check if the method passed in is valid
   method <- match.arg(method)
 
@@ -64,87 +54,101 @@ vca <- function(data, p, method = c("nascimento", "lopez"), ...) {
   }
 
   vcaFunc <- get(paste("vca", method, sep = "_"), mode = "function")
-  res <- vcaFunc(data)
+  if (ncol(data) == p) {
+    res <- vcaFunc(data)
+  } else {
+    res <- vcaFunc(vca_dr(data, p))
+  }
 
   if (.options("debuglevel") >= 1L) {
     res[["unsorted_indices"]] <- res$indices
-    res$indices <- sort(res$indices)
   }
-  class(res) = "vca"
+  res$indices <- sort(res$indices)
+
+  class(res) <- "vca"
   return(res)
 }
 
 .test(vca) <- function() {
   context("vca")
 
-  # Note: .testdata$x matches all columns of .testdata, which are x.L1, x.L2, x.L3.
+  old_debuglevel <- unmixR.options("debuglevel")
+  on.exit(unmixR.options(debuglevel = old_debuglevel), add = TRUE)
 
-  reduced <- vca_dr(.testdata$x, p = 3)
-
-  test_that("vca produces error for invalid values of p", {
+  test_that("vca validates p and method", {
     expect_error(vca(.testdata$x, p = "---"))
     expect_error(vca(.testdata$x, p = 0))
     expect_error(vca(.testdata$x, p = 1))
     expect_error(vca(.testdata$x, p = 4))
+    expect_error(vca(.testdata$x, p = 3, method = "invalid"))
   })
 
-  test_that("vca produces error for invalid method", {
-    expect_error(vca(reduced, p = 3, method = "invalid"))
-  })
-
-  test_that("vca requires input with exactly p columns", {
-    expect_error(vca(.testdata$x, p = 2), "Use `vca_dr\\(\\)` first")
-  })
-
-
-  # test correct calculations for the available methods
-  implementations <- get.implementations("vca")
-  test_that("Implementations available", {
+  test_that("vca exposes expected implementations", {
+    implementations <- get.implementations("vca")
     expect_equal(sort(implementations), c("lopez", "nascimento"))
   })
 
-  test_that("correct results for all available methods: triangle data", {
-    # FIXME: Fix the tests below ASAP
-    skip("Skip tests to implement GHA infrastructure. Fix the tests ASAP")
+  test_that("correct results for all available methods: triangle data (debuglevel = 0)", {
+    unmixR.options(debuglevel = 0L)
 
-    for (i in implementations) {
-      expect_equal(vca(.testdata$x, p = 3, method = i)$indices, .correct)
+    for (method in get.implementations("vca")) {
+      set.seed(17)
+      res <- vca(.testdata$x, p = 3, method = method)
 
-      indices <- vca(.testdata$x, p = 2, method = i)$indices
-      expect_true(all(indices %in% .correct), info = i)
-
-      if (i == "Lopez2012") skip("temporarily disabled: known issue #36")
-      expect_false(any(duplicated(indices)), info = i)
+      expect_s3_class(res, "vca")
+      expect_true(names(res) == "indices", info = method)
+      expect_equal(res$indices, .correct, info = method)
     }
+  })
+
+  test_that("vca adds debug fields and sorts indices when debuglevel >= 1", {
+    unmixR.options(debuglevel = 1L)
+
+    set.seed(17)
+    res <- vca(.testdata$x, p = 3)
+
+    expect_true(all(c("indices", "unsorted_indices", "projection_vectors") %in% names(res)))
+    expect_equal(res$indices, .correct)
+    expect_equal(dim(res$projection_vectors), c(ncol(.testdata$x), ncol(.testdata$x)))
+  })
+
+  test_that("vca on higher dimensional data reduces dimensions before running projections", {
+    set.seed(17)
+
+    # Prepare a mixture with true endmembers
+    vertices <- sample(laser$spc, size = 3)
+    inner_points <- .get_simplex_points(vertices, max_coefficient = c(0.8, 0.8, 0.8))
+    X <- rbind(vertices, inner_points)
+    # Shuffle rows to make sure the order is not informative
+    i <- sample(nrow(X))
+    o <- order(i)
+    X <- X[i, ]
+    vertex_indices <- sort(o[1:3])
+
+    res <- vca(X, p = 3)
+    ems <- endmembers(res, X)
+    expect_equal(res$indices, vertex_indices)
   })
 
   test_that("no duplicates with Lopez2012 for test data", {
-    skip("known issue: #36")
-
-    indices <- replicate(10, vca(.testdata$x, p = 2, method = "Lopez2012")$indices)
+    indices <- replicate(10, vca(.testdata$x, p = 2, method = "lopez")$indices)
     expect_true(all(indices %in% .correct))
-    expect_true(all(indices[1, ] != indices[2, ]), info = "Lopez2012 duplicate indices: testdata, p = 2")
-  })
-
-  test_that("correct results for all available methods: laser data", {
-    skip("temporarily disabled")
-    for (i in implementations) {
-      expect_equal(vca(laser$spc, p = 2, method = i)$indices, .correct.laser)
-    }
+    expect_true(all(indices[1, ] != indices[2, ]), info = "vca lopez duplicate indices: testdata, p = 2")
   })
 
   ## all 3 components should be recovered, vca output is sorted.
   test_that("vca output is sorted", {
-    # FIXME: Fix the tests below ASAP
-    skip("Skip tests to implement GHA infrastructure. Fix the tests ASAP")
-
     indices <- vca(.testdata$x, p = 3)$indices
     expect_equal(indices, sort(indices))
   })
 
   # test: hyperSpec object
   test_that("vca on hyperSpec object", {
-    expect_equal(vca(laser, p = 2, seed = 12345)$indices,
-                 vca(laser$spc, p = 2, seed = 12345)$indices)
+    set.seed(17)
+    hspc <- vca(laser, p = 2)$indices
+    set.seed(17)
+    spc <- vca(laser$spc, p = 2)$indices
+
+    expect_equal(hspc, spc)
   })
 }

@@ -63,3 +63,40 @@ vca_nascimento <- function(data) {
   }
   res
 }
+
+.test(vca_nascimento) <- function() {
+  context("vca_nascimento")
+
+  old_debuglevel <- unmixR.options("debuglevel")
+  on.exit(unmixR.options(debuglevel = old_debuglevel), add = TRUE)
+
+  test_that("vca_nascimento returns valid indices", {
+    unmixR.options(debuglevel = 0L)
+    set.seed(123)
+    res <- vca_nascimento(.testdata$x)
+
+    expect_true(is.list(res))
+    expect_equal(names(res), "indices")
+    expect_equal(sort(res$indices), .correct)
+  })
+
+  test_that("vca_nascimento is reproducible for a fixed seed", {
+    unmixR.options(debuglevel = 0L)
+    set.seed(42)
+    indices_1 <- vca_nascimento(.testdata$x)$indices
+    set.seed(42)
+    indices_2 <- vca_nascimento(.testdata$x)$indices
+
+    expect_identical(indices_1, indices_2)
+  })
+
+  test_that("vca_nascimento includes projection vectors in debug mode", {
+    unmixR.options(debuglevel = 1L)
+    set.seed(7)
+    res <- vca_nascimento(.testdata$x)
+
+    expect_true(all(c("indices", "projection_vectors") %in% names(res)))
+    expect_equal(dim(res$projection_vectors), c(ncol(.testdata$x), ncol(.testdata$x)))
+    expect_true(all(is.finite(res$projection_vectors)))
+  })
+}

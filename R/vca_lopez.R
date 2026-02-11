@@ -50,14 +50,16 @@ vca_lopez <- function(data) {
     # Gram-Schmidt orthogonalization
     if (i >= 3) {
       for (j in 3:i) {
-        proj_ei_uj_1 <- (crossprod(E[, i], U[, j - 1]) / crossprod(U[, j - 1])) * U[, j - 1]
+        coef <- as.numeric(crossprod(E[, i], U[, j - 1]) / crossprod(U[, j - 1]))
+        proj_ei_uj_1 <- coef * U[, j - 1]
         U[, i] <- U[, i] - proj_ei_uj_1
       }
     }
     # U_i is orthogonal to other i - 1 vectors
 
     # projecting w onto U_i
-    proj_w_ui <- (crossprod(w, U[, i]) / crossprod(U[, i])) * U[, i]
+    coef <- as.numeric(crossprod(w, U[, i]) / crossprod(U[, i]))
+    proj_w_ui <- coef * U[, i]
 
     # vector f is orthogonal to the subspace spanned by columns of E
     proj_acc <- proj_acc + proj_w_ui
@@ -85,4 +87,29 @@ vca_lopez <- function(data) {
     res[["projection_vectors"]] <- projection_vectors
   }
   res
+}
+
+.test(vca_lopez) <- function() {
+  context("vca_lopez")
+
+  old_debuglevel <- unmixR.options("debuglevel")
+  on.exit(unmixR.options(debuglevel = old_debuglevel), add = TRUE)
+
+  test_that("vca_lopez returns valid indices", {
+    unmixR.options(debuglevel = 0L)
+    res <- vca_lopez(.testdata$x)
+
+    expect_true(is.list(res))
+    expect_equal(names(res), "indices")
+    expect_equal(sort(res$indices), .correct)
+  })
+
+  test_that("vca_lopez includes projection vectors in debug mode", {
+    unmixR.options(debuglevel = 1L)
+    res <- vca_lopez(.testdata$x)
+
+    expect_true(all(c("indices", "projection_vectors") %in% names(res)))
+    expect_equal(dim(res$projection_vectors), c(ncol(.testdata$x), ncol(.testdata$x)))
+    expect_true(all(is.finite(res$projection_vectors)))
+  })
 }

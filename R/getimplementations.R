@@ -17,8 +17,11 @@
 get.implementations <- function(method, search.paths = unmixR.options("implementation.search")) {
   search.paths <- lapply(search.paths, as.environment)
 
-  implementations <- sapply(search.paths, ls, pattern = sprintf("^%s[^._].*", method))
-
+  # Get all methods starting with `method`
+  implementations <- sapply(search.paths, ls, pattern = sprintf("^%s[^.].*", method))
+  
+  # Remove method name (with and without "_") from prefix
+  implementations <- gsub(paste0(method, "_"), "", implementations)
   implementations <- gsub(method, "", implementations)
 
   implementations <- implementations[nzchar(implementations)]
