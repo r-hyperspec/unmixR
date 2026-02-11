@@ -1,8 +1,8 @@
 Package: unmixR
 Type: Package
 Title: Hyperspectral Unmixing Methods
-Version: 2.6.0
-Date: 20025-07-11
+Version: 2.7.0
+Date: 2026-02-11
 Authors@R: c(
   person("Anton", "Belov", role = "aut"),
   person("Conor", "McManus", role = "aut"),
@@ -19,7 +19,7 @@ Description: Functions implementing the N-FINDR, Iterated Constrained
 URL: 
     https://github.com/r-hyperspec/unmixR
 BugReports: https://github.com/r-hyperspec/unmixR/issues
-License: MIT
+License: MIT + file LICENSE
 ByteCompile: TRUE
 Encoding: UTF-8
 Depends:
@@ -48,9 +48,7 @@ Collate:
     'abundances.R'
     'atgp.R'
     'demo_data.R'
-    'dimensionalityReduction.R'
     'endmembers.R'
-    'estSNR.R'
     'getimplementations.R'
     'ice.R'
     'nfindr.R'
@@ -61,11 +59,12 @@ Collate:
     'nfindr_ldu.R'
     'nfindr_volume.R'
     'options.R'
-    'predict.R'
     'projections.R'
     'simplex.R'
     'unittests.R'
     'vca.R'
-    'vca05.R'
-    'vcaLopez2012.R'
-RoxygenNote: 7.3.2
+    'vca_dr.R'
+    'vca_lopez.R'
+    'vca_nascimento.R'
+    'vca_snr.R'
+RoxygenNote: 7.3.3

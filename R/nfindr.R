@@ -68,6 +68,8 @@
 #'                                  indices at all replacement steps. If fact,
 #'                                  is used to see how the simplex was growing.
 #'   }
+#'   The returned object has classes \code{c("nfindr", "pure_endmembers")} and
+#'   can be passed directly to \code{\link{abundances}}.
 #'
 #' @seealso \code{\link{endmembers}} to extract the endmembers; \code{\link{abundances}}
 #' to determine abundances of endmembers in each sample
@@ -85,6 +87,9 @@
 #' # Get endmembers both in reduced and original space
 #' ems <- endmembers(nf, demo_data)
 #' ems_pca <- endmembers(nf, x)
+#
+#' # Calculate abundances
+#' ab <- abundances(nf, demo_data, method = "nnls")
 #'
 #' # Plot endmembers
 #' matplot(t(ems), type = "l")
@@ -226,7 +231,7 @@ nfindr <- function(
     result[["replacements"]] <- lapply(results_list, function(r) r$replacements)
   }
 
-  class(result) <- "nfindr"
+  class(result) <- c("nfindr", "pure_endmembers")
   
   return(result)
 }
@@ -256,6 +261,13 @@ nfindr <- function(
   estimators <- eval(formals(nfindr)$estimator)
   estimators <- estimators[order(tolower(estimators))]
   expect_equal(estimators, c("cofactor", "Cramer", "height", "LDU", "volume"))
+
+  test_that("nfindr output has pure_endmembers class", {
+    result <- nfindr(data, p, init = indices)
+    expect_s3_class(result, "nfindr")
+    expect_s3_class(result, "pure_endmembers")
+  })
+
   ## Test exceptions ----
   test_that("Exceptions", {
     # invalid p

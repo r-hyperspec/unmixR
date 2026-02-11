@@ -13,7 +13,7 @@
 #' @export
 #' @include unmixR-package.R
 #' @importFrom testthat SummaryReporter ListReporter MultiReporter get_reporter with_reporter
-#' 
+#' @importFrom stats runif
 
 unmixR.unittest <- function () {
 

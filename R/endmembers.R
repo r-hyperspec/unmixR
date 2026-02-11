@@ -1,10 +1,10 @@
-#' Retrieve N-FINDR/VCA Endmembers
+#' Retrieve Endmembers from Pure-Pixel Models
 #'
 #' Retrieves the endmembers from a dataset using the model returned by
-#' \code{\link{nfindr}} or \code{\link{vca}}.
+#' \code{\link{nfindr}}, \code{\link{vca}}, or \code{\link{atgp}}.
 #'
-#' @param object The N-FINDR/VCA structure returned by the general
-#'   \code{\link{nfindr}} or \code{\link{vca}} interface.
+#' @param object A pure-pixel model structure (class \code{pure_endmembers})
+#'   returned by \code{\link{nfindr}}, \code{\link{vca}}, or \code{\link{atgp}}.
 #'
 #' @param data The data used to calculate the endmembers.  If not provided
 #'   the data used to calculate the endmembers will be retrieved from the
@@ -22,19 +22,25 @@
 #'
 #' @export
 #'
-#' @seealso \code{\link{vca}} and \code{\link{nfindr}} for examples.
+#' @seealso \code{\link{vca}}, \code{\link{nfindr}}, \code{\link{atgp}}, and
+#'   \code{\link{abundances}} for examples.
 #'
 
 # BH: this doesn't handle drop = TRUE for nfindr series correctly.
 # need to determine if we want to keep drop = TRUE
 
-endmembers <- function(object, data=NULL) {
-	if (is.null(data)) {
-		if (is.null(object[["data"]])) {
-			stop("No data provided and none found in object.")
-		}
-		data <- object[["data"]]
-	}
-	i <- object[["indices"]]
-	return(data[i,])
+endmembers <- function(object, data = NULL) {
+  if (is.null(data)) {
+    if (is.null(object[["data"]])) {
+      stop("No data provided and none found in object.")
+    }
+    data <- object[["data"]]
+  }
+
+  if (is.null(object[["indices"]])) {
+    stop("`pure_endmembers` objects must contain `indices`.")
+  }
+  i <- object[["indices"]]
+
+  return(data[i, , drop = FALSE])
 }

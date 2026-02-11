@@ -9,7 +9,14 @@
 #' are not guaranteed to sum to 1. Use the \code{normalize} argument to normalize
 #' the abundances.
 #'
-#' @param endmembers A matrix where each row is an endmember.
+#' For pure-pixel extractors (e.g. \code{\link{nfindr}}, \code{\link{vca}},
+#' \code{\link{atgp}}), the model object can be passed directly. For methods
+#' that return endmember matrices directly (e.g. \code{\link{ice}}), pass that
+#' matrix.
+#'
+#' @param endmembers Either a matrix where each row is an endmember, or a
+#'   pure-pixel model object (class \code{pure_endmembers}) such as output from
+#'   \code{\link{nfindr}}, \code{\link{vca}}, or \code{\link{atgp}}.
 #' @param data A matrix where each row is a spectrum.
 #' @param method A character string specifying the method to use for abundance calculation. 
 #'   Options are "nnls" (default) for non-negative least squares and "bary" for barycentric coordinates.
@@ -26,22 +33,23 @@
 #' 
 #' # Perform N-FINDR in reduced space
 #' nf <- nfindr(x, p = 3)
-#'
-#' # Get endmembers both in reduced and original space
-#' ems <- endmembers(nf, demo_data)
-#' ems_pca <- endmembers(nf, x)
 #' 
 #' # Calculate abundances using barycentric coordinates
 #' # it works only in the reduced space
-#' ab_bary <- abundances(ems_pca, x, method = "bary")
+#' ab_bary <- abundances(nf, x, method = "bary")
 #' 
 #' # Calculate abundances using NNLS
 #' # it works in both spaces but it is better to be applied in the original space
-#' ab_nnls <- abundances(ems, demo_data, method = "nnls", normalize = TRUE)
+#' ab_nnls <- abundances(nf, demo_data, method = "nnls", normalize = TRUE)
+#'
+#' # One can use the specific endmember matrix directly:
+#' # `abundances(nf, x)` is the same as `abundances(endmembers(nf, x), x)`
+#' ems <- endmembers(nf, demo_data)
+#' ab_from_matrix <- abundances(ems, demo_data)
 #'
 #' # Alternatively, one can use the specific function directly
 #' nnls(ems, demo_data) # not normalized
-#' bary(ems_pca, x)
+#' bary(endmembers(nf, x), x)
 #'
 #' @name abundances
 #' @include unmixR-package.R
@@ -99,6 +107,11 @@ bary <- function(endmembers, data) {
 #' @export
 abundances <- function(endmembers, data, method=c("nnls", "bary"), normalize=FALSE) {
 	method <- match.arg(method)
+
+  if (inherits(endmembers, "pure_endmembers")) {
+    get_endmembers <- get("endmembers", mode = "function")
+    endmembers <- get_endmembers(endmembers, data)
+  }
   
   if (method == "nnls") {
 	  res <- nnls(endmembers, data)
@@ -155,6 +168,38 @@ abundances <- function(endmembers, data, method=c("nnls", "bary"), normalize=FAL
 
     ab_bary <- abundances(endmembers, data, method = "bary")
     expect_equal(ab_bary, bary(endmembers, data))
+  })
+
+  test_that("abundances accepts pure_endmembers objects", {
+    pure_model <- list(indices = c(1, 2, 3))
+    class(pure_model) <- "pure_endmembers"
+
+    ab_from_model <- abundances(pure_model, data, method = "nnls")
+    ab_from_matrix <- abundances(data[pure_model$indices, , drop = FALSE], data, method = "nnls")
+    expect_equal(ab_from_model, ab_from_matrix)
+
+    bary_data <- endmembers
+    ab_bary_from_model <- abundances(pure_model, bary_data, method = "bary")
+    ab_bary_from_matrix <- abundances(bary_data[pure_model$indices, , drop = FALSE], bary_data, method = "bary")
+    expect_equal(ab_bary_from_model, ab_bary_from_matrix)
+  })
+
+  test_that("abundances pure_endmembers shorthand works for pure-pixel algorithms", {
+    pure_data <- .testdata$x[,1:2]
+
+    nf <- nfindr(pure_data, p = 3)
+    expect_equal(abundances(nf, pure_data), abundances(endmembers(nf, pure_data), pure_data))
+
+    vc <- vca(pure_data, p = 2)
+    expect_equal(abundances(vc, pure_data), abundances(endmembers(vc, pure_data), pure_data))
+
+    ag <- atgp(pure_data, p = 2)
+    expect_equal(abundances(ag, pure_data), abundances(endmembers(ag, pure_data), pure_data))
+  })
+
+  test_that("pure_endmembers object must have indices", {
+    bad_model <- structure(list(), class = "pure_endmembers")
+    expect_error(abundances(bad_model, data), "indices")
   })
 
 

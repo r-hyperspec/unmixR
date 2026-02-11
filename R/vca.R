@@ -1,40 +1,37 @@
 #' General Interface to Vertex Component Analysis Spectral Unmixing
 #' Implementations
-#' 
+#'
 #' This algorithm is based on the geometry of convex sets. It exploits the
 #' fact that endmembers occupy the vertices of a simplex.
-#' 
+#'
 #' @param data Data matrix. It will be converted to a matrix using
-#'   as.matrix. The matrix should contain a spectrum per row.
+#'   as.matrix. The matrix should contain a spectrum per row. If dimension
+#'   of the data is higher than \code{p}, \code{\link{vca_dr}} is applied
+#'   to reduce the data to \code{p} dimensions before running projections.
 #'
 #' @param p Number of endmembers.
 #'
-#' @param SNR The Signal-to-Noise ratio of the data. By default it will be
-#'   estimated using \code{\link{estSNR}}.
-#'
 #' @param method The VCA algorithm to use. Options:
 #'   \itemize{
-#'     \item 05 (\code{\link{vca05}})
-#'     \item Lopez2012 (\code{\link{vcaLopez2012}})
+#'     \item nascimento (\code{\link{vca_nascimento}})
+#'     \item lopez (\code{\link{vca_lopez}})
 #'   }
-#'   Default: 05.
+#'   Default: \code{nascimento}.
 #'
-#' @param seed vca05 generates a random vector. Set
-#'   the random number generator seed with this argument.
-#'
-#' @param EMonly Boolean that indicates whether the \code{data} parameter
-#'   should be stored in the resulting structure.
-#'
-#' @param ... Additional parameters for the methods (currently unused).
-#' 
 #' @return A list which contains:
 #'   \itemize{
-#'     \item \strong{data}: the original data.
-#'     \item \strong{indices}: the indices of the calculated endmembers.
+#'     \item \strong{indices}: sorted indices of the calculated endmembers.
+#'     \item \strong{projection_vectors}: projection vectors in iteration
+#'       order, included only when \code{debuglevel >= 1}.
+#'     \item \strong{unsorted_indices}: unsorted list of indices,
+#'       i.e., in the same order as iteration, included only
+#'       when \code{debuglevel >= 1}.
 #'   }
-#' 
+#'   The returned object has classes \code{c("vca", "pure_endmembers")} and
+#'   can be passed directly to \code{\link{abundances}}.
 #'
-#' @seealso \code{\link{endmembers}} to extract the spectra; \code{\link{predict}}
+#'
+#' @seealso \code{\link{endmembers}} to extract the spectra; \code{\link{abundances}}
 #' to determine abundances of endmembers in each sample.
 #'
 #' @rdname vca
@@ -43,127 +40,118 @@
 #'
 #' @examples
 #' data(demo_data)
-#' demo <- vca(demo_data, 2, method = "05")
-#' em <- endmembers(demo)
-#' em <- rbind(demo_data[c(7,9),], em)
-#' em[3:4,] <- em[3:4,] + 0.5 # a small offset for the found em's
-#' matplot(t(em), type = "l",
-#'    col = c("black", "blue", "black", "blue"), lty = c(1, 1, 2, 2),
-#'    xlab = "frequency", ylab = "intensity",
-#'    main = "mvca of demo_data")
-#' leg.txt <- c("Endmember 2", "Endmember 3", "Endmember 2 (found)", "Endmember 3 (found)")
-#' legend("topright", leg.txt, col = c("black", "blue", "black", "blue"),
-#' lty = c(1, 1, 2, 2), cex = 0.75)
-vca <- function(data, p, method = c("05", "Lopez2012"), seed = 1L, SNR = estSNR(data, p), ..., EMonly = FALSE) {
-
+#' vca_demo <- vca(demo_data, p = 2)
+#' em <- endmembers(vca_demo, demo_data)
+#' matplot(t(em), type = "l")
+vca <- function(data, p, method = c("nascimento", "lopez")) {
   # check if the method passed in is valid
-  method <- match.arg (method)
+  method <- match.arg(method)
 
   # transform the input into a matrix
-  data <- as.matrix (data)
+  data <- as.matrix(data)
 
   # check for p being with the valid range, >= 2
-  if (!is.numeric (p) || p < 2 || p > ncol (data)) {
+  if (!is.numeric(p) || p < 2 || p > ncol(data)) {
     stop("p must be a positive integer >= 2 and <= ncol (data)")
   }
 
-  # set the random number generator seed if supplied
-  set.seed(seed)
-  
-  force(SNR)
-  reducedData <- dimensionalityReduction(data, p, SNR)
-
-  vcaFunc <- get(paste("vca", method, sep=""), mode = "function")
-
-  seed <- .Random.seed
-
-  val <- vcaFunc(reducedData, p, SNR, ...)
-
-  if (.options("debuglevel") >= 1L){
-      res <- list(data = if (!EMonly) data else data[as.integer(val),],
-                  indices = if (!EMonly) as.integer(val) else 1:p,
-                  seed = seed)
-  }else{
-      res <- list(data = if (!EMonly) data else data[as.integer(val),],
-                  indices = if (!EMonly) as.integer(val) else 1:p)
+  vcaFunc <- get(paste("vca", method, sep = "_"), mode = "function")
+  if (ncol(data) == p) {
+    res <- vcaFunc(data)
+  } else {
+    res <- vcaFunc(vca_dr(data, p))
   }
-  class(res) = "vca"
-  return(res)
 
+  if (.options("debuglevel") >= 1L) {
+    res[["unsorted_indices"]] <- res$indices
+  }
+  res$indices <- sort(res$indices)
+
+  class(res) <- c("vca", "pure_endmembers")
+  return(res)
 }
 
-
 .test(vca) <- function() {
-  context ("vca")
+  context("vca")
 
-  # Note: .testdata$x matches all columns of .testdata, which are x.L1, x.L2, x.L3
+  old_debuglevel <- unmixR.options("debuglevel")
+  on.exit(unmixR.options(debuglevel = old_debuglevel), add = TRUE)
 
-  test_that ("vca produces error for invalid values of p", {
-    expect_error (vca (.testdata$x, p = "---"))
-    expect_error (vca (.testdata$x, p = 0))
-    expect_error (vca (.testdata$x, p = 1))
-    expect_error (vca (.testdata$x, p = 4))
+  test_that("vca validates p and method", {
+    expect_error(vca(.testdata$x, p = "---"))
+    expect_error(vca(.testdata$x, p = 0))
+    expect_error(vca(.testdata$x, p = 1))
+    expect_error(vca(.testdata$x, p = 4))
+    expect_error(vca(.testdata$x, p = 3, method = "invalid"))
   })
 
-  test_that ("vca produces error for invalid method", {
-    expect_error (vca (.testdata$x, p, method="invalid"))
+  test_that("vca exposes expected implementations", {
+    implementations <- get.implementations("vca")
+    expect_equal(sort(implementations), c("lopez", "nascimento"))
   })
 
-  ## test that at least the implementations provided by unmixR are available
-  # this fails at the moment (correctly!) because we need to rename mvca again!
-  implementations <- get.implementations("vca")
-  test_that ("Implementations available", {
-    expect_true (all (c ("05", "Lopez2012") %in% implementations))
-  })
+  test_that("correct results for all available methods: triangle data (debuglevel = 0)", {
+    unmixR.options(debuglevel = 0L)
 
+    for (method in get.implementations("vca")) {
+      set.seed(17)
+      res <- vca(.testdata$x, p = 3, method = method)
 
-  # test correct calculations for the available methods
-  implementations <- get.implementations("vca")
-
-  test_that("correct results for all available methods: triangle data", {
-    # FIXME: Fix the tests below ASAP
-    skip("Skip tests to implement GHA infrastructure. Fix the tests ASAP")
-
-    for (i in implementations) {
-      expect_equal (vca (.testdata$x, p = 3, method = i)$indices, .correct)
-
-      indices <- vca (.testdata$x, p = 2, method = i)$indices
-      expect_true (all (indices %in% .correct), info = i)
-
-      if (i == "Lopez2012") skip ("temporarily disabled: known issue #36")
-      expect_false (any (duplicated (indices)), info = i)
+      expect_s3_class(res, "vca")
+      expect_s3_class(res, "pure_endmembers")
+      expect_true(names(res) == "indices", info = method)
+      expect_equal(res$indices, .correct, info = method)
     }
   })
 
-  test_that ("no duplicates with Lopez2012 for test data", {
-    skip ("known issue: #36")
+  test_that("vca adds debug fields and sorts indices when debuglevel >= 1", {
+    unmixR.options(debuglevel = 1L)
 
-    indices <- replicate (10, vca (.testdata$x, p = 2, method = "Lopez2012")$indices)
-    expect_true (all (indices %in% .correct))
-    expect_true (all (indices [1, ] != indices [2, ]), info = "Lopez2012 duplicate indices: testdata, p = 2")
-  }
-  )
+    set.seed(17)
+    res <- vca(.testdata$x, p = 3)
 
-  test_that("correct results for all available methods: laser data", {
-    skip ("temporarily disabled")
-    for (i in implementations) {
-      expect_equal (vca (laser$spc, p = 2, method = i)$indices, .correct.laser)
-    }
+    expect_true(all(c("indices", "unsorted_indices", "projection_vectors") %in% names(res)))
+    expect_equal(res$indices, .correct)
+    expect_equal(dim(res$projection_vectors), c(ncol(.testdata$x), ncol(.testdata$x)))
   })
 
+  test_that("vca on higher dimensional data reduces dimensions before running projections", {
+    set.seed(17)
+
+    # Prepare a mixture with true endmembers
+    vertices <- sample(laser$spc, size = 3)
+    inner_points <- .get_simplex_points(vertices, max_coefficient = c(0.8, 0.8, 0.8))
+    X <- rbind(vertices, inner_points)
+    # Shuffle rows to make sure the order is not informative
+    i <- sample(nrow(X))
+    o <- order(i)
+    X <- X[i, ]
+    vertex_indices <- sort(o[1:3])
+
+    res <- vca(X, p = 3)
+    ems <- endmembers(res, X)
+    expect_equal(res$indices, vertex_indices)
+  })
+
+  test_that("no duplicates with Lopez2012 for test data", {
+    indices <- replicate(10, vca(.testdata$x, p = 2, method = "lopez")$indices)
+    expect_true(all(indices %in% .correct))
+    expect_true(all(indices[1, ] != indices[2, ]), info = "vca lopez duplicate indices: testdata, p = 2")
+  })
 
   ## all 3 components should be recovered, vca output is sorted.
   test_that("vca output is sorted", {
-    # FIXME: Fix the tests below ASAP
-    skip("Skip tests to implement GHA infrastructure. Fix the tests ASAP")
-
-    indices <- vca (.testdata$x, p = 3)$indices
-    expect_equal(indices, sort (indices))
+    indices <- vca(.testdata$x, p = 3)$indices
+    expect_equal(indices, sort(indices))
   })
 
   # test: hyperSpec object
   test_that("vca on hyperSpec object", {
-      expect_equal (vca (laser, p = 2, seed = 12345)$indices,
-                    vca (laser$spc, p = 2, seed = 12345)$indices)
+    set.seed(17)
+    hspc <- vca(laser, p = 2)$indices
+    set.seed(17)
+    spc <- vca(laser$spc, p = 2)$indices
+
+    expect_equal(hspc, spc)
   })
 }
