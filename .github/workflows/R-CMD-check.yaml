@@ -31,10 +31,6 @@ jobs:
 
     name: ${{ matrix.config.os }} (R-${{ matrix.config.r }})
 
-    defaults:
-      run:
-        working-directory: ./pkg/unmixR
-
     strategy:
       fail-fast: false
       matrix:
@@ -70,20 +66,17 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          working-directory: ./pkg/unmixR
           extra-packages: |
               any::rcmdcheck
               any::devtools
           needs: check
 
       - name: Roxygenize
-        working-directory: ./pkg/unmixR
         run: |
           devtools::document()
         shell: Rscript {0}
 
       - uses: r-lib/actions/check-r-package@v2
         with:
-          working-directory: ./pkg/unmixR
           upload-snapshots: true
 
